@@ -1,6 +1,6 @@
 <div align="right">
 <a href="/README.md">中文</a> &nbsp;|&nbsp;
-<a href="/README-EN.md">EN</a>
+<a href="/README_en-US.md">EN</a>
 </div>
 
 <div align="center">
@@ -18,25 +18,25 @@
 </div>
 # Gear-WenXinWorkShop-Starter
 
-## 获取access-token方法
-1. 前往 [文心一言资格申请](https://cloud.baidu.com/product/wenxinworkshop) 
+## How to get access-token?
+1. Go to [WenXinYiYan qualification application](https://cloud.baidu.com/product/wenxinworkshop) 
 
-2. [填写问卷](https://cloud.baidu.com/survey/qianfan.html)，等待审核通过（我用了一天半）
+2. [Fill out the questionnaire](https://cloud.baidu.com/survey/qianfan.html)，and wait for approval (it took me one and a half days)
 
-3. 审核通过后进入 [控制台](https://console.bce.baidu.com/ai/?_=#/ai/wenxinworkshop/overview/index)，点击[创建应用](https://console.bce.baidu.com/ai/?_=#/ai/wenxinworkshop/app/create)
-4. 进入左侧 [应用列表](https://console.bce.baidu.com/ai/?_=#/ai/wenxinworkshop/app/list)，复制 `API Key` 与 `Secret Key`
-5. 将你的 `API Key` 与 `Secret Key` 替换链接的[Key]，访问以下地址
+3. After approval,enter the [console](https://console.bce.baidu.com/ai/?_=#/ai/wenxinworkshop/overview/index)，click[Create Application](https://console.bce.baidu.com/ai/?_=#/ai/wenxinworkshop/app/create)
+4. Enter the left side [Application List](https://console.bce.baidu.com/ai/?_=#/ai/wenxinworkshop/app/list)，copy`API Key` and `Secret Key`
+5. Replace your `API Key` and `Secret Key` with [Key] in the link and visit the following address
  > https://aip.baidubce.com/oauth/2.0/token?grant_type=client_credentials&client_id=[API-Key]&client_secret=[Secret-Key]
 
-## 📖 项目简介
-- 百度 **“文心千帆 WENXINWORKSHOP”** 大模型的spring-boot-starter，可以帮助您快速接入百度的AI能力，只需一行代码即可调用百度文心千帆大模型。
-- 目前已百度已开放ErnieBot、Ernie-Bot-Turbo、BLOOMZ-7B、Embedding-V1模型，此项目正在快速开发迭代中，后续将添加更多模型支持。
-- 目前已基本支持“文心一言 ErnieBot”大模型的API（单轮对话、连续对话）。
-- 0.0.2版本中将增加支持流式返回以及Ernie-Bot-Turbo、BLOOMZ-7B、Embedding-V1模型的支持。
+## 📖 Project Introduction
+- Use Baidu's ** "Wenxin Qianfan WENXINWORKSHOP"** large model spring-boot-starter to help you quickly access Baidu's AI capabilities with just one line of code to call Baidu Wenxin Qianfan large model.
+- Baidu has opened ErnieBot, Ernie-Bot-Turbo, BLOOMZ-7B, Embedding-V1 models. This project is under rapid development and iteration, and more model support will be added later.
+- It currently basically supports the API of the "Wenxin Yiyian ErnieBot" large model (single round dialogue, continuous dialogue).
+- Version 0.0.2 will add support for streaming returns and Ernie-Bot-Turbo, BLOOMZ-7B, Embedding-V1 model support.
 
 
-## 🚀 快速开始
-### 1、添加依赖
+## 🚀 Quick Start
+### 1、Add Dependencies
 - Maven
 ```xml
 <dependency>
@@ -52,7 +52,7 @@ dependencies {
 }
 ```
 
-### 2、添加access-token
+### 2、Add access-token
 - application.yml & application.yaml
   ```yaml
   gear:
@@ -64,23 +64,23 @@ dependencies {
   gear.wenxin.access-token=xx.xxxxxxxxxx.xxxxxx.xxxxxxx.xxxxx-xxxx
   ```
 
-### 3、调用示例
+### 3、Invoke Example
 ```java
 @RestController
 public class ChatController {
 
-    // 要调用的模型的客户端
+    // Model client to call
     @Resource
     private ErnieBotClient ernieBotClient;
 
-    // 单次对话
+    // Single round chat
     @PostMapping("/chat")
     public BaseResponse<String> chatSingle(String msg) {
         ErnieResponse ernieResponse = ernieBotClient.chatWithSingleRound(msg);
         return ResultUtils.success(ernieResponse.getResult());
     }
 
-    // 连续对话
+    // Continuous chat
     @PostMapping("/chat")
     public BaseResponse<String> chat(String msg) {
         String chatUID = "test-user-1001";
@@ -91,8 +91,8 @@ public class ChatController {
 }
 ```
 
-## 📑使用文档
-[~先欠着~](http://mopen.cloud/)
+## 📑Documentation
+[~Owe first~](http://mopen.cloud/)
 
-## 开源协议
+## Open Source License
 [LICENSE](https://www.apache.org/licenses/LICENSE-2.0)
