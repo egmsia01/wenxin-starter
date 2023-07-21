@@ -18,7 +18,7 @@ public class OnlyValidator implements ConstraintValidator<Only, Number> {
     @Override
     public boolean isValid(Number number, ConstraintValidatorContext context) {
         if (number == null) {
-            return true; // Null values are considered valid, handle them with other annotations if needed
+            return true;
         }
 
         double doubleValue = number.doubleValue();

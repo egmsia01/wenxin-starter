@@ -15,8 +15,10 @@ import java.lang.annotation.*;
 @Target({ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Only {
-    String message() default "At least one property with the same value must be null";
+    String message() default "被标记相同 value 的属性至少有一个为 null !";
+
     Class<?>[] groups() default {};
+
     Class<? extends Payload>[] payload() default {};
 
     double value();

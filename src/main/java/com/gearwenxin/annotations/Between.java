@@ -17,12 +17,17 @@ import java.lang.annotation.*;
 @Target({ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Between {
-    String message() default "Value must be between {min} and {max}";
+    String message() default "属性值必须介于 {min} 和 {max} 之间 !";
+
     Class<?>[] groups() default {};
+
     Class<? extends Payload>[] payload() default {};
 
     double min();
+
     double max();
+
     boolean includeMin() default false;
+
     boolean includeMax() default false;
 }

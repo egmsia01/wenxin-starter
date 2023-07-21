@@ -2,16 +2,11 @@ package com.gearwenxin.model.erniebot;
 
 import com.gearwenxin.annotations.Between;
 import com.gearwenxin.annotations.Only;
-import com.gearwenxin.model.Message;
-import com.google.gson.annotations.SerializedName;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.util.List;
 
 /**
  * @author Ge Mingjia
@@ -20,10 +15,9 @@ import java.util.List;
  * ErnieBot 模型
  */
 @Data
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ErnieSingleRoundRequest {
+public class ChatErnieRequest {
 
     /**
      * 表示最终用户的唯一标识符，可以监视和检测滥用行为，防止接口恶意调用

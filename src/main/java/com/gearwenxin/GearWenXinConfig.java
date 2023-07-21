@@ -13,7 +13,7 @@ import org.springframework.context.annotation.Configuration;
 @Data
 @Configuration
 @ComponentScan
-@ConfigurationProperties(prefix = "gear.wenxin")
+@ConfigurationProperties("gear.wenxin")
 public class GearWenXinConfig {
 
     private String accessToken;
