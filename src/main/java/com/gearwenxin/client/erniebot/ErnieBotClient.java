@@ -45,7 +45,7 @@ public class ErnieBotClient implements ErnieBot {
         messageList.add(message);
 
         ernieRequest.setMessages(messageList);
-        ernieRequest.setStream(true);
+
         String response = ChatUtils.commonChat(URLConstant.ERNIE_BOT_URL, accessToken, GSON.toJson(ernieRequest));
 
         return GSON.fromJson(response, ErnieResponse.class);
