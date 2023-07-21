@@ -21,10 +21,10 @@
 ## 获取access-token方法
 1. 前往 [文心一言资格申请](https://cloud.baidu.com/product/wenxinworkshop) 
 
-2. [填写问卷](https://cloud.baidu.com/survey/qianfan.html) ，等待审核通过（我用了一天半）
+2. [填写问卷](https://cloud.baidu.com/survey/qianfan.html)，等待审核通过（我用了一天半）
 
 3. 审核通过后进入 [控制台](https://console.bce.baidu.com/ai/?_=#/ai/wenxinworkshop/overview/index)，点击[创建应用](https://console.bce.baidu.com/ai/?_=#/ai/wenxinworkshop/app/create)
-4. 进入左侧 [应用列表](https://console.bce.baidu.com/ai/?_=#/ai/wenxinworkshop/app/list),复制 `API Key` 与 `Secret Key`
+4. 进入左侧 [应用列表](https://console.bce.baidu.com/ai/?_=#/ai/wenxinworkshop/app/list)，复制 `API Key` 与 `Secret Key`
 5. 将你的 `API Key` 与 `Secret Key` 替换链接的[Key]，访问以下地址
  > https://aip.baidubce.com/oauth/2.0/token?grant_type=client_credentials&client_id=[API-Key]&client_secret=[Secret-Key]
 
@@ -94,3 +94,5 @@ public class ChatController {
 ## 📑使用文档
 [~先欠着~](http://mopen.cloud/)
 
+## 开源协议
+[LICENSE](https://www.apache.org/licenses/LICENSE-2.0)
