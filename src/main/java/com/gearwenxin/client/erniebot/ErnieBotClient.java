@@ -45,7 +45,7 @@ public class ErnieBotClient implements ErnieBot {
         messageList.add(message);
 
         ernieRequest.setMessages(messageList);
-
+        ernieRequest.setStream(true);
         String response = ChatUtils.commonChat(URLConstant.ERNIE_BOT_URL, accessToken, GSON.toJson(ernieRequest));
 
         return GSON.fromJson(response, ErnieResponse.class);
@@ -82,7 +82,6 @@ public class ErnieBotClient implements ErnieBot {
         List<Message> messagesHistory = messagesHistoryMap.computeIfAbsent(msgUid, key -> new ArrayList<>());
         // 添加到历史
         messagesHistory.add(new Message(RoleEnum.user, chatErnieRequest.getContent()));
-
         ernieRequest.setMessages(messagesHistory);
         log.info("ernieRequest => {}", GSON.toJson(ernieRequest));
 
