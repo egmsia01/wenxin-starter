@@ -2,14 +2,13 @@ package com.gearwenxin.client.erniebot;
 
 import com.gearwenxin.common.*;
 import com.gearwenxin.exception.BusinessException;
-import com.gearwenxin.model.BaseRequest;
 import com.gearwenxin.model.erniebot.ChatErnieRequest;
 import com.gearwenxin.model.erniebot.ErnieResponse;
 import com.gearwenxin.model.Message;
-import com.google.gson.Gson;
 import com.gearwenxin.model.erniebot.ErnieRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
+import reactor.core.publisher.Mono;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -25,7 +24,6 @@ import java.util.Map;
 public class ErnieBotClient implements ErnieBot {
 
     private final String accessToken;
-    static final Gson GSON = new Gson();
 
     // 存储不同msgCode的对话历史
     private final Map<String, List<Message>> messagesHistoryMap = new HashMap<>();
@@ -44,9 +42,8 @@ public class ErnieBotClient implements ErnieBot {
         ernieRequest.setMessages(messageList);
         log.info("content_singleErnieRequest => {}", ernieRequest.toString());
 
-        String response = ChatUtils.commonChat(URLConstant.ERNIE_BOT_URL, accessToken, GSON.toJson(ernieRequest));
-
-        return GSON.fromJson(response, ErnieResponse.class);
+        Mono<ErnieResponse> response = ChatUtils.monoChat(URLConstant.ERNIE_BOT_URL, accessToken, ernieRequest);
+        return response.block();
     }
 
     @Override
@@ -56,9 +53,9 @@ public class ErnieBotClient implements ErnieBot {
         ErnieRequest ernieRequest = ConvertUtils.chatErnieRequestToErnieRequest(chatErnieRequest);
         log.info("singleRequest => {}", ernieRequest.toString());
 
-        String response = ChatUtils.commonChat(URLConstant.ERNIE_BOT_URL, accessToken, GSON.toJson(ernieRequest));
+        Mono<ErnieResponse> response = ChatUtils.monoChat(URLConstant.ERNIE_BOT_URL, accessToken, ernieRequest);
 
-        return GSON.fromJson(response, ErnieResponse.class);
+        return response.block();
     }
 
     @Override
@@ -73,10 +70,12 @@ public class ErnieBotClient implements ErnieBot {
         ernieRequest.setMessages(messagesHistory);
         log.info("content_multipleErnieRequest => {}", ernieRequest.toString());
 
-        String response = ChatUtils.commonChat(URLConstant.ERNIE_BOT_URL, accessToken, GSON.toJson(ernieRequest));
-        ErnieResponse ernieResponse = GSON.fromJson(response, ErnieResponse.class);
+        Mono<ErnieResponse> response = ChatUtils.monoChat(URLConstant.ERNIE_BOT_URL, accessToken, ernieRequest);
+        ErnieResponse ernieResponse = response.block();
+        if (ernieResponse == null) {
+            throw new BusinessException(ErrorCode.SYSTEM_NET_ERROR);
+        }
         messagesHistory.add(buildAssistantMessage(ernieResponse.getResult()));
-
         return ernieResponse;
     }
 
@@ -92,8 +91,11 @@ public class ErnieBotClient implements ErnieBot {
         ernieRequest.setMessages(messagesHistory);
         log.info("multipleErnieRequest => {}", ernieRequest.toString());
 
-        String response = ChatUtils.commonChat(URLConstant.ERNIE_BOT_URL, accessToken, GSON.toJson(ernieRequest));
-        ErnieResponse ernieResponse = GSON.fromJson(response, ErnieResponse.class);
+        Mono<ErnieResponse> response = ChatUtils.monoChat(URLConstant.ERNIE_BOT_URL, accessToken, ernieRequest);
+        ErnieResponse ernieResponse = response.block();
+        if (ernieResponse == null) {
+            throw new BusinessException(ErrorCode.SYSTEM_NET_ERROR);
+        }
         messagesHistory.add(buildAssistantMessage(ernieResponse.getResult()));
 
         return ernieResponse;
