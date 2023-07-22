@@ -66,6 +66,7 @@ dependencies {
 
 ### 3、调用示例
 ```java
+
 @RestController
 public class ChatController {
 
@@ -74,20 +75,27 @@ public class ChatController {
     private ErnieBot ernieBotClient;
 
     // 单次对话
-    @PostMapping("/chats")
+    @PostMapping("/chat")
     public BaseResponse<String> chatSingle(String msg) {
-        ErnieResponse ernieResponse = ernieBotClient.chatSingleRound(msg);
-        return ResultUtils.success(ernieResponse.getResult());
+        ErnieResponse response = ernieBotClient.chatSingle(msg);
+        return ResultUtils.success(response.getResult());
     }
 
     // 连续对话
-    @PostMapping("/chatm")
+    @PostMapping("/chats")
     public BaseResponse<String> chat(String msg) {
         String chatUID = "test-user-1001";
-        ErnieResponse ernieResponse = ernieBotClient.chatMultipleRounds(msg, chatUID);
-        return ResultUtils.success(ernieResponse.getResult());
+        ErnieResponse response = ernieBotClient.chatContinuous(msg, chatUID);
+        return ResultUtils.success(response.getResult());
     }
 
+    // 流式返回
+    @PostMapping(value = "/stream/chat", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public Flux<ErnieResponse> chatSingle(String msg) {
+      Flux<ErnieResponse> response = ernieBotClient.chatSingleWithStream(msg);
+      return ResultUtils.success(response);
+    }
+    
 }
 ```
 

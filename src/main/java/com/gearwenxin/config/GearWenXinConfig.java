@@ -1,4 +1,4 @@
-package com.gearwenxin;
+package com.gearwenxin.config;
 
 import com.gearwenxin.client.erniebot.ErnieBot;
 import com.gearwenxin.client.erniebot.ErnieBotClient;
