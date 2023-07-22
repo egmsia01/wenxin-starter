@@ -1,13 +1,9 @@
 package com.gearwenxin.model.erniebot;
 
-import com.gearwenxin.annotations.Between;
-import com.gearwenxin.annotations.Only;
 import com.gearwenxin.model.BaseRequest;
 import com.google.gson.annotations.SerializedName;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 
 /**
@@ -19,6 +15,8 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString(callSuper=true)
+@EqualsAndHashCode(callSuper = true)
 public class ErnieRequest extends BaseRequest {
 
     /**
@@ -27,8 +25,6 @@ public class ErnieRequest extends BaseRequest {
      * （3）建议该参数和top_p只设置1个
      * （4）建议top_p和temperature不要同时更改
      */
-    @Only(value = 0)
-    @Between(min = 0, max = 1.0, includeMax = true)
     @SerializedName("temperature")
     private Float temperature;
 
@@ -38,8 +34,6 @@ public class ErnieRequest extends BaseRequest {
      * （3）建议该参数和temperature只设置1个
      * （4）建议top_p和temperature不要同时更改
      */
-    @Only(value = 0)
-    @Between(min = 0, max = 1.0, includeMin = true, includeMax = true)
     @SerializedName("top_p")
     private Float topP;
 
@@ -48,7 +42,6 @@ public class ErnieRequest extends BaseRequest {
      * （1）值越大表示惩罚越大
      * （2）默认1.0，取值范围：[1.0, 2.0]
      */
-    @Between(min = 1.0, max = 2.0, includeMin = true, includeMax = true)
     @SerializedName("penalty_score")
     private Float penaltyScore;
 

@@ -1,8 +1,6 @@
 package com.gearwenxin.model;
 
 import com.google.gson.annotations.SerializedName;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -34,9 +32,7 @@ public class BaseRequest {
      * （4）最后一个message的content长度（即此轮对话的问题）不能超过2000个字符；
      * 如果messages中content总长度大于2000字符，系统会依次遗忘最早的历史会话，直到content的总长度不超过2000个字符
      */
-    @Size(max = 2000)
     @SerializedName("messages")
-    @NotNull(message = "messages is null !")
     private List<Message> messages;
 
     /**
