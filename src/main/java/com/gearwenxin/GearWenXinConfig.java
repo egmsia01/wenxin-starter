@@ -1,5 +1,6 @@
 package com.gearwenxin;
 
+import com.gearwenxin.client.erniebot.ErnieBot;
 import com.gearwenxin.client.erniebot.ErnieBotClient;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -19,7 +20,7 @@ public class GearWenXinConfig {
     private String accessToken;
 
     @Bean
-    public ErnieBotClient ernieBotClient(){
+    public ErnieBot ernieBot() {
         return new ErnieBotClient(accessToken);
     }
 }

@@ -34,9 +34,9 @@ public class ConvertUtils {
         if (chatErnieRequest.getPenaltyScore() != null) {
             ernieRequest.setPenaltyScore(chatErnieRequest.getPenaltyScore());
         }
-        if (chatErnieRequest.getStream() != null) {
-            ernieRequest.setStream(chatErnieRequest.getStream());
-        }
+//        if (chatErnieRequest.getStream() != null) {
+//            ernieRequest.setStream(chatErnieRequest.getStream());
+//        }
 
         return ernieRequest;
     }
