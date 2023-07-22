@@ -71,17 +71,17 @@ public class ChatController {
 
     // 要调用的模型的客户端
     @Resource
-    private ErnieBotClient ernieBotClient;
+    private ErnieBot ernieBotClient;
 
     // 单次对话
-    @PostMapping("/chat")
+    @PostMapping("/chats")
     public BaseResponse<String> chatSingle(String msg) {
-        ErnieResponse ernieResponse = ernieBotClient.chatWithSingleRound(msg);
+        ErnieResponse ernieResponse = ernieBotClient.chatSingleRound(msg);
         return ResultUtils.success(ernieResponse.getResult());
     }
 
     // 连续对话
-    @PostMapping("/chat")
+    @PostMapping("/chatm")
     public BaseResponse<String> chat(String msg) {
         String chatUID = "test-user-1001";
         ErnieResponse ernieResponse = ernieBotClient.chatMultipleRounds(msg, chatUID);
