@@ -8,6 +8,7 @@ import com.gearwenxin.model.Message;
 import com.gearwenxin.model.erniebot.ErnieRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.ArrayList;
@@ -33,7 +34,7 @@ public class ErnieBotClient implements ErnieBot {
     }
 
     @Override
-    public ErnieResponse chatSingleRound(String content) {
+    public ErnieResponse chatSingle(String content) {
         if (StringUtils.isEmpty(content)) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
@@ -47,7 +48,20 @@ public class ErnieBotClient implements ErnieBot {
     }
 
     @Override
-    public ErnieResponse chatSingleRound(ChatErnieRequest chatErnieRequest) {
+    public Flux<ErnieResponse> chatSingleWithStream(String content) {
+        if (StringUtils.isEmpty(content)) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        List<Message> messageList = buildMessageList(content);
+        ErnieRequest ernieRequest = new ErnieRequest();
+        ernieRequest.setMessages(messageList);
+        log.info("content_singleErnieRequest => {}", ernieRequest.toString());
+
+        return ChatUtils.fluxChat(URLConstant.ERNIE_BOT_URL, accessToken, ernieRequest);
+    }
+
+    @Override
+    public ErnieResponse chatSingle(ChatErnieRequest chatErnieRequest) {
         this.validChatErnieRequest(chatErnieRequest);
 
         ErnieRequest ernieRequest = ConvertUtils.chatErnieRequestToErnieRequest(chatErnieRequest);
@@ -59,11 +73,21 @@ public class ErnieBotClient implements ErnieBot {
     }
 
     @Override
-    public ErnieResponse chatMultipleRounds(String content, String msgUID) {
-        if (StringUtils.isEmpty(content) || StringUtils.isEmpty(msgUID)) {
+    public Flux<ErnieResponse> chatSingleWithStream(ChatErnieRequest chatErnieRequest) {
+        this.validChatErnieRequest(chatErnieRequest);
+
+        ErnieRequest ernieRequest = ConvertUtils.chatErnieRequestToErnieRequest(chatErnieRequest);
+        log.info("singleRequest => {}", ernieRequest.toString());
+
+        return ChatUtils.fluxChat(URLConstant.ERNIE_BOT_URL, accessToken, ernieRequest);
+    }
+
+    @Override
+    public ErnieResponse chatContinuous(String content, String msgUid) {
+        if (StringUtils.isEmpty(content) || StringUtils.isEmpty(msgUid)) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
-        List<Message> messagesHistory = messagesHistoryMap.computeIfAbsent(msgUID, k -> new ArrayList<>());
+        List<Message> messagesHistory = messagesHistoryMap.computeIfAbsent(msgUid, k -> new ArrayList<>());
         messagesHistory.add(buildUserMessage(content));
 
         ErnieRequest ernieRequest = new ErnieRequest();
@@ -80,12 +104,17 @@ public class ErnieBotClient implements ErnieBot {
     }
 
     @Override
-    public ErnieResponse chatMultipleRounds(ChatErnieRequest chatErnieRequest, String msgUID) {
-        if (StringUtils.isEmpty(msgUID)) {
+    public Flux<ErnieResponse> chatContinuousWithStream(String content, String msgUid) {
+        return null;
+    }
+
+    @Override
+    public ErnieResponse chatContinuous(ChatErnieRequest chatErnieRequest, String msgUid) {
+        if (StringUtils.isEmpty(msgUid)) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
         ErnieRequest ernieRequest = ConvertUtils.chatErnieRequestToErnieRequest(chatErnieRequest);
-        List<Message> messagesHistory = messagesHistoryMap.computeIfAbsent(msgUID, key -> new ArrayList<>());
+        List<Message> messagesHistory = messagesHistoryMap.computeIfAbsent(msgUid, key -> new ArrayList<>());
         // 添加到历史
         messagesHistory.add(buildUserMessage(chatErnieRequest.getContent()));
         ernieRequest.setMessages(messagesHistory);
@@ -102,11 +131,20 @@ public class ErnieBotClient implements ErnieBot {
     }
 
     @Override
+    public Flux<ErnieResponse> chatContinuousWithStream(ChatErnieRequest chatErnieRequest, String msgUid) {
+        return null;
+    }
+
+    @Override
     public void validChatErnieRequest(ChatErnieRequest request) {
 
         // 检查content不为空
         if (StringUtils.isEmpty(request.getContent())) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "content cannot be empty");
+        }
+        // 检查content长度
+        if (request.getContent().length() > 2000) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "content's length cannot be more than 2000");
         }
         // 检查temperature和topP不both有值
         if (request.getTemperature() != null && request.getTopP() != null) {
