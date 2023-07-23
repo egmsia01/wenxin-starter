@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class ErnieResponse {
+public class ChatErnieResponse {
 
     /**
      * 本轮对话的id

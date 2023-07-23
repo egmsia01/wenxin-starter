@@ -26,7 +26,7 @@ public interface ErnieBot {
      * @param content 对话内容
      * @return ErnieResponse Flux<ErnieResponse>
      */
-    Flux<ErnieResponse> chatSingleWithStream(String content);
+    Flux<ErnieResponse> chatSingleOfStream(String content);
 
     /**
      * 单轮对话，无上下文记忆，支持参数配置
@@ -44,7 +44,7 @@ public interface ErnieBot {
      * @param chatErnieRequest 请求实体类
      * @return ErnieResponse Flux<ErnieResponse>
      */
-    Flux<ErnieResponse> chatSingleWithStream(ChatErnieRequest chatErnieRequest);
+    Flux<ErnieResponse> chatSingleOfStream(ChatErnieRequest chatErnieRequest);
 
     /**
      * 多轮对话，有上下文记忆，默认参数
@@ -54,7 +54,7 @@ public interface ErnieBot {
      * @param msgUid  对话唯一识别码
      * @return ErnieResponse 响应实体类
      */
-    ErnieResponse chatContinuous(String content, String msgUid);
+    ErnieResponse chatCont(String content, String msgUid);
 
     /**
      * 多轮对话，有上下文记忆，默认参数
@@ -64,7 +64,7 @@ public interface ErnieBot {
      * @param msgUid  对话唯一识别码
      * @return ErnieResponse 响应实体类
      */
-    Flux<ErnieResponse> chatContinuousWithStream(String content, String msgUid);
+    Flux<ErnieResponse> chatContOfStream(String content, String msgUid);
 
     /**
      * 多轮对话，有上下文记忆，支持参数配置
@@ -74,7 +74,7 @@ public interface ErnieBot {
      * @param msgUid           对话唯一识别码
      * @return ErnieResponse 响应实体类
      */
-    ErnieResponse chatContinuous(ChatErnieRequest chatErnieRequest, String msgUid);
+    ErnieResponse chatCont(ChatErnieRequest chatErnieRequest, String msgUid);
 
     /**
      * 多轮对话，有上下文记忆，支持参数配置
@@ -84,7 +84,7 @@ public interface ErnieBot {
      * @param msgUid           对话唯一识别码
      * @return ErnieResponse 响应实体类
      */
-    Flux<ErnieResponse> chatContinuousWithStream(ChatErnieRequest chatErnieRequest, String msgUid);
+    Flux<ErnieResponse> chatContOfStream(ChatErnieRequest chatErnieRequest, String msgUid);
 
     /**
      * ChatErnieRequest 参数校验

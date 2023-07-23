@@ -10,7 +10,7 @@
     </parent>
     <groupId>io.github.gemingjia</groupId>
     <artifactId>gear-wenxinworkshop-starter</artifactId>
-    <version>0.0.1.2-SNAPSHOT</version>
+    <version>0.0.1.3-SNAPSHOT</version>
     <name>gear-wenxinworkshop-starter</name>
     <description>A springboot start of Baidu "WENXINWORKSHOP"</description>
     <url>https://github.com/gemingjia/gear-wenxinworkshop-starter</url>

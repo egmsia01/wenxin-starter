@@ -57,10 +57,8 @@ public class ChatUtils {
                 .accept(MediaType.TEXT_EVENT_STREAM)
                 .retrieve()
                 .bodyToFlux(ErnieResponse.class)
-                .map(ChatUtils::extractResultFromResponse);
+                .map(ConvertUtils::convertFromResponse);
     }
 
-    private static ErnieResponse extractResultFromResponse(ErnieResponse response) {
-        return response;
-    }
+
 }
