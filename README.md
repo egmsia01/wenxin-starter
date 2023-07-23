@@ -100,9 +100,9 @@ public class ChatController {
         return ernieBotClient.chatSingleOfStream(msg);
     }
 
-    // 流式返回,单次对话
+    // 流式返回,连续对话
     @PostMapping(value = "/stream/chats", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public Flux<ErnieResponse> chatSingle(String msg, String msgUid) {
+    public Flux<ErnieResponse> chatCont(String msg, String msgUid) {
         return ernieBotClient.chatContOfStream(msg, msgUid);
     }
 
