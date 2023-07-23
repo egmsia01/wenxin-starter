@@ -1,9 +1,11 @@
 package com.gearwenxin.common;
 
+import com.gearwenxin.exception.BusinessException;
 import com.gearwenxin.model.Message;
+import org.apache.commons.lang.StringUtils;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.LinkedList;
+import java.util.Queue;
 
 /**
  * @author Ge Mingjia
@@ -11,10 +13,12 @@ import java.util.List;
  */
 public class CommonUtils {
 
-    public static List<Message> buildMessageList(String content) {
-        List<Message> messageList = new ArrayList<>();
-        messageList.add(buildUserMessage(content));
-        return messageList;
+    public static final int MAX_TOTAL_LENGTH = 2000;
+
+    public static Queue<Message> buildMessageQueue(String content) {
+        Queue<Message> messageQueue = new LinkedList<>();
+        messageQueue.add(buildUserMessage(content));
+        return messageQueue;
     }
 
     public static Message buildUserMessage(String content) {
@@ -23,6 +27,39 @@ public class CommonUtils {
 
     public static Message buildAssistantMessage(String content) {
         return new Message(RoleEnum.assistant, content);
+    }
+
+    /**
+     * 向历史消息中添加消息
+     *
+     * @param messagesHistory 历史消息队列
+     * @param message         需添加的Message
+     */
+    public static void offerMessage(Queue<Message> messagesHistory, Message message) {
+
+        if (messagesHistory == null || message == null || StringUtils.isEmpty(message.getContent())) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+
+        if (message.getRole() == RoleEnum.assistant) {
+            messagesHistory.offer(message);
+            return;
+        }
+
+        int totalLength = message.getContent().length();
+
+        for (Message msg : messagesHistory) {
+            if (msg.getRole() == RoleEnum.user) {
+                totalLength += msg.getContent().length();
+            }
+        }
+        while (totalLength > MAX_TOTAL_LENGTH) {
+            Message firstMessage = messagesHistory.poll();
+            Message secondMessage = messagesHistory.poll();
+            if (firstMessage != null && secondMessage != null) {
+                totalLength -= (firstMessage.getContent().length() + secondMessage.getContent().length());
+            }
+        }
     }
 
 }

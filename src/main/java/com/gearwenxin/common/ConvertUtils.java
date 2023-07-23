@@ -5,8 +5,8 @@ import com.gearwenxin.model.erniebot.ChatErnieRequest;
 import com.gearwenxin.model.erniebot.ErnieRequest;
 import com.gearwenxin.model.erniebot.ErnieResponse;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.LinkedList;
+import java.util.Queue;
 
 /**
  * 类型转换工具类
@@ -22,9 +22,9 @@ public class ConvertUtils {
             ernieRequest.setUserId(chatErnieRequest.getUserId());
         }
         if (chatErnieRequest.getContent() != null) {
-            List<Message> messageList = new ArrayList<>();
-            messageList.add(new Message(RoleEnum.user, chatErnieRequest.getContent()));
-            ernieRequest.setMessages(messageList);
+            Queue<Message> messageQueue = new LinkedList<>();
+            messageQueue.add(new Message(RoleEnum.user, chatErnieRequest.getContent()));
+            ernieRequest.setMessages(messageQueue);
         }
         if (chatErnieRequest.getTemperature() != null) {
             ernieRequest.setTemperature(chatErnieRequest.getTemperature());

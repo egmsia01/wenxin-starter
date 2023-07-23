@@ -6,7 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
+import java.util.Queue;
 
 /**
  * @author Ge Mingjia
@@ -33,7 +33,7 @@ public class BaseRequest {
      * 如果messages中content总长度大于2000字符，系统会依次遗忘最早的历史会话，直到content的总长度不超过2000个字符
      */
     @SerializedName("messages")
-    private List<Message> messages;
+    private Queue<Message> messages;
 
     /**
      * 是否以流式接口的形式返回数据，默认false

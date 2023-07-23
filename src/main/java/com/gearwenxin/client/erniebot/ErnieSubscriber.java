@@ -1,5 +1,6 @@
 package com.gearwenxin.client.erniebot;
 
+import com.gearwenxin.common.CommonUtils;
 import com.gearwenxin.model.Message;
 import com.gearwenxin.model.erniebot.ErnieResponse;
 import lombok.extern.slf4j.Slf4j;
@@ -9,9 +10,10 @@ import org.reactivestreams.Subscription;
 import reactor.core.Disposable;
 import reactor.core.publisher.FluxSink;
 
-import java.util.List;
+import java.util.Queue;
 
 import static com.gearwenxin.common.CommonUtils.buildAssistantMessage;
+import static com.gearwenxin.common.CommonUtils.buildUserMessage;
 
 /**
  * @author Ge Mingjia
@@ -22,14 +24,12 @@ public class ErnieSubscriber implements Subscriber<ErnieResponse>, Disposable {
 
     private final FluxSink<ErnieResponse> emitter;
     private Subscription subscription;
-    List<Message> messagesHistory;
-    private String msgUid;
+    Queue<Message> messagesHistory;
 
     private final StringBuilder stringBuilder = new StringBuilder();
 
-    public ErnieSubscriber(FluxSink<ErnieResponse> emitter, String msgUid, List<Message> messagesHistory) {
+    public ErnieSubscriber(FluxSink<ErnieResponse> emitter, Queue<Message> messagesHistory) {
         this.emitter = emitter;
-        this.msgUid = msgUid;
         this.messagesHistory = messagesHistory;
     }
 
@@ -62,10 +62,8 @@ public class ErnieSubscriber implements Subscriber<ErnieResponse>, Disposable {
     @Override
     public void onComplete() {
         log.info("onComplete ==========>");
-        if (stringBuilder != null) {
-            String allResult = stringBuilder.toString();
-            messagesHistory.add(buildAssistantMessage(allResult));
-        }
+        String allResult = stringBuilder.toString();
+        CommonUtils.offerMessage(messagesHistory, buildAssistantMessage(allResult));
         emitter.complete();
     }
 

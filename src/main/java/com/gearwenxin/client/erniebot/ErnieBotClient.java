@@ -20,7 +20,6 @@ import static com.gearwenxin.common.CommonUtils.*;
  * @author Ge Mingjia
  * @date 2023/7/20
  */
-
 @Slf4j
 public class ErnieBotClient implements ErnieBot {
 
@@ -28,7 +27,12 @@ public class ErnieBotClient implements ErnieBot {
 
     public static final String PREFIX_MSG_HISTORY_MONO = "Mono_";
     public static final String PREFIX_MSG_HISTORY_FLUX = "Flux_";
-    private final Map<String, List<Message>> MESSAGES_HISTORY_MAP = new HashMap<>();
+
+    // 每个模型的历史消息Map
+    private static final Map<String, Queue<Message>> MESSAGES_HISTORY_MAP = new HashMap<>();
+
+    // 最大的单个content字符数
+    private static final int MAX_CONTENT_LENGTH = 2000;
 
     public ErnieBotClient(String accessToken) {
         this.accessToken = accessToken;
@@ -39,9 +43,9 @@ public class ErnieBotClient implements ErnieBot {
         if (StringUtils.isEmpty(content)) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
-        List<Message> messageList = buildMessageList(content);
+        Queue<Message> messageQueue = buildMessageQueue(content);
         ErnieRequest ernieRequest = new ErnieRequest();
-        ernieRequest.setMessages(messageList);
+        ernieRequest.setMessages(messageQueue);
         log.info("content_singleErnieRequest => {}", ernieRequest.toString());
 
         Mono<ErnieResponse> response = ChatUtils.monoChat(URLConstant.ERNIE_BOT_URL, accessToken, ernieRequest);
@@ -53,9 +57,9 @@ public class ErnieBotClient implements ErnieBot {
         if (StringUtils.isEmpty(content)) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
-        List<Message> messageList = buildMessageList(content);
+        Queue<Message> messageQueue = buildMessageQueue(content);
         ErnieRequest ernieRequest = new ErnieRequest();
-        ernieRequest.setMessages(messageList);
+        ernieRequest.setMessages(messageQueue);
         ernieRequest.setStream(true);
         log.info("content_singleErnieRequest => {}", ernieRequest.toString());
         return ChatUtils.fluxChat(URLConstant.ERNIE_BOT_URL, accessToken, ernieRequest);
@@ -89,8 +93,8 @@ public class ErnieBotClient implements ErnieBot {
         if (StringUtils.isEmpty(content) || StringUtils.isEmpty(msgUid)) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
-        List<Message> messagesHistory = MESSAGES_HISTORY_MAP.computeIfAbsent(msgUid, k -> new ArrayList<>());
-        messagesHistory.add(buildUserMessage(content));
+        Queue<Message> messagesHistory = MESSAGES_HISTORY_MAP.computeIfAbsent(msgUid, k -> new LinkedList<>());
+        CommonUtils.offerMessage(messagesHistory, buildUserMessage(content));
 
         ErnieRequest ernieRequest = new ErnieRequest();
         ernieRequest.setMessages(messagesHistory);
@@ -101,7 +105,7 @@ public class ErnieBotClient implements ErnieBot {
         if (ernieResponse == null) {
             throw new BusinessException(ErrorCode.SYSTEM_NET_ERROR);
         }
-        messagesHistory.add(buildAssistantMessage(ernieResponse.getResult()));
+        CommonUtils.offerMessage(messagesHistory, buildAssistantMessage(ernieResponse.getResult()));
         return ernieResponse;
     }
 
@@ -110,15 +114,15 @@ public class ErnieBotClient implements ErnieBot {
         if (StringUtils.isBlank(content) || StringUtils.isEmpty(msgUid)) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
-        List<Message> messagesHistory = MESSAGES_HISTORY_MAP.computeIfAbsent(msgUid, k -> new ArrayList<>());
-        messagesHistory.add(buildUserMessage(content));
+        Queue<Message> messagesHistory = MESSAGES_HISTORY_MAP.computeIfAbsent(msgUid, k -> new LinkedList<>());
+        CommonUtils.offerMessage(messagesHistory, buildUserMessage(content));
 
         ErnieRequest ernieRequest = new ErnieRequest();
         ernieRequest.setMessages(messagesHistory);
         ernieRequest.setStream(true);
         log.info("content_chatContOfStreamErnieRequest => {}", ernieRequest.toString());
 
-        return this.historyFlux(msgUid, ernieRequest, messagesHistory);
+        return this.historyFlux(ernieRequest, messagesHistory);
     }
 
     @Override
@@ -128,9 +132,9 @@ public class ErnieBotClient implements ErnieBot {
         }
         this.validChatErnieRequest(chatErnieRequest);
         ErnieRequest ernieRequest = ConvertUtils.chatErnieRequestToErnieRequest(chatErnieRequest);
-        List<Message> messagesHistory = MESSAGES_HISTORY_MAP.computeIfAbsent(msgUid, key -> new ArrayList<>());
+        Queue<Message> messagesHistory = MESSAGES_HISTORY_MAP.computeIfAbsent(msgUid, key -> new LinkedList<>());
         // 添加到历史
-        messagesHistory.add(buildUserMessage(chatErnieRequest.getContent()));
+        CommonUtils.offerMessage(messagesHistory, buildUserMessage(chatErnieRequest.getContent()));
         ernieRequest.setMessages(messagesHistory);
         log.info("chatContErnieRequest => {}", ernieRequest.toString());
 
@@ -139,7 +143,7 @@ public class ErnieBotClient implements ErnieBot {
         if (ernieResponse == null) {
             throw new BusinessException(ErrorCode.SYSTEM_NET_ERROR);
         }
-        messagesHistory.add(buildAssistantMessage(ernieResponse.getResult()));
+        CommonUtils.offerMessage(messagesHistory, buildAssistantMessage(ernieResponse.getResult()));
 
         return ernieResponse;
     }
@@ -151,14 +155,15 @@ public class ErnieBotClient implements ErnieBot {
         }
         this.validChatErnieRequest(chatErnieRequest);
         ErnieRequest ernieRequest = ConvertUtils.chatErnieRequestToErnieRequest(chatErnieRequest);
-        List<Message> messagesHistory = MESSAGES_HISTORY_MAP.computeIfAbsent(msgUid, key -> new ArrayList<>());
+        Queue<Message> messagesHistory = MESSAGES_HISTORY_MAP.computeIfAbsent(msgUid, key -> new LinkedList<>());
         // 添加到历史
-        messagesHistory.add(buildUserMessage(chatErnieRequest.getContent()));
+        CommonUtils.offerMessage(messagesHistory, buildUserMessage(chatErnieRequest.getContent()));
+
         ernieRequest.setMessages(messagesHistory);
         ernieRequest.setStream(true);
         log.info("chatContOfStreamErnieRequest => {}", ernieRequest.toString());
 
-        return this.historyFlux(msgUid, ernieRequest, messagesHistory);
+        return this.historyFlux(ernieRequest, messagesHistory);
     }
 
     @Override
@@ -168,8 +173,8 @@ public class ErnieBotClient implements ErnieBot {
         if (StringUtils.isEmpty(request.getContent())) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "content cannot be empty");
         }
-        // 检查content长度
-        if (request.getContent().length() > 2000) {
+        // 检查单个content长度
+        if (request.getContent().length() > MAX_CONTENT_LENGTH) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "content's length cannot be more than 2000");
         }
         // 检查temperature和topP不both有值
@@ -193,10 +198,9 @@ public class ErnieBotClient implements ErnieBot {
         }
     }
 
-
-    private <T> Flux<ErnieResponse> historyFlux(String msgUid, T request, List<Message> messagesHistory) {
+    private <T> Flux<ErnieResponse> historyFlux(T request, Queue<Message> messagesHistory) {
         return Flux.create(emitter -> {
-            ErnieSubscriber subscriber = new ErnieSubscriber(emitter, msgUid, messagesHistory);
+            ErnieSubscriber subscriber = new ErnieSubscriber(emitter, messagesHistory);
             Flux<ErnieResponse> ernieResponse = ChatUtils.fluxChat(URLConstant.ERNIE_BOT_URL, accessToken, request);
             ernieResponse.subscribe(subscriber);
             emitter.onDispose(subscriber);
