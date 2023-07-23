@@ -23,4 +23,5 @@ public class GearWenXinConfig {
     public ErnieBot ernieBot() {
         return new ErnieBotClient(accessToken);
     }
+
 }

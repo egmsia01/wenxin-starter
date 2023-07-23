@@ -3,6 +3,7 @@ package com.gearwenxin.common;
 import com.gearwenxin.model.Message;
 import com.gearwenxin.model.erniebot.ChatErnieRequest;
 import com.gearwenxin.model.erniebot.ErnieRequest;
+import com.gearwenxin.model.erniebot.ErnieResponse;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,6 +40,10 @@ public class ConvertUtils {
 //        }
 
         return ernieRequest;
+    }
+
+    public static ErnieResponse convertFromResponse(ErnieResponse response) {
+        return response;
     }
 
 }
