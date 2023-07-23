@@ -19,6 +19,8 @@
 # Gear-WenXinWorkShop-Starter
 
 ## 获取access-token方法
+![image](https://github.com/gemingjia/gear-wenxinworkshop-starter/assets/80268501/7225fb98-761a-4ead-b626-d59fc0931161)
+
 1. 前往 [文心一言资格申请](https://cloud.baidu.com/product/wenxinworkshop) 
 
 2. [填写问卷](https://cloud.baidu.com/survey/qianfan.html)，等待审核通过（我用了一天半）
