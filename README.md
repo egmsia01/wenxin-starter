@@ -41,6 +41,7 @@
 ### 1、添加依赖
 - Maven
 ```xml
+<!-- 若中央仓库未更新可暂时自行编译 -->
 <dependency>
   <groupId>io.github.gemingjia</groupId>
   <artifactId>gear-wenxinworkshop-starter</artifactId>
@@ -87,17 +88,22 @@ public class ChatController {
     @PostMapping("/chats")
     public BaseResponse<String> chat(String msg) {
         String chatUID = "test-user-1001";
-        ErnieResponse response = ernieBotClient.chatContinuous(msg, chatUID);
+        ErnieResponse response = ernieBotClient.chatCont(msg, chatUID);
         return ResultUtils.success(response.getResult());
     }
 
-    // 流式返回
+    // 流式返回,单次对话
     @PostMapping(value = "/stream/chat", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public Flux<ErnieResponse> chatSingle(String msg) {
-      Flux<ErnieResponse> response = ernieBotClient.chatSingleWithStream(msg);
-      return ResultUtils.success(response);
+        return ernieBotClient.chatSingleOfStream(msg);
     }
-    
+
+    // 流式返回,单次对话
+    @PostMapping(value = "/stream/chats", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public Flux<ErnieResponse> chatSingle(String msg, String msgUid) {
+        return ernieBotClient.chatContOfStream(msg, msgUid);
+    }
+
 }
 ```
 
