@@ -13,7 +13,6 @@ import reactor.core.publisher.FluxSink;
 import java.util.Queue;
 
 import static com.gearwenxin.common.CommonUtils.buildAssistantMessage;
-import static com.gearwenxin.common.CommonUtils.buildUserMessage;
 
 /**
  * @author Ge Mingjia
@@ -63,7 +62,8 @@ public class ErnieSubscriber implements Subscriber<ErnieResponse>, Disposable {
     public void onComplete() {
         log.info("onComplete ==========>");
         String allResult = stringBuilder.toString();
-        CommonUtils.offerMessage(messagesHistory, buildAssistantMessage(allResult));
+        Message message = buildAssistantMessage(allResult);
+        CommonUtils.offerMessage(messagesHistory, message);
         emitter.complete();
     }
 

@@ -17,7 +17,8 @@ public class CommonUtils {
 
     public static Queue<Message> buildMessageQueue(String content) {
         Queue<Message> messageQueue = new LinkedList<>();
-        messageQueue.add(buildUserMessage(content));
+        Message message = buildUserMessage(content);
+        messageQueue.offer(message);
         return messageQueue;
     }
 
