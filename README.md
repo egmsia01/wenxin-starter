@@ -88,7 +88,7 @@ public class ChatController {
 
     // 连续对话
     @PostMapping("/chats")
-    public BaseResponse<String> chat(String msg) {
+    public BaseResponse<String> chatCont(String msg) {
         String chatUID = "test-user-1001";
         ErnieResponse response = ernieBotClient.chatCont(msg, chatUID);
         return ResultUtils.success(response.getResult());
@@ -96,13 +96,13 @@ public class ChatController {
 
     // 流式返回,单次对话
     @PostMapping(value = "/stream/chat", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public Flux<ErnieResponse> chatSingle(String msg) {
+    public Flux<ErnieResponse> chatSingleStream(String msg) {
         return ernieBotClient.chatSingleOfStream(msg);
     }
 
     // 流式返回,连续对话
     @PostMapping(value = "/stream/chats", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public Flux<ErnieResponse> chatCont(String msg, String msgUid) {
+    public Flux<ErnieResponse> chatContStream(String msg, String msgUid) {
         return ernieBotClient.chatContOfStream(msg, msgUid);
     }
 
