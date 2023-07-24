@@ -41,14 +41,12 @@ public class CommonUtils {
         if (messagesHistory == null || message == null || StringUtils.isEmpty(message.getContent())) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
-
+        messagesHistory.offer(message);
         if (message.getRole() == RoleEnum.assistant) {
-            messagesHistory.offer(message);
             return;
         }
 
-        int totalLength = message.getContent().length();
-
+        int totalLength = 0;
         for (Message msg : messagesHistory) {
             if (msg.getRole() == RoleEnum.user) {
                 totalLength += msg.getContent().length();
