@@ -34,9 +34,8 @@
 - 百度 **“文心千帆 WENXINWORKSHOP”** 大模型的spring-boot-starter，可以帮助您快速接入百度的AI能力，只需一行代码即可调用百度文心千帆大模型。
 - 完整对接文心千帆的官方API文档。
 - 支持对话的流式返回。
-- 目前已百度已开放ErnieBot、Ernie-Bot-Turbo、BLOOMZ-7B、Embedding-V1模型，此项目正在快速开发迭代中，后续将添加更多模型支持。
-- 目前支持 “文心一言 ErnieBot” 大模型的API（单轮对话、连续对话、流式返回）。
-- 0.0.2版本中将增加Ernie-Bot-Turbo、BLOOMZ-7B、Embedding-V1模型的支持。
+- 完整支持 `文心一言 ErnieBot`、`ERNIE-Bot-turbo`、`BLOOMZ-7B` 模型的API（单轮对话、连续对话、流式返回）。
+- 0.0.2版本中将增加Embedding-V1模型的支持。
 
 
 ## 🚀 快速开始
@@ -47,7 +46,7 @@
 <dependency>
   <groupId>io.github.gemingjia</groupId>
   <artifactId>gear-wenxinworkshop-starter</artifactId>
-  <version>0.0.1.3-SNAPSHOT</version>
+  <version>0.0.2-SNAPSHOT</version>
 </dependency>
 ```
 - Gradle
