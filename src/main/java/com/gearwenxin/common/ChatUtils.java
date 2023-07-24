@@ -1,12 +1,13 @@
 package com.gearwenxin.common;
 
 import com.gearwenxin.model.erniebot.ErnieResponse;
-import com.google.gson.Gson;
 import org.springframework.http.MediaType;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
+import static com.gearwenxin.common.CommonUtils.GSON;
 
 /**
  * @author Ge Mingjia
@@ -14,7 +15,6 @@ import reactor.core.publisher.Mono;
  */
 public class ChatUtils {
 
-    public static final Gson GSON = new Gson();
 
     /**
      * 非流式请求
@@ -34,7 +34,8 @@ public class ChatUtils {
         return client.post()
                 .body(BodyInserters.fromValue(GSON.toJson(request)))
                 .retrieve()
-                .bodyToMono(ErnieResponse.class);
+                .bodyToMono(ErnieResponse.class)
+                .map(ConvertUtils::convertFromResponse);
     }
 
     /**

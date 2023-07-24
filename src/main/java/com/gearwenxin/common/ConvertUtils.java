@@ -8,6 +8,8 @@ import com.gearwenxin.model.erniebot.ErnieResponse;
 import java.util.LinkedList;
 import java.util.Queue;
 
+import static com.gearwenxin.common.CommonUtils.JSON_OBJECT;
+
 /**
  * 类型转换工具类
  *
@@ -15,6 +17,7 @@ import java.util.Queue;
  * @date 2023/5/27
  */
 public class ConvertUtils {
+
     public static ErnieRequest chatErnieRequestToErnieRequest(ChatErnieRequest chatErnieRequest) {
         ErnieRequest ernieRequest = new ErnieRequest();
 

@@ -9,8 +9,8 @@ import lombok.NoArgsConstructor;
 /**
  * @author Ge Mingjia
  * @date 2023/7/20
- *
- *  ErnieBot 模型
+ * <p>
+ * ErnieBot 模型
  */
 @Data
 @NoArgsConstructor
@@ -73,5 +73,17 @@ public class ErnieResponse {
      */
     @JsonProperty("usage")
     private Usage usage;
+
+    /**
+     * 错误代码，正常为 null
+     */
+    @JsonProperty("error_code")
+    private Integer errorCode;
+
+    /**
+     * 错误信息，正常为 null
+     */
+    @JsonProperty("error_msg")
+    private String errorMsg;
 
 }

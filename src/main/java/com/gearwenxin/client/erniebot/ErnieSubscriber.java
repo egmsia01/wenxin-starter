@@ -55,6 +55,10 @@ public class ErnieSubscriber implements Subscriber<ErnieResponse>, Disposable {
     @Override
     public void onError(Throwable throwable) {
         log.info("onError ==========>");
+        // 如果出现错误，中断后立即保存当前已有部分
+        String errPartResult = stringBuilder.toString();
+        Message message = buildAssistantMessage(errPartResult);
+        CommonUtils.offerMessage(messagesHistory, message);
         emitter.error(throwable);
     }
 
