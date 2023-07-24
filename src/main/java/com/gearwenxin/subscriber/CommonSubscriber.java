@@ -1,4 +1,4 @@
-package com.gearwenxin.client.erniebot;
+package com.gearwenxin.subscriber;
 
 import com.gearwenxin.common.CommonUtils;
 import com.gearwenxin.model.Message;
@@ -19,7 +19,7 @@ import static com.gearwenxin.common.CommonUtils.buildAssistantMessage;
  * @date 2023/7/20
  */
 @Slf4j
-public class ErnieSubscriber implements Subscriber<ErnieResponse>, Disposable {
+public class CommonSubscriber implements Subscriber<ErnieResponse>, Disposable {
 
     private final FluxSink<ErnieResponse> emitter;
     private Subscription subscription;
@@ -27,7 +27,7 @@ public class ErnieSubscriber implements Subscriber<ErnieResponse>, Disposable {
 
     private final StringBuilder stringBuilder = new StringBuilder();
 
-    public ErnieSubscriber(FluxSink<ErnieResponse> emitter, Queue<Message> messagesHistory) {
+    public CommonSubscriber(FluxSink<ErnieResponse> emitter, Queue<Message> messagesHistory) {
         this.emitter = emitter;
         this.messagesHistory = messagesHistory;
     }

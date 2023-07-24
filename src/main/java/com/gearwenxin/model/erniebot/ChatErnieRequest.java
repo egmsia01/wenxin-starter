@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
  * @author Ge Mingjia
  * @date 2023/7/20
  * <p>
- * ErnieBot 模型
+ * CommonBot 模型
  */
 @Data
 @NoArgsConstructor

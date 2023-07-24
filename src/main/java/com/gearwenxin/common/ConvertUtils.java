@@ -6,8 +6,6 @@ import com.gearwenxin.model.erniebot.*;
 import java.util.LinkedList;
 import java.util.Queue;
 
-import static com.gearwenxin.common.CommonUtils.JSON_OBJECT;
-
 /**
  * 类型转换工具类
  *
@@ -16,7 +14,7 @@ import static com.gearwenxin.common.CommonUtils.JSON_OBJECT;
  */
 public class ConvertUtils {
 
-    public static ErnieRequest chatErnieRequestToErnieRequest(ChatErnieRequest chatErnieRequest) {
+    public static ErnieRequest chatErnieReqToErnieReq(ChatErnieRequest chatErnieRequest) {
         ErnieRequest ernieRequest = new ErnieRequest();
 
         if (chatErnieRequest.getUserId() != null) {
@@ -40,19 +38,19 @@ public class ConvertUtils {
         return ernieRequest;
     }
 
-    public static TurboRequest chatTurboRequestToTurboRequest(ChatTurboRequest chatTurboRequest) {
-        TurboRequest turboRequest = new TurboRequest();
+    public static Turbo7BRequest chatTurboReq7BToTurboReq(ChatTurbo7BRequest chatTurbo7BRequest) {
+        Turbo7BRequest turbo7BRequest = new Turbo7BRequest();
 
-        if (chatTurboRequest.getUserId() != null) {
-            turboRequest.setUserId(chatTurboRequest.getUserId());
+        if (chatTurbo7BRequest.getUserId() != null) {
+            turbo7BRequest.setUserId(chatTurbo7BRequest.getUserId());
         }
-        if (chatTurboRequest.getContent() != null) {
+        if (chatTurbo7BRequest.getContent() != null) {
             Queue<Message> messageQueue = new LinkedList<>();
-            messageQueue.add(new Message(RoleEnum.user, chatTurboRequest.getContent()));
-            turboRequest.setMessages(messageQueue);
+            messageQueue.add(new Message(RoleEnum.user, chatTurbo7BRequest.getContent()));
+            turbo7BRequest.setMessages(messageQueue);
         }
 
-        return turboRequest;
+        return turbo7BRequest;
     }
 
 

@@ -1,4 +1,4 @@
-package com.gearwenxin.client.erniebot;
+package com.gearwenxin.client;
 
 import com.gearwenxin.model.erniebot.ErnieResponse;
 import reactor.core.publisher.Flux;
@@ -7,7 +7,7 @@ import reactor.core.publisher.Flux;
  * @author Ge Mingjia
  * @date 2023/7/20
  */
-public interface ErnieBot<T> {
+public interface CommonBot<T> {
 
     /**
      * 单轮对话，无上下文记忆，默认参数

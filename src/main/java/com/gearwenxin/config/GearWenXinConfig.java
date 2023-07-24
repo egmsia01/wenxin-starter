@@ -1,10 +1,8 @@
 package com.gearwenxin.config;
 
-import com.gearwenxin.client.erniebot.ErnieBot;
-import com.gearwenxin.client.erniebot.ErnieBotClient;
-import com.gearwenxin.client.erniebot.ErnieBotTurboClient;
-import com.gearwenxin.model.erniebot.ChatErnieRequest;
-import com.gearwenxin.model.erniebot.ChatTurboRequest;
+import com.gearwenxin.client.Bloomz7BClient;
+import com.gearwenxin.client.ErnieBotClient;
+import com.gearwenxin.client.ErnieBotTurboClient;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -30,6 +28,11 @@ public class GearWenXinConfig {
     @Bean
     public ErnieBotTurboClient ernieBotTurboClient() {
         return new ErnieBotTurboClient(accessToken);
+    }
+
+    @Bean
+    public Bloomz7BClient bloomz7BClient() {
+        return new Bloomz7BClient(accessToken);
     }
 
 }
