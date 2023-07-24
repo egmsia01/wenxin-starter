@@ -1,9 +1,7 @@
 package com.gearwenxin.common;
 
 import com.gearwenxin.model.Message;
-import com.gearwenxin.model.erniebot.ChatErnieRequest;
-import com.gearwenxin.model.erniebot.ErnieRequest;
-import com.gearwenxin.model.erniebot.ErnieResponse;
+import com.gearwenxin.model.erniebot.*;
 
 import java.util.LinkedList;
 import java.util.Queue;
@@ -38,15 +36,24 @@ public class ConvertUtils {
         if (chatErnieRequest.getPenaltyScore() != null) {
             ernieRequest.setPenaltyScore(chatErnieRequest.getPenaltyScore());
         }
-//        if (chatErnieRequest.getStream() != null) {
-//            ernieRequest.setStream(chatErnieRequest.getStream());
-//        }
 
         return ernieRequest;
     }
 
-//    public static <T> convertFromResponse(ErnieResponse response) {
-//        return response;
-//    }
+    public static TurboRequest chatTurboRequestToTurboRequest(ChatTurboRequest chatTurboRequest) {
+        TurboRequest turboRequest = new TurboRequest();
+
+        if (chatTurboRequest.getUserId() != null) {
+            turboRequest.setUserId(chatTurboRequest.getUserId());
+        }
+        if (chatTurboRequest.getContent() != null) {
+            Queue<Message> messageQueue = new LinkedList<>();
+            messageQueue.add(new Message(RoleEnum.user, chatTurboRequest.getContent()));
+            turboRequest.setMessages(messageQueue);
+        }
+
+        return turboRequest;
+    }
+
 
 }

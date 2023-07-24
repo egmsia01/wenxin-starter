@@ -15,7 +15,7 @@ import lombok.*;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString(callSuper=true)
+@ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
 public class ErnieRequest extends BaseRequest {
 
