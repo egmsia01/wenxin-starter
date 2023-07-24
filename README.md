@@ -76,7 +76,7 @@ public class ChatController {
 
     // 要调用的模型的客户端
     @Resource
-    private ErnieBot ernieBotClient;
+    private ErnieBotClient ernieBotClient;
 
     // 单次对话
     @PostMapping("/chat")
