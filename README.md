@@ -111,5 +111,7 @@ public class ChatController {
 ## 📑使用文档
 [~先欠着~](http://mopen.cloud/)
 
+请求参数和返回报文与[官方文档](https://cloud.baidu.com/doc/WENXINWORKSHOP/s/jlil56u11)完全兼容，可移步官方文档查看。
+
 ## 开源协议
 [LICENSE](https://www.apache.org/licenses/LICENSE-2.0)
