@@ -2,7 +2,6 @@ package com.gearwenxin.common;
 
 import com.gearwenxin.exception.BusinessException;
 import com.gearwenxin.model.Message;
-import com.google.gson.Gson;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
 
@@ -16,7 +15,6 @@ import java.util.Queue;
 public class CommonUtils {
 
     public static final JSONObject JSON_OBJECT = new JSONObject();
-    public static final Gson GSON = new Gson();
     public static final int MAX_TOTAL_LENGTH = 2000;
 
     public static Queue<Message> buildMessageQueue(String content) {

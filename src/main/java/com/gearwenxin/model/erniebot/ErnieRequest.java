@@ -1,7 +1,7 @@
 package com.gearwenxin.model.erniebot;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.gearwenxin.model.BaseRequest;
-import com.google.gson.annotations.SerializedName;
 
 import lombok.*;
 
@@ -25,7 +25,7 @@ public class ErnieRequest extends BaseRequest {
      * （3）建议该参数和top_p只设置1个
      * （4）建议top_p和temperature不要同时更改
      */
-    @SerializedName("temperature")
+    @JsonProperty("temperature")
     private Float temperature;
 
     /**
@@ -34,7 +34,7 @@ public class ErnieRequest extends BaseRequest {
      * （3）建议该参数和temperature只设置1个
      * （4）建议top_p和temperature不要同时更改
      */
-    @SerializedName("top_p")
+    @JsonProperty("top_p")
     private Float topP;
 
     /**
@@ -42,7 +42,7 @@ public class ErnieRequest extends BaseRequest {
      * （1）值越大表示惩罚越大
      * （2）默认1.0，取值范围：[1.0, 2.0]
      */
-    @SerializedName("penalty_score")
+    @JsonProperty("penalty_score")
     private Float penaltyScore;
 
 }

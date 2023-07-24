@@ -1,13 +1,10 @@
 package com.gearwenxin.common;
 
-import com.gearwenxin.model.erniebot.ErnieResponse;
 import org.springframework.http.MediaType;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-
-import static com.gearwenxin.common.CommonUtils.GSON;
 
 /**
  * @author Ge Mingjia
@@ -15,16 +12,19 @@ import static com.gearwenxin.common.CommonUtils.GSON;
  */
 public class ChatUtils {
 
-
     /**
      * 非流式请求
      *
      * @param url         请求地址
      * @param accessToken accessToken
      * @param request     请求类
-     * @return Mono<ErnieResponse>对象
+     * @return Mono<T>
      */
-    public static <T> Mono<ErnieResponse> monoChat(String url, String accessToken, T request) {
+    public static <T> Mono<T> monoChat(
+            String url,
+            String accessToken,
+            Object request,
+            Class<T> type) {
 
         WebClient client = WebClient.builder()
                 .baseUrl(url + accessToken)
@@ -32,10 +32,9 @@ public class ChatUtils {
                 .build();
 
         return client.post()
-                .body(BodyInserters.fromValue(GSON.toJson(request)))
+                .body(BodyInserters.fromValue(request))
                 .retrieve()
-                .bodyToMono(ErnieResponse.class)
-                .map(ConvertUtils::convertFromResponse);
+                .bodyToMono(type);
     }
 
     /**
@@ -44,9 +43,13 @@ public class ChatUtils {
      * @param url         请求地址
      * @param accessToken accessToken
      * @param request     请求类
-     * @return Mono<ErnieResponse>对象
+     * @return Flux<T>
      */
-    public static <T> Flux<ErnieResponse> fluxChat(String url, String accessToken, T request) {
+    public static <T> Flux<T> fluxChat(
+            String url,
+            String accessToken,
+            Object request,
+            Class<T> type) {
 
         WebClient client = WebClient.builder()
                 .baseUrl(url + accessToken)
@@ -54,12 +57,10 @@ public class ChatUtils {
                 .build();
 
         return client.post()
-                .body(BodyInserters.fromValue(GSON.toJson(request)))
+                .body(BodyInserters.fromValue(request))
                 .accept(MediaType.TEXT_EVENT_STREAM)
                 .retrieve()
-                .bodyToFlux(ErnieResponse.class)
-                .map(ConvertUtils::convertFromResponse);
+                .bodyToFlux(type);
     }
-
 
 }

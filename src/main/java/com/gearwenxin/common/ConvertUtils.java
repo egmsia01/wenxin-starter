@@ -45,8 +45,8 @@ public class ConvertUtils {
         return ernieRequest;
     }
 
-    public static ErnieResponse convertFromResponse(ErnieResponse response) {
-        return response;
-    }
+//    public static <T> convertFromResponse(ErnieResponse response) {
+//        return response;
+//    }
 
 }

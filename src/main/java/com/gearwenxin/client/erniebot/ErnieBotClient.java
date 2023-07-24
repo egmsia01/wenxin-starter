@@ -44,11 +44,15 @@ public class ErnieBotClient implements ErnieBot {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
         Queue<Message> messageQueue = buildMessageQueue(content);
-        ErnieRequest ernieRequest = new ErnieRequest();
-        ernieRequest.setMessages(messageQueue);
-        log.info("content_singleErnieRequest => {}", ernieRequest.toString());
+        ErnieRequest request = new ErnieRequest();
+        request.setMessages(messageQueue);
+        log.info("content_singleErnieRequest => {}", request.toString());
 
-        Mono<ErnieResponse> response = ChatUtils.monoChat(URLConstant.ERNIE_BOT_URL, accessToken, ernieRequest);
+        Mono<ErnieResponse> response = ChatUtils.monoChat(
+                URLConstant.ERNIE_BOT_URL,
+                accessToken,
+                request,
+                ErnieResponse.class);
         return response.block();
     }
 
@@ -62,7 +66,11 @@ public class ErnieBotClient implements ErnieBot {
         ernieRequest.setMessages(messageQueue);
         ernieRequest.setStream(true);
         log.info("content_singleErnieRequest => {}", ernieRequest.toString());
-        return ChatUtils.fluxChat(URLConstant.ERNIE_BOT_URL, accessToken, ernieRequest);
+        return ChatUtils.fluxChat(
+                URLConstant.ERNIE_BOT_URL,
+                accessToken,
+                ernieRequest,
+                ErnieResponse.class);
     }
 
     @Override
@@ -72,7 +80,11 @@ public class ErnieBotClient implements ErnieBot {
         ErnieRequest ernieRequest = ConvertUtils.chatErnieRequestToErnieRequest(chatErnieRequest);
         log.info("singleRequest => {}", ernieRequest.toString());
 
-        Mono<ErnieResponse> response = ChatUtils.monoChat(URLConstant.ERNIE_BOT_URL, accessToken, ernieRequest);
+        Mono<ErnieResponse> response = ChatUtils.monoChat(
+                URLConstant.ERNIE_BOT_URL,
+                accessToken,
+                ernieRequest,
+                ErnieResponse.class);
 
         return response.block();
     }
@@ -85,7 +97,11 @@ public class ErnieBotClient implements ErnieBot {
         ernieRequest.setStream(true);
         log.info("singleRequest => {}", ernieRequest.toString());
 
-        return ChatUtils.fluxChat(URLConstant.ERNIE_BOT_URL, accessToken, ernieRequest);
+        return ChatUtils.fluxChat(
+                URLConstant.ERNIE_BOT_URL,
+                accessToken,
+                ernieRequest,
+                ErnieResponse.class);
     }
 
     @Override
@@ -101,7 +117,11 @@ public class ErnieBotClient implements ErnieBot {
         ernieRequest.setMessages(messagesHistory);
         log.info("content_multipleErnieRequest => {}", ernieRequest.toString());
 
-        Mono<ErnieResponse> response = ChatUtils.monoChat(URLConstant.ERNIE_BOT_URL, accessToken, ernieRequest);
+        Mono<ErnieResponse> response = ChatUtils.monoChat(
+                URLConstant.ERNIE_BOT_URL,
+                accessToken,
+                ernieRequest,
+                ErnieResponse.class);
         ErnieResponse ernieResponse = response.block();
         if (ernieResponse == null) {
             throw new BusinessException(ErrorCode.SYSTEM_NET_ERROR);
@@ -145,7 +165,11 @@ public class ErnieBotClient implements ErnieBot {
         ernieRequest.setMessages(messagesHistory);
         log.info("chatContErnieRequest => {}", ernieRequest.toString());
 
-        Mono<ErnieResponse> response = ChatUtils.monoChat(URLConstant.ERNIE_BOT_URL, accessToken, ernieRequest);
+        Mono<ErnieResponse> response = ChatUtils.monoChat(
+                URLConstant.ERNIE_BOT_URL,
+                accessToken,
+                ernieRequest,
+                ErnieResponse.class);
         ErnieResponse ernieResponse = response.block();
         if (ernieResponse == null) {
             throw new BusinessException(ErrorCode.SYSTEM_NET_ERROR);
@@ -210,7 +234,11 @@ public class ErnieBotClient implements ErnieBot {
     private <T> Flux<ErnieResponse> historyFlux(T request, Queue<Message> messagesHistory) {
         return Flux.create(emitter -> {
             ErnieSubscriber subscriber = new ErnieSubscriber(emitter, messagesHistory);
-            Flux<ErnieResponse> ernieResponse = ChatUtils.fluxChat(URLConstant.ERNIE_BOT_URL, accessToken, request);
+            Flux<ErnieResponse> ernieResponse = ChatUtils.fluxChat(
+                    URLConstant.ERNIE_BOT_URL,
+                    accessToken,
+                    request,
+                    ErnieResponse.class);
             ernieResponse.subscribe(subscriber);
             emitter.onDispose(subscriber);
         });
