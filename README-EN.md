@@ -75,7 +75,7 @@ public class ChatController {
     // Single round chat
     @PostMapping("/chat")
     public BaseResponse<String> chatSingle(String msg) {
-        ErnieResponse response = ernieBotClient.chatSingle(msg);
+        ChatResponse response = ernieBotClient.chatSingle(msg);
         return ResultUtils.success(response.getResult());
     }
 
@@ -83,19 +83,19 @@ public class ChatController {
     @PostMapping("/chats")
     public BaseResponse<String> chatCont(String msg) {
         String chatUID = "test-user-1001";
-        ErnieResponse response = ernieBotClient.chatCont(msg, chatUID);
+        ChatResponse response = ernieBotClient.chatCont(msg, chatUID);
         return ResultUtils.success(response.getResult());
     }
 
     // Single round chat with stream
     @PostMapping(value = "/stream/chat", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public Flux<ErnieResponse> chatSingleStream(String msg) {
+    public Flux<ChatResponse> chatSingleStream(String msg) {
         return ernieBotClient.chatSingleOfStream(msg);
     }
 
     // // Continuous chat with stream
     @PostMapping(value = "/stream/chats", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public Flux<ErnieResponse> chatContStream(String msg, String msgUid) {
+    public Flux<ChatResponse> chatContStream(String msg, String msgUid) {
         return ernieBotClient.chatContOfStream(msg, msgUid);
     }
 

@@ -2,7 +2,7 @@ package com.gearwenxin.subscriber;
 
 import com.gearwenxin.common.CommonUtils;
 import com.gearwenxin.model.Message;
-import com.gearwenxin.model.erniebot.ErnieResponse;
+import com.gearwenxin.model.erniebot.ChatResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.reactivestreams.Subscriber;
@@ -19,15 +19,15 @@ import static com.gearwenxin.common.CommonUtils.buildAssistantMessage;
  * @date 2023/7/20
  */
 @Slf4j
-public class CommonSubscriber implements Subscriber<ErnieResponse>, Disposable {
+public class CommonSubscriber implements Subscriber<ChatResponse>, Disposable {
 
-    private final FluxSink<ErnieResponse> emitter;
+    private final FluxSink<ChatResponse> emitter;
     private Subscription subscription;
     Queue<Message> messagesHistory;
 
     private final StringBuilder stringBuilder = new StringBuilder();
 
-    public CommonSubscriber(FluxSink<ErnieResponse> emitter, Queue<Message> messagesHistory) {
+    public CommonSubscriber(FluxSink<ChatResponse> emitter, Queue<Message> messagesHistory) {
         this.emitter = emitter;
         this.messagesHistory = messagesHistory;
     }
@@ -40,7 +40,7 @@ public class CommonSubscriber implements Subscriber<ErnieResponse>, Disposable {
     }
 
     @Override
-    public void onNext(ErnieResponse response) {
+    public void onNext(ChatResponse response) {
         log.info("onNext ==========>");
         String partResult = response.getResult();
         // 消费一条任务

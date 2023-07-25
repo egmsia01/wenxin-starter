@@ -1,6 +1,6 @@
 package com.gearwenxin.client;
 
-import com.gearwenxin.model.erniebot.ErnieResponse;
+import com.gearwenxin.model.erniebot.ChatResponse;
 import reactor.core.publisher.Flux;
 
 /**
@@ -14,36 +14,36 @@ public interface CommonBot<T> {
      * （非流式）
      *
      * @param content 对话内容
-     * @return ErnieResponse 响应实体类
+     * @return ChatResponse 响应实体类
      */
-    ErnieResponse chatSingle(String content);
+    ChatResponse chatSingle(String content);
 
     /**
      * 单轮对话，无上下文记忆，默认参数
      * （流式）
      *
      * @param content 对话内容
-     * @return ErnieResponse Flux<ErnieResponse>
+     * @return ChatResponse Flux<ChatResponse>
      */
-    Flux<ErnieResponse> chatSingleOfStream(String content);
+    Flux<ChatResponse> chatSingleOfStream(String content);
 
     /**
      * 单轮对话，无上下文记忆，支持参数配置
      * （非流式）
      *
      * @param chatRequest 请求实体类
-     * @return ErnieResponse 响应实体类
+     * @return ChatResponse 响应实体类
      */
-    ErnieResponse chatSingle(T chatRequest);
+    ChatResponse chatSingle(T chatRequest);
 
     /**
      * 单轮对话，无上下文记忆，默认参数
      * （流式）
      *
      * @param chatRequest 请求实体类
-     * @return ErnieResponse Flux<ErnieResponse>
+     * @return ChatResponse Flux<ChatResponse>
      */
-    Flux<ErnieResponse> chatSingleOfStream(T chatRequest);
+    Flux<ChatResponse> chatSingleOfStream(T chatRequest);
 
     /**
      * 多轮对话，有上下文记忆，默认参数
@@ -51,9 +51,9 @@ public interface CommonBot<T> {
      *
      * @param content 对话内容
      * @param msgUid  对话唯一识别码
-     * @return ErnieResponse 响应实体类
+     * @return ChatResponse 响应实体类
      */
-    ErnieResponse chatCont(String content, String msgUid);
+    ChatResponse chatCont(String content, String msgUid);
 
     /**
      * 多轮对话，有上下文记忆，默认参数
@@ -61,9 +61,9 @@ public interface CommonBot<T> {
      *
      * @param content 对话内容
      * @param msgUid  对话唯一识别码
-     * @return ErnieResponse 响应实体类
+     * @return ChatResponse 响应实体类
      */
-    Flux<ErnieResponse> chatContOfStream(String content, String msgUid);
+    Flux<ChatResponse> chatContOfStream(String content, String msgUid);
 
     /**
      * 多轮对话，有上下文记忆，支持参数配置
@@ -71,9 +71,9 @@ public interface CommonBot<T> {
      *
      * @param chatRequest 请求实体类
      * @param msgUid      对话唯一识别码
-     * @return ErnieResponse 响应实体类
+     * @return ChatResponse 响应实体类
      */
-    ErnieResponse chatCont(T chatRequest, String msgUid);
+    ChatResponse chatCont(T chatRequest, String msgUid);
 
     /**
      * 多轮对话，有上下文记忆，支持参数配置
@@ -81,8 +81,8 @@ public interface CommonBot<T> {
      *
      * @param chatRequest 请求实体类
      * @param msgUid      对话唯一识别码
-     * @return ErnieResponse 响应实体类
+     * @return ChatResponse 响应实体类
      */
-    Flux<ErnieResponse> chatContOfStream(T chatRequest, String msgUid);
+    Flux<ChatResponse> chatContOfStream(T chatRequest, String msgUid);
 
 }
