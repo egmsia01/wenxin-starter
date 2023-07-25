@@ -30,9 +30,8 @@
 
 ## 📖 Project Introduction
 - Use Baidu's ** "Wenxin Qianfan WENXINWORKSHOP"** large model spring-boot-starter to help you quickly access Baidu's AI capabilities with just one line of code to call Baidu Wenxin Qianfan large model.
-- Baidu has opened ErnieBot, Ernie-Bot-Turbo, BLOOMZ-7B, Embedding-V1 models. This project is under rapid development and iteration, and more model support will be added later.
-- It currently basically supports the API of the "Wenxin Yiyian ErnieBot" large model (single round dialogue, continuous dialogue).
-- Version 0.0.2 will add support for streaming returns and Ernie-Bot-Turbo, BLOOMZ-7B, Embedding-V1 model support.
+- Starter has supposed ErnieBot, Ernie-Bot-Turbo, BLOOMZ-7B models. This project is under rapid development and iteration, and more model support will be added later.
+- It currently basically supports the API of the "Wenxin Yiyian ErnieBot"、ErnieBot、Ernie-Bot-Turbo、BLOOMZ-7B models large model (single round dialogue, continuous dialog and return with stream).
 
 
 ## 🚀 Quick Start
@@ -42,13 +41,13 @@
 <dependency>
   <groupId>io.github.gemingjia</groupId>
   <artifactId>gear-wenxinworkshop-starter</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
+  <version>0.0.2</version>
 </dependency>
 ```
 - Gradle
 ```gradle
 dependencies {
-  implementation 'io.github.gemingjia:gear-wenxinworkshop-starter:0.0.1-SNAPSHOT' 
+  implementation 'io.github.gemingjia:gear-wenxinworkshop-starter:0.0.2' 
 }
 ```
 
@@ -76,16 +75,28 @@ public class ChatController {
     // Single round chat
     @PostMapping("/chat")
     public BaseResponse<String> chatSingle(String msg) {
-        ErnieResponse ernieResponse = ernieBotClient.chatWithSingleRound(msg);
-        return ResultUtils.success(ernieResponse.getResult());
+        ErnieResponse response = ernieBotClient.chatSingle(msg);
+        return ResultUtils.success(response.getResult());
     }
 
     // Continuous chat
-    @PostMapping("/chat")
-    public BaseResponse<String> chat(String msg) {
+    @PostMapping("/chats")
+    public BaseResponse<String> chatCont(String msg) {
         String chatUID = "test-user-1001";
-        ErnieResponse ernieResponse = ernieBotClient.chatMultipleRounds(msg, chatUID);
-        return ResultUtils.success(ernieResponse.getResult());
+        ErnieResponse response = ernieBotClient.chatCont(msg, chatUID);
+        return ResultUtils.success(response.getResult());
+    }
+
+    // Single round chat with stream
+    @PostMapping(value = "/stream/chat", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public Flux<ErnieResponse> chatSingleStream(String msg) {
+        return ernieBotClient.chatSingleOfStream(msg);
+    }
+
+    // // Continuous chat with stream
+    @PostMapping(value = "/stream/chats", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public Flux<ErnieResponse> chatContStream(String msg, String msgUid) {
+        return ernieBotClient.chatContOfStream(msg, msgUid);
     }
 
 }
