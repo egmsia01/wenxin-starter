@@ -24,9 +24,8 @@ import static com.gearwenxin.common.CommonUtils.*;
  * @date 2023/7/20
  */
 @Slf4j
-public class ErnieBotTurboClient implements CommonBot<ChatTurbo7BRequest> {
+public abstract class ErnieBotTurboClient implements CommonBot<ChatTurbo7BRequest> {
 
-    private final String accessToken;
     private static final String TAG = "ErnieBotTurboClient_";
     public static final String PREFIX_MSG_HISTORY_MONO = "Mono_";
     public static final String PREFIX_MSG_HISTORY_FLUX = "Flux_";
@@ -37,9 +36,11 @@ public class ErnieBotTurboClient implements CommonBot<ChatTurbo7BRequest> {
     // 最大的单个content字符数
     private static final int MAX_CONTENT_LENGTH = 2000;
 
-    public ErnieBotTurboClient(String accessToken) {
-        this.accessToken = accessToken;
+    protected ErnieBotTurboClient() {
     }
+
+    @Override
+    public abstract String getAccessToken();
 
     @Override
     public ChatResponse chatSingle(String content) {
@@ -53,7 +54,7 @@ public class ErnieBotTurboClient implements CommonBot<ChatTurbo7BRequest> {
 
         Mono<ChatResponse> response = ChatUtils.monoPost(
                 URLConstant.ERNIE_BOT_URL,
-                accessToken,
+                getAccessToken(),
                 request,
                 ChatResponse.class);
         return response.block();
@@ -71,7 +72,7 @@ public class ErnieBotTurboClient implements CommonBot<ChatTurbo7BRequest> {
         log.info(TAG + "content_singleRequest_stream => {}", ernieRequest.toString());
         return ChatUtils.fluxPost(
                 URLConstant.ERNIE_BOT_URL,
-                accessToken,
+                getAccessToken(),
                 ernieRequest,
                 ChatResponse.class);
     }
@@ -85,7 +86,7 @@ public class ErnieBotTurboClient implements CommonBot<ChatTurbo7BRequest> {
 
         Mono<ChatResponse> response = ChatUtils.monoPost(
                 URLConstant.ERNIE_BOT_URL,
-                accessToken,
+                getAccessToken(),
                 ernieRequest,
                 ChatResponse.class);
 
@@ -102,7 +103,7 @@ public class ErnieBotTurboClient implements CommonBot<ChatTurbo7BRequest> {
 
         return ChatUtils.fluxPost(
                 URLConstant.ERNIE_BOT_URL,
-                accessToken,
+                getAccessToken(),
                 ernieRequest,
                 ChatResponse.class);
     }
@@ -122,7 +123,7 @@ public class ErnieBotTurboClient implements CommonBot<ChatTurbo7BRequest> {
 
         Mono<ChatResponse> response = ChatUtils.monoPost(
                 URLConstant.ERNIE_BOT_URL,
-                accessToken,
+                getAccessToken(),
                 ernieRequest,
                 ChatResponse.class);
         ChatResponse chatResponse = response.block();
@@ -170,7 +171,7 @@ public class ErnieBotTurboClient implements CommonBot<ChatTurbo7BRequest> {
 
         Mono<ChatResponse> response = ChatUtils.monoPost(
                 URLConstant.ERNIE_BOT_URL,
-                accessToken,
+                getAccessToken(),
                 ernieRequest,
                 ChatResponse.class);
         ChatResponse chatResponse = response.block();
@@ -218,7 +219,7 @@ public class ErnieBotTurboClient implements CommonBot<ChatTurbo7BRequest> {
             CommonSubscriber subscriber = new CommonSubscriber(emitter, messagesHistory);
             Flux<ChatResponse> chatResponse = ChatUtils.fluxPost(
                     URLConstant.ERNIE_BOT_TURBO_URL,
-                    accessToken,
+                    getAccessToken(),
                     request,
                     ChatResponse.class);
             chatResponse.subscribe(subscriber);

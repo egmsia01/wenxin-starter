@@ -15,16 +15,13 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author Ge Mingjia
  * @date 2023/7/24
  */
-public class Bloomz7BClient extends ErnieBotTurboClient {
+public abstract class Bloomz7BClient extends ErnieBotTurboClient {
 
-    private final String accessToken;
     private static final String TAG = "Bloomz7BClient_";
     private static final Map<String, Queue<Message>> MESSAGES_HISTORY_MAP = new ConcurrentHashMap<>();
 
-    public Bloomz7BClient(String accessToken) {
-        super(accessToken);
-        this.accessToken = accessToken;
-    }
+    @Override
+    public abstract String getAccessToken();
 
     @Override
     public <T> Flux<ChatResponse> historyFlux(T request, Queue<Message> messagesHistory) {
@@ -32,7 +29,7 @@ public class Bloomz7BClient extends ErnieBotTurboClient {
             CommonSubscriber subscriber = new CommonSubscriber(emitter, messagesHistory);
             Flux<ChatResponse> chatResponse = ChatUtils.fluxPost(
                     URLConstant.BLOOMZ_7B_URL,
-                    accessToken,
+                    getAccessToken(),
                     request,
                     ChatResponse.class);
             chatResponse.subscribe(subscriber);

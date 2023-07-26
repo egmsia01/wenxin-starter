@@ -18,14 +18,15 @@ import java.util.Map;
  * @date 2023/7/20
  */
 @Slf4j
-public class PromptBotClient implements PromptBot {
+public abstract class PromptBotClient implements PromptBot {
 
-    private final String accessToken;
     private static final String TAG = "PromptBotClient_";
 
-    public PromptBotClient(String accessToken) {
-        this.accessToken = accessToken;
+    protected PromptBotClient() {
     }
+
+    @Override
+    public abstract String getAccessToken();
 
     @Override
     public PromptResponse chatPrompt(PromptRequest promptRequest) {
@@ -42,7 +43,7 @@ public class PromptBotClient implements PromptBot {
 
         Mono<PromptResponse> response = ChatUtils.monoGet(
                 URLConstant.PROMPT_URL,
-                accessToken,
+                getAccessToken(),
                 paramMap,
                 PromptResponse.class);
 
