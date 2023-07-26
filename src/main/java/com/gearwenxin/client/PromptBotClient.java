@@ -7,11 +7,17 @@ import com.gearwenxin.exception.BusinessException;
 
 import com.gearwenxin.model.request.PromptRequest;
 import com.gearwenxin.model.response.PromptResponse;
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.StringUtils;
+import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 import reactor.core.publisher.Mono;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.util.Map;
+import java.util.function.Supplier;
 
 /**
  * @author Ge Mingjia
@@ -25,8 +31,7 @@ public abstract class PromptBotClient implements PromptBot {
     protected PromptBotClient() {
     }
 
-    @Override
-    public abstract String getAccessToken();
+    protected abstract String getAccessToken();
 
     @Override
     public PromptResponse chatPrompt(PromptRequest promptRequest) {

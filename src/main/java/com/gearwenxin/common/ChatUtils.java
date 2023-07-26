@@ -12,11 +12,9 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -42,6 +40,10 @@ public class ChatUtils {
             String accessToken,
             Object request,
             Class<T> type) {
+
+        if (url == null || accessToken == null || request == null || type == null) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
 
         String completeUrl = url + ACCESS_TOKEN_PRE + accessToken;
 
@@ -74,6 +76,10 @@ public class ChatUtils {
             String accessToken,
             Object request,
             Class<T> type) {
+
+        if (url == null || accessToken == null || request == null || type == null) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
 
         String completeUrl = url + ACCESS_TOKEN_PRE + accessToken;
 
@@ -108,31 +114,33 @@ public class ChatUtils {
             Map<String, String> paramsMap,
             Class<T> type) {
 
+        if (url == null || accessToken == null || paramsMap == null || paramsMap.isEmpty()) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+
         WebClient.Builder clientBuilder = WebClient.builder()
                 .baseUrl(url)
                 .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
         // 屎山 待优化
         WebClient client;
-        if (paramsMap != null && !paramsMap.isEmpty()) {
-            paramsMap.put("access_token", accessToken);
-            client = clientBuilder.build();
-            String queryParams = paramsMap.entrySet().stream()
-                    .map(entry -> entry.getKey() + "=" + encodeURL(entry.getValue()))
-                    .collect(Collectors.joining("&"));
 
-            client = client.mutate()
-                    .filter((request, next) -> {
-                        String uriWithQueryParams = request.url() + "?" + queryParams;
-                        ClientRequest filteredRequest = ClientRequest.from(request)
-                                .url(URI.create(uriWithQueryParams))
-                                .build();
-                        return next.exchange(filteredRequest);
-                    })
-                    .build();
-            log.info("monoGet => {}", queryParams);
-        } else {
-            client = clientBuilder.build();
-        }
+        paramsMap.put("access_token", accessToken);
+        client = clientBuilder.build();
+        String queryParams = paramsMap.entrySet().stream()
+                .map(entry -> entry.getKey() + "=" + encodeURL(entry.getValue()))
+                .collect(Collectors.joining("&"));
+
+        client = client.mutate()
+                .filter((request, next) -> {
+                    String uriWithQueryParams = request.url() + "?" + queryParams;
+                    ClientRequest filteredRequest = ClientRequest.from(request)
+                            .url(URI.create(uriWithQueryParams))
+                            .build();
+                    return next.exchange(filteredRequest);
+                })
+                .build();
+        log.info("monoGet => {}", queryParams);
+
 
         return client.get()
                 .uri("")

@@ -5,6 +5,7 @@ import com.gearwenxin.common.URLConstant;
 import com.gearwenxin.model.Message;
 import com.gearwenxin.model.response.ChatResponse;
 import com.gearwenxin.subscriber.CommonSubscriber;
+import org.springframework.beans.factory.annotation.Value;
 import reactor.core.publisher.Flux;
 
 import java.util.Map;
@@ -17,11 +18,12 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public abstract class Bloomz7BClient extends ErnieBotTurboClient {
 
+    private String accessToken;
     private static final String TAG = "Bloomz7BClient_";
     private static final Map<String, Queue<Message>> MESSAGES_HISTORY_MAP = new ConcurrentHashMap<>();
 
     @Override
-    public abstract String getAccessToken();
+    protected abstract String getAccessToken();
 
     @Override
     public <T> Flux<ChatResponse> historyFlux(T request, Queue<Message> messagesHistory) {

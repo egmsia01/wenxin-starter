@@ -9,6 +9,7 @@ import com.gearwenxin.model.request.Turbo7BRequest;
 import com.gearwenxin.subscriber.CommonSubscriber;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Value;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -26,21 +27,19 @@ import static com.gearwenxin.common.CommonUtils.*;
 @Slf4j
 public abstract class ErnieBotTurboClient implements CommonBot<ChatTurbo7BRequest> {
 
+    private String accessToken;
     private static final String TAG = "ErnieBotTurboClient_";
     public static final String PREFIX_MSG_HISTORY_MONO = "Mono_";
     public static final String PREFIX_MSG_HISTORY_FLUX = "Flux_";
-
     // 每个模型的历史消息Map
     private static final Map<String, Queue<Message>> MESSAGES_HISTORY_MAP = new ConcurrentHashMap<>();
-
     // 最大的单个content字符数
     private static final int MAX_CONTENT_LENGTH = 2000;
 
     protected ErnieBotTurboClient() {
     }
 
-    @Override
-    public abstract String getAccessToken();
+    protected abstract String getAccessToken();
 
     @Override
     public ChatResponse chatSingle(String content) {

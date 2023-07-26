@@ -13,13 +13,6 @@ import reactor.core.publisher.Flux;
 public interface PromptBot {
 
     /**
-     * 获取 accessToken
-     *
-     * @return accessToken
-     */
-    String getAccessToken();
-
-    /**
      * Prompt模板对话 (Get请求 不支持流式返回)
      * （非流式）
      *

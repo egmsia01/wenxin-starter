@@ -1,15 +1,11 @@
 package com.gearwenxin.config;
 
 import com.gearwenxin.client.*;
-import com.gearwenxin.model.request.PromptRequest;
-import com.gearwenxin.model.response.PromptResponse;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-
-import java.util.function.Supplier;
 
 /**
  * @author Ge Mingjia

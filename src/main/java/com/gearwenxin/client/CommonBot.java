@@ -9,12 +9,12 @@ import reactor.core.publisher.Flux;
  */
 public interface CommonBot<T> {
 
-    /**
-     * 获取 accessToken
-     *
-     * @return accessToken
-     */
-    String getAccessToken();
+//    /**
+//     * 获取 accessToken
+//     *
+//     * @return accessToken
+//     */
+//    String getAccessToken();
 
     /**
      * 单轮对话，无上下文记忆，默认参数

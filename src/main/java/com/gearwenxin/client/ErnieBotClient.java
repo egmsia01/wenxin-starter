@@ -10,6 +10,7 @@ import com.gearwenxin.common.ChatUtils;
 import com.gearwenxin.subscriber.CommonSubscriber;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Value;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -25,6 +26,7 @@ import static com.gearwenxin.common.CommonUtils.*;
 @Slf4j
 public abstract class ErnieBotClient implements CommonBot<ChatErnieRequest> {
 
+    private String accessToken;
     private static final String TAG = "ErnieBotClient_";
     public static final String PREFIX_MSG_HISTORY_MONO = "Mono_";
     public static final String PREFIX_MSG_HISTORY_FLUX = "Flux_";
@@ -38,8 +40,7 @@ public abstract class ErnieBotClient implements CommonBot<ChatErnieRequest> {
     protected ErnieBotClient() {
     }
 
-    @Override
-    public abstract String getAccessToken();
+    protected abstract String getAccessToken();
 
     @Override
     public ChatResponse chatSingle(String content) {
