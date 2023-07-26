@@ -7,7 +7,9 @@ import com.gearwenxin.model.response.ChatResponse;
 import com.gearwenxin.subscriber.CommonSubscriber;
 import reactor.core.publisher.Flux;
 
+import java.util.Map;
 import java.util.Queue;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author Ge Mingjia
@@ -17,6 +19,7 @@ public class Bloomz7BClient extends ErnieBotTurboClient {
 
     private final String accessToken;
     private static final String TAG = "Bloomz7BClient_";
+    private static final Map<String, Queue<Message>> MESSAGES_HISTORY_MAP = new ConcurrentHashMap<>();
 
     public Bloomz7BClient(String accessToken) {
         super(accessToken);

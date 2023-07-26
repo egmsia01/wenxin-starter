@@ -31,7 +31,7 @@ public class ErnieBotClient implements CommonBot<ChatErnieRequest> {
     public static final String PREFIX_MSG_HISTORY_FLUX = "Flux_";
 
     // 每个模型的历史消息Map
-    private static final Map<String, Queue<Message>> ERNIE_MESSAGES_HISTORY_MAP = new ConcurrentHashMap<>();
+    private static final Map<String, Queue<Message>> MESSAGES_HISTORY_MAP = new ConcurrentHashMap<>();
 
     // 最大的单个content字符数
     private static final int MAX_CONTENT_LENGTH = 2000;
@@ -111,7 +111,7 @@ public class ErnieBotClient implements CommonBot<ChatErnieRequest> {
         if (StringUtils.isEmpty(content) || StringUtils.isEmpty(msgUid)) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
-        Queue<Message> messagesHistory = ERNIE_MESSAGES_HISTORY_MAP.computeIfAbsent(msgUid, k -> new LinkedList<>());
+        Queue<Message> messagesHistory = MESSAGES_HISTORY_MAP.computeIfAbsent(msgUid, k -> new LinkedList<>());
         Message message = buildUserMessage(content);
         CommonUtils.offerMessage(messagesHistory, message);
 
@@ -139,7 +139,7 @@ public class ErnieBotClient implements CommonBot<ChatErnieRequest> {
         if (StringUtils.isBlank(content) || StringUtils.isEmpty(msgUid)) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
-        Queue<Message> messagesHistory = ERNIE_MESSAGES_HISTORY_MAP.computeIfAbsent(msgUid, k -> new LinkedList<>());
+        Queue<Message> messagesHistory = MESSAGES_HISTORY_MAP.computeIfAbsent(msgUid, k -> new LinkedList<>());
         Message message = buildUserMessage(content);
         CommonUtils.offerMessage(messagesHistory, message);
 
@@ -158,7 +158,7 @@ public class ErnieBotClient implements CommonBot<ChatErnieRequest> {
         }
         this.validChatErnieRequest(chatErnieRequest);
         ErnieRequest ernieRequest = ConvertUtils.chatErnieReqToErnieReq(chatErnieRequest);
-        Queue<Message> messagesHistory = ERNIE_MESSAGES_HISTORY_MAP.computeIfAbsent(msgUid, key -> new LinkedList<>());
+        Queue<Message> messagesHistory = MESSAGES_HISTORY_MAP.computeIfAbsent(msgUid, key -> new LinkedList<>());
 
         // 添加到历史
         Message message = buildUserMessage(chatErnieRequest.getContent());
@@ -189,7 +189,7 @@ public class ErnieBotClient implements CommonBot<ChatErnieRequest> {
         }
         this.validChatErnieRequest(chatErnieRequest);
         ErnieRequest ernieRequest = ConvertUtils.chatErnieReqToErnieReq(chatErnieRequest);
-        Queue<Message> messagesHistory = ERNIE_MESSAGES_HISTORY_MAP.computeIfAbsent(msgUid, key -> new LinkedList<>());
+        Queue<Message> messagesHistory = MESSAGES_HISTORY_MAP.computeIfAbsent(msgUid, key -> new LinkedList<>());
         // 添加到历史
         Message message = buildUserMessage(chatErnieRequest.getContent());
         CommonUtils.offerMessage(messagesHistory, message);

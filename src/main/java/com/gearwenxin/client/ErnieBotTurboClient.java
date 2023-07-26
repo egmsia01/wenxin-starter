@@ -32,7 +32,7 @@ public class ErnieBotTurboClient implements CommonBot<ChatTurbo7BRequest> {
     public static final String PREFIX_MSG_HISTORY_FLUX = "Flux_";
 
     // 每个模型的历史消息Map
-    private static final Map<String, Queue<Message>> TURBO_MESSAGES_HISTORY_MAP = new ConcurrentHashMap<>();
+    private static final Map<String, Queue<Message>> MESSAGES_HISTORY_MAP = new ConcurrentHashMap<>();
 
     // 最大的单个content字符数
     private static final int MAX_CONTENT_LENGTH = 2000;
@@ -112,7 +112,7 @@ public class ErnieBotTurboClient implements CommonBot<ChatTurbo7BRequest> {
         if (StringUtils.isEmpty(content) || StringUtils.isEmpty(msgUid)) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
-        Queue<Message> messagesHistory = TURBO_MESSAGES_HISTORY_MAP.computeIfAbsent(msgUid, k -> new LinkedList<>());
+        Queue<Message> messagesHistory = MESSAGES_HISTORY_MAP.computeIfAbsent(msgUid, k -> new LinkedList<>());
         Message message = buildUserMessage(content);
         CommonUtils.offerMessage(messagesHistory, message);
 
@@ -140,7 +140,7 @@ public class ErnieBotTurboClient implements CommonBot<ChatTurbo7BRequest> {
         if (StringUtils.isBlank(content) || StringUtils.isEmpty(msgUid)) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
-        Queue<Message> messagesHistory = TURBO_MESSAGES_HISTORY_MAP.computeIfAbsent(msgUid, k -> new LinkedList<>());
+        Queue<Message> messagesHistory = MESSAGES_HISTORY_MAP.computeIfAbsent(msgUid, k -> new LinkedList<>());
         Message message = buildUserMessage(content);
         CommonUtils.offerMessage(messagesHistory, message);
 
@@ -159,7 +159,7 @@ public class ErnieBotTurboClient implements CommonBot<ChatTurbo7BRequest> {
         }
         this.validBaseRequest(chatTurbo7BRequest);
         Turbo7BRequest ernieRequest = ConvertUtils.chatTurboReq7BToTurboReq(chatTurbo7BRequest);
-        Queue<Message> messagesHistory = TURBO_MESSAGES_HISTORY_MAP.computeIfAbsent(msgUid, key -> new LinkedList<>());
+        Queue<Message> messagesHistory = MESSAGES_HISTORY_MAP.computeIfAbsent(msgUid, key -> new LinkedList<>());
 
         // 添加到历史
         Message message = buildUserMessage(chatTurbo7BRequest.getContent());
@@ -190,7 +190,7 @@ public class ErnieBotTurboClient implements CommonBot<ChatTurbo7BRequest> {
         }
         this.validBaseRequest(chatTurbo7BRequest);
         Turbo7BRequest ernieRequest = ConvertUtils.chatTurboReq7BToTurboReq(chatTurbo7BRequest);
-        Queue<Message> messagesHistory = TURBO_MESSAGES_HISTORY_MAP.computeIfAbsent(msgUid, key -> new LinkedList<>());
+        Queue<Message> messagesHistory = MESSAGES_HISTORY_MAP.computeIfAbsent(msgUid, key -> new LinkedList<>());
         // 添加到历史
         Message message = buildUserMessage(chatTurbo7BRequest.getContent());
         CommonUtils.offerMessage(messagesHistory, message);
