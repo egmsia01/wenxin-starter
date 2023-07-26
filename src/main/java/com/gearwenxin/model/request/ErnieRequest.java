@@ -1,4 +1,4 @@
-package com.gearwenxin.model.erniebot;
+package com.gearwenxin.model.request;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.gearwenxin.model.BaseRequest;

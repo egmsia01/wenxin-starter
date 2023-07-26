@@ -3,7 +3,7 @@ package com.gearwenxin.client;
 import com.gearwenxin.common.ChatUtils;
 import com.gearwenxin.common.URLConstant;
 import com.gearwenxin.model.Message;
-import com.gearwenxin.model.erniebot.ChatResponse;
+import com.gearwenxin.model.response.ChatResponse;
 import com.gearwenxin.subscriber.CommonSubscriber;
 import reactor.core.publisher.Flux;
 
@@ -27,7 +27,7 @@ public class Bloomz7BClient extends ErnieBotTurboClient {
     public <T> Flux<ChatResponse> historyFlux(T request, Queue<Message> messagesHistory) {
         return Flux.create(emitter -> {
             CommonSubscriber subscriber = new CommonSubscriber(emitter, messagesHistory);
-            Flux<ChatResponse> chatResponse = ChatUtils.fluxChat(
+            Flux<ChatResponse> chatResponse = ChatUtils.fluxPost(
                     URLConstant.BLOOMZ_7B_URL,
                     accessToken,
                     request,

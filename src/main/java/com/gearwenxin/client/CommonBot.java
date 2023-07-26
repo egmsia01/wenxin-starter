@@ -1,6 +1,6 @@
 package com.gearwenxin.client;
 
-import com.gearwenxin.model.erniebot.ChatResponse;
+import com.gearwenxin.model.response.ChatResponse;
 import reactor.core.publisher.Flux;
 
 /**
@@ -84,5 +84,6 @@ public interface CommonBot<T> {
      * @return ChatResponse 响应实体类
      */
     Flux<ChatResponse> chatContOfStream(T chatRequest, String msgUid);
+
 
 }

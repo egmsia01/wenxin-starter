@@ -2,7 +2,7 @@ package com.gearwenxin.subscriber;
 
 import com.gearwenxin.common.CommonUtils;
 import com.gearwenxin.model.Message;
-import com.gearwenxin.model.erniebot.ChatResponse;
+import com.gearwenxin.model.response.ChatResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.reactivestreams.Subscriber;

@@ -2,10 +2,10 @@ package com.gearwenxin.client;
 
 import com.gearwenxin.common.*;
 import com.gearwenxin.exception.BusinessException;
-import com.gearwenxin.model.erniebot.ChatErnieRequest;
-import com.gearwenxin.model.erniebot.ChatResponse;
+import com.gearwenxin.model.chatmodel.ChatErnieRequest;
+import com.gearwenxin.model.response.ChatResponse;
 import com.gearwenxin.model.Message;
-import com.gearwenxin.model.erniebot.ErnieRequest;
+import com.gearwenxin.model.request.ErnieRequest;
 import com.gearwenxin.common.ChatUtils;
 import com.gearwenxin.subscriber.CommonSubscriber;
 import lombok.extern.slf4j.Slf4j;
@@ -50,7 +50,7 @@ public class ErnieBotClient implements CommonBot<ChatErnieRequest> {
         request.setMessages(messageQueue);
         log.info(TAG + "content_singleRequest => {}", request.toString());
 
-        Mono<ChatResponse> response = ChatUtils.monoChat(
+        Mono<ChatResponse> response = ChatUtils.monoPost(
                 URLConstant.ERNIE_BOT_URL,
                 accessToken,
                 request,
@@ -68,7 +68,7 @@ public class ErnieBotClient implements CommonBot<ChatErnieRequest> {
         ernieRequest.setMessages(messageQueue);
         ernieRequest.setStream(true);
         log.info(TAG + "content_singleRequest_stream => {}", ernieRequest.toString());
-        return ChatUtils.fluxChat(
+        return ChatUtils.fluxPost(
                 URLConstant.ERNIE_BOT_URL,
                 accessToken,
                 ernieRequest,
@@ -82,7 +82,7 @@ public class ErnieBotClient implements CommonBot<ChatErnieRequest> {
         ErnieRequest ernieRequest = ConvertUtils.chatErnieReqToErnieReq(chatErnieRequest);
         log.info(TAG + "singleRequest => {}", ernieRequest.toString());
 
-        Mono<ChatResponse> response = ChatUtils.monoChat(
+        Mono<ChatResponse> response = ChatUtils.monoPost(
                 URLConstant.ERNIE_BOT_URL,
                 accessToken,
                 ernieRequest,
@@ -99,7 +99,7 @@ public class ErnieBotClient implements CommonBot<ChatErnieRequest> {
         ernieRequest.setStream(true);
         log.info(TAG + "singleRequest_stream => {}", ernieRequest.toString());
 
-        return ChatUtils.fluxChat(
+        return ChatUtils.fluxPost(
                 URLConstant.ERNIE_BOT_URL,
                 accessToken,
                 ernieRequest,
@@ -119,7 +119,7 @@ public class ErnieBotClient implements CommonBot<ChatErnieRequest> {
         ernieRequest.setMessages(messagesHistory);
         log.info(TAG + "content_contRequest => {}", ernieRequest.toString());
 
-        Mono<ChatResponse> response = ChatUtils.monoChat(
+        Mono<ChatResponse> response = ChatUtils.monoPost(
                 URLConstant.ERNIE_BOT_URL,
                 accessToken,
                 ernieRequest,
@@ -167,7 +167,7 @@ public class ErnieBotClient implements CommonBot<ChatErnieRequest> {
         ernieRequest.setMessages(messagesHistory);
         log.info(TAG + "contRequest => {}", ernieRequest.toString());
 
-        Mono<ChatResponse> response = ChatUtils.monoChat(
+        Mono<ChatResponse> response = ChatUtils.monoPost(
                 URLConstant.ERNIE_BOT_URL,
                 accessToken,
                 ernieRequest,
@@ -235,7 +235,7 @@ public class ErnieBotClient implements CommonBot<ChatErnieRequest> {
     public <T> Flux<ChatResponse> historyFlux(T request, Queue<Message> messagesHistory) {
         return Flux.create(emitter -> {
             CommonSubscriber subscriber = new CommonSubscriber(emitter, messagesHistory);
-            Flux<ChatResponse> chatResponse = ChatUtils.fluxChat(
+            Flux<ChatResponse> chatResponse = ChatUtils.fluxPost(
                     URLConstant.ERNIE_BOT_URL,
                     accessToken,
                     request,

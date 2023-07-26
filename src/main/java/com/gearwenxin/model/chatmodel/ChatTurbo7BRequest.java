@@ -1,4 +1,4 @@
-package com.gearwenxin.model.erniebot;
+package com.gearwenxin.model.chatmodel;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

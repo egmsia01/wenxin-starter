@@ -1,4 +1,4 @@
-package com.gearwenxin.model.erniebot;
+package com.gearwenxin.model.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.gearwenxin.model.Usage;
@@ -34,25 +34,25 @@ public class ChatResponse {
      * 时间戳
      */
     @JsonProperty("created")
-    private int created;
+    private Integer created;
 
     /**
      * 表示当前子句的序号。只有在流式接口模式下会返回该字段
      */
     @JsonProperty("sentence_id")
-    private int sentenceId;
+    private Integer sentenceId;
 
     /**
      * 表示当前子句是否是最后一句。只有在流式接口模式下会返回该字段
      */
     @JsonProperty("is_end")
-    private boolean isEnd;
+    private Boolean isEnd;
 
     /**
      * 当前生成的结果是否被截断
      */
     @JsonProperty("is_truncated")
-    private boolean isTruncated;
+    private Boolean isTruncated;
 
     /**
      * 对话返回结果
@@ -66,7 +66,7 @@ public class ChatResponse {
      * false：否，表示用户输入无安全风险
      */
     @JsonProperty("need_clear_history")
-    private boolean needClearHistory;
+    private Boolean needClearHistory;
 
     /**
      * token统计信息，token数 = 汉字数+单词数*1.3 （仅为估算逻辑）

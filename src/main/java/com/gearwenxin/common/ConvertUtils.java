@@ -1,7 +1,9 @@
 package com.gearwenxin.common;
 
 import com.gearwenxin.model.Message;
-import com.gearwenxin.model.erniebot.*;
+import com.gearwenxin.model.chatmodel.*;
+import com.gearwenxin.model.request.ErnieRequest;
+import com.gearwenxin.model.request.Turbo7BRequest;
 
 import java.util.LinkedList;
 import java.util.Queue;

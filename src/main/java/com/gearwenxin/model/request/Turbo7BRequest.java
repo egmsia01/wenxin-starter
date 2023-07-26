@@ -1,4 +1,4 @@
-package com.gearwenxin.model.erniebot;
+package com.gearwenxin.model.request;
 
 import com.gearwenxin.model.BaseRequest;
 import lombok.*;
