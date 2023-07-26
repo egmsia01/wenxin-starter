@@ -40,13 +40,14 @@
 
 ## 🚀 快速开始
 ### 1、添加依赖
+Repository Path: [/io/github/gemingjia/gear-wenxinworkshop-starter/0.0.2/gear-wenxinworkshop-starter-0.0.2.jar](/io/github/gemingjia/gear-wenxinworkshop-starter/0.0.2/gear-wenxinworkshop-starter-0.0.2.jar)
 - Maven
 ```xml
-<!-- 若中央仓库未更新可暂时自行编译 -->
+<!-- 若中央仓库未更新可暂时自行用jar包引入 -->
 <dependency>
   <groupId>io.github.gemingjia</groupId>
   <artifactId>gear-wenxinworkshop-starter</artifactId>
-  <version>0.0.2-SNAPSHOT</version>
+  <version>0.0.2</version>
 </dependency>
 ```
 - Gradle
