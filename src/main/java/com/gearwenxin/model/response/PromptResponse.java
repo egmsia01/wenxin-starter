@@ -29,4 +29,9 @@ public class PromptResponse {
     @JsonProperty("error_msg")
     private String errorMsg;
 
+    @JsonProperty("code")
+    private String promptErrCode;
+
+    @JsonProperty("message")
+    private PromptErrMessage promptErrMessage;
 }

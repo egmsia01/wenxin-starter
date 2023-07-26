@@ -30,6 +30,7 @@ public abstract class PromptBotClient implements PromptBot {
 
     @Override
     public PromptResponse chatPrompt(PromptRequest promptRequest) {
+        log.info("getAccessToken => {}", getAccessToken());
         if (promptRequest == null ||
                 promptRequest.getId() == null ||
                 promptRequest.getId() <= 0 ||
@@ -40,7 +41,6 @@ public abstract class PromptBotClient implements PromptBot {
         String id = String.valueOf(promptRequest.getId());
         Map<String, String> paramMap = promptRequest.getParamMap();
         paramMap.put("id", id);
-
         Mono<PromptResponse> response = ChatUtils.monoGet(
                 URLConstant.PROMPT_URL,
                 getAccessToken(),

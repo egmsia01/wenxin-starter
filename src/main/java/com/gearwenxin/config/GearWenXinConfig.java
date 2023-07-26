@@ -45,7 +45,6 @@ public class GearWenXinConfig {
     @Bean
     public Bloomz7BClient bloomz7BClient() {
         return new Bloomz7BClient() {
-
             @Override
             public String getAccessToken() {
                 return accessToken;

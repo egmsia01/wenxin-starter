@@ -43,17 +43,17 @@
 Repository Path: [/io/github/gemingjia/gear-wenxinworkshop-starter/0.0.2/gear-wenxinworkshop-starter-0.0.2.jar](/io/github/gemingjia/gear-wenxinworkshop-starter/0.0.2/gear-wenxinworkshop-starter-0.0.2.jar)
 - Maven
 ```xml
-<!-- 若中央仓库未更新可暂时自行用jar包引入 -->
+<!-- 若中央仓库未更新可等待1-2小时 -->
 <dependency>
   <groupId>io.github.gemingjia</groupId>
   <artifactId>gear-wenxinworkshop-starter</artifactId>
-  <version>0.0.2</version>
+  <version>0.0.3</version>
 </dependency>
 ```
 - Gradle
 ```gradle
 dependencies {
-  implementation 'io.github.gemingjia:gear-wenxinworkshop-starter:0.0.1-SNAPSHOT' 
+  implementation 'io.github.gemingjia:gear-wenxinworkshop-starter:0.0.3' 
 }
 ```
 
@@ -104,6 +104,20 @@ public class ChatController {
     @PostMapping(value = "/stream/chats", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public Flux<ChatResponse> chatContStream(String msg, String msgUid) {
         return ernieBotClient.chatContOfStream(msg, msgUid);
+    }
+
+    // 模板对话
+    @PostMapping("/rompt")
+    public BaseResponse<PromptResponse> chatSingle() {
+        Map<String, String> map = new HashMap<>();
+        map.put("article", "我看见过波澜壮阔的大海，玩赏过水平如镜的西湖，却从没看见过漓江这样的水。漓江的水真静啊，静得让你感觉不到它在流动。");
+        map.put("number", "20");
+        PromptRequest promptRequest = new PromptRequest();
+        promptRequest.setId(1234);
+        promptRequest.setParamMap(map);
+        PromptResponse promptResponse = promptBotClient.chatPrompt(promptRequest);
+
+        return ResultUtils.success(promptResponse);
     }
 
 }
