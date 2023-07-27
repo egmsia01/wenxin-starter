@@ -22,7 +22,7 @@
 ![image](https://github.com/gemingjia/gear-wenxinworkshop-starter/assets/80268501/7225fb98-761a-4ead-b626-d59fc0931161)
 可直接查看下面文章：
 
-[申请文心一言&文心千帆大模型API资格、获取access_token，并使用SpringBoot接入文心一言API](https://blog.csdn.net/qq_30299877/article/details/131917097)
+[申请文心一言&文心千帆大模型API资格、获取access_token，并使用SpringBoot接入文心一言API](https://juejin.cn/post/7260418945721991227)
 
 ---
 
