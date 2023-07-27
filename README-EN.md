@@ -41,13 +41,13 @@
 <dependency>
   <groupId>io.github.gemingjia</groupId>
   <artifactId>gear-wenxinworkshop-starter</artifactId>
-  <version>0.0.3</version>
+  <version>0.0.3.2</version>
 </dependency>
 ```
 - Gradle
 ```gradle
 dependencies {
-  implementation 'io.github.gemingjia:gear-wenxinworkshop-starter:0.0.3' 
+  implementation 'io.github.gemingjia:gear-wenxinworkshop-starter:0.0.3.2' 
 }
 ```
 
