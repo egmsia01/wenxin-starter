@@ -36,13 +36,8 @@ public class ChatErnieRequest {
     private Float topP;
 
     /**
-     * 通过对已生成的token增加惩罚，减少重复生成的现象。说明：
+     * 通过对已生成的token增加惩罚，减少重复生成的现象。
      */
     private Float penaltyScore;
-
-//    /**
-//     * 是否以流式接口的形式返回数据，默认false
-//     */
-//    private Boolean stream;
 
 }

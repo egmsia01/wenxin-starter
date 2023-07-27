@@ -1,7 +1,11 @@
 package com.gearwenxin.client;
 
+import com.gearwenxin.model.Message;
 import com.gearwenxin.model.response.ChatResponse;
 import reactor.core.publisher.Flux;
+
+import java.util.Map;
+import java.util.Queue;
 
 /**
  * @author Ge Mingjia
@@ -9,12 +13,24 @@ import reactor.core.publisher.Flux;
  */
 public interface CommonBot<T> {
 
-//    /**
-//     * 获取 accessToken
-//     *
-//     * @return accessToken
-//     */
-//    String getAccessToken();
+    /**
+     * 获取历史消息列表 MessageHistoryMap
+     *
+     * @return accessToken
+     */
+    Map<String, Queue<Message>> getMessageHistoryMap();
+
+    /**
+     * 设置历史消息列表 MessageHistoryMap
+     * @param map 历史消息列表
+     */
+    void initMessageHistoryMap(Map<String, Queue<Message>> map);
+
+    /**
+     * 获取模型的URL
+     * @return URL
+     */
+    String getURL();
 
     /**
      * 单轮对话，无上下文记忆，默认参数

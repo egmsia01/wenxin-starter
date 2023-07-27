@@ -1,6 +1,6 @@
 package com.gearwenxin.subscriber;
 
-import com.gearwenxin.common.CommonUtils;
+import com.gearwenxin.common.WenXinUtils;
 import com.gearwenxin.model.Message;
 import com.gearwenxin.model.response.ChatResponse;
 import lombok.extern.slf4j.Slf4j;
@@ -12,7 +12,7 @@ import reactor.core.publisher.FluxSink;
 
 import java.util.Queue;
 
-import static com.gearwenxin.common.CommonUtils.buildAssistantMessage;
+import static com.gearwenxin.common.WenXinUtils.buildAssistantMessage;
 
 /**
  * @author Ge Mingjia
@@ -23,7 +23,7 @@ public class CommonSubscriber implements Subscriber<ChatResponse>, Disposable {
 
     private final FluxSink<ChatResponse> emitter;
     private Subscription subscription;
-    Queue<Message> messagesHistory;
+    private final Queue<Message> messagesHistory;
 
     private final StringBuilder stringBuilder = new StringBuilder();
 
@@ -58,7 +58,7 @@ public class CommonSubscriber implements Subscriber<ChatResponse>, Disposable {
         // 如果出现错误，中断后立即保存当前已有部分
         String errPartResult = stringBuilder.toString();
         Message message = buildAssistantMessage(errPartResult);
-        CommonUtils.offerMessage(messagesHistory, message);
+        WenXinUtils.offerMessage(messagesHistory, message);
         emitter.error(throwable);
     }
 
@@ -67,7 +67,7 @@ public class CommonSubscriber implements Subscriber<ChatResponse>, Disposable {
         log.info("onComplete ==========>");
         String allResult = stringBuilder.toString();
         Message message = buildAssistantMessage(allResult);
-        CommonUtils.offerMessage(messagesHistory, message);
+        WenXinUtils.offerMessage(messagesHistory, message);
         emitter.complete();
     }
 

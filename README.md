@@ -20,6 +20,11 @@
 
 ## 获取access-token方法
 ![image](https://github.com/gemingjia/gear-wenxinworkshop-starter/assets/80268501/7225fb98-761a-4ead-b626-d59fc0931161)
+可直接查看下面文章：
+
+[申请文心一言&文心千帆大模型API资格、获取access_token，并使用SpringBoot接入文心一言API](https://blog.csdn.net/qq_30299877/article/details/131917097)
+
+---
 
 1. 前往 [文心一言资格申请](https://cloud.baidu.com/product/wenxinworkshop) 
 
@@ -34,8 +39,8 @@
 - 百度 **“文心千帆 WENXINWORKSHOP”** 大模型的spring-boot-starter，可以帮助您快速接入百度的AI能力，只需一行代码即可调用百度文心千帆大模型。
 - 完整对接文心千帆的官方API文档。
 - 支持对话的流式返回。
-- 完整支持 `文心一言 ErnieBot`、`ERNIE-Bot-turbo`、`BLOOMZ-7B` 模型的API（单轮对话、连续对话、流式返回）。
-- 0.0.3版本中将增加Embedding-V1模型的支持。
+- 完整支持 `文心一言 ErnieBot`、`ERNIE-Bot-turbo`、`BLOOMZ-7B`、`Prompt模板`模型的API（单轮对话、连续对话、流式返回）。
+- 0.0.4版本中将增加Embedding-V1模型的支持。
 
 
 ## 🚀 快速开始
@@ -124,9 +129,11 @@ public class ChatController {
 ```
 
 ## 📑使用文档
-[~先欠着~](http://mopen.cloud/)
 
-请求参数和返回报文与[官方文档](https://cloud.baidu.com/doc/WENXINWORKSHOP/s/jlil56u11)完全兼容，可移步官方文档查看。
+<div>
+点击跳转 => 
+<a href="/wenxin-doc.md">使用文档</a>
+</div>
 
 ## 开源协议
 [LICENSE](https://www.apache.org/licenses/LICENSE-2.0)

@@ -45,6 +45,8 @@ public class ChatUtils {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
 
+        log.info("URL => {}", url);
+
         String completeUrl = url + ACCESS_TOKEN_PRE + accessToken;
 
         WebClient client = WebClient.builder()
@@ -80,7 +82,7 @@ public class ChatUtils {
         if (url == null || accessToken == null || request == null || type == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
-
+        log.info("URL => {}", url);
         String completeUrl = url + ACCESS_TOKEN_PRE + accessToken;
 
         WebClient client = WebClient.builder()
@@ -117,7 +119,7 @@ public class ChatUtils {
         if (url == null || accessToken == null || paramsMap == null || paramsMap.isEmpty()) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
-
+        log.info("URL => {}", url);
         WebClient.Builder clientBuilder = WebClient.builder()
                 .baseUrl(url)
                 .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);

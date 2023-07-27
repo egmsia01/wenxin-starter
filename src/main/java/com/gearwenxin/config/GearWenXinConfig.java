@@ -49,8 +49,8 @@ public class GearWenXinConfig {
     }
 
     @Bean
-    public PromptBotClient promptBotClient() {
-        return new PromptBotClient() {
+    public PromptClient promptClient() {
+        return new PromptClient() {
             @Override
             public String getAccessToken() {
                 return accessToken;

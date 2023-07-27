@@ -1,8 +1,10 @@
 package com.gearwenxin.common;
 
+import com.gearwenxin.exception.BusinessException;
 import com.gearwenxin.model.Message;
 import com.gearwenxin.model.chatmodel.*;
 import com.gearwenxin.model.request.ErnieRequest;
+import com.gearwenxin.model.request.PromptRequest;
 import com.gearwenxin.model.request.Turbo7BRequest;
 
 import java.util.LinkedList;
@@ -19,6 +21,9 @@ public class ConvertUtils {
     public static ErnieRequest chatErnieReqToErnieReq(ChatErnieRequest chatErnieRequest) {
         ErnieRequest ernieRequest = new ErnieRequest();
 
+        if (chatErnieRequest == null) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
         if (chatErnieRequest.getUserId() != null) {
             ernieRequest.setUserId(chatErnieRequest.getUserId());
         }
@@ -43,6 +48,9 @@ public class ConvertUtils {
     public static Turbo7BRequest chatTurboReq7BToTurboReq(ChatTurbo7BRequest chatTurbo7BRequest) {
         Turbo7BRequest turbo7BRequest = new Turbo7BRequest();
 
+        if (chatTurbo7BRequest == null) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
         if (chatTurbo7BRequest.getUserId() != null) {
             turbo7BRequest.setUserId(chatTurbo7BRequest.getUserId());
         }
@@ -53,6 +61,21 @@ public class ConvertUtils {
         }
 
         return turbo7BRequest;
+    }
+
+    public static PromptRequest chatPromptReqToPromptReq(ChatPromptRequest chatPromptRequest) {
+        PromptRequest promptRequest = new PromptRequest();
+
+        if (chatPromptRequest == null) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        if (chatPromptRequest.getId() > 0) {
+            promptRequest.setId(String.valueOf(chatPromptRequest.getId()));
+        }
+        if (chatPromptRequest.getParamMap() != null && !chatPromptRequest.getParamMap().isEmpty()) {
+            promptRequest.setParamMap(chatPromptRequest.getParamMap());
+        }
+        return promptRequest;
     }
 
 

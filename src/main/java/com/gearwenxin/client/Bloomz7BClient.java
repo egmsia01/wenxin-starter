@@ -5,7 +5,6 @@ import com.gearwenxin.common.URLConstant;
 import com.gearwenxin.model.Message;
 import com.gearwenxin.model.response.ChatResponse;
 import com.gearwenxin.subscriber.CommonSubscriber;
-import org.springframework.beans.factory.annotation.Value;
 import reactor.core.publisher.Flux;
 
 import java.util.Map;
@@ -20,17 +19,33 @@ public abstract class Bloomz7BClient extends ErnieBotTurboClient {
 
     private String accessToken;
     private static final String TAG = "Bloomz7BClient_";
-    private static final Map<String, Queue<Message>> MESSAGES_HISTORY_MAP = new ConcurrentHashMap<>();
+    private static Map<String, Queue<Message>> BLOOMZ_MESSAGES_HISTORY_MAP = new ConcurrentHashMap<>();
+    private static final String URL = URLConstant.BLOOMZ_7B_URL;
 
     @Override
     protected abstract String getAccessToken();
+
+    @Override
+    public Map<String, Queue<Message>> getMessageHistoryMap() {
+        return BLOOMZ_MESSAGES_HISTORY_MAP;
+    }
+
+    @Override
+    public void initMessageHistoryMap(Map<String, Queue<Message>> map) {
+        BLOOMZ_MESSAGES_HISTORY_MAP = map;
+    }
+
+    @Override
+    public String getURL() {
+        return URL;
+    }
 
     @Override
     public <T> Flux<ChatResponse> historyFlux(T request, Queue<Message> messagesHistory) {
         return Flux.create(emitter -> {
             CommonSubscriber subscriber = new CommonSubscriber(emitter, messagesHistory);
             Flux<ChatResponse> chatResponse = ChatUtils.fluxPost(
-                    URLConstant.BLOOMZ_7B_URL,
+                    getURL(),
                     getAccessToken(),
                     request,
                     ChatResponse.class);
