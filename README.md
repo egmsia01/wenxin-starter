@@ -80,7 +80,7 @@ dependencies {
 @RestController
 public class ChatController {
 
-    // 要调用的模型的客户端
+     // 要调用的模型的客户端
     @Resource
     private ErnieBotClient ernieBotClient;
 
@@ -88,7 +88,7 @@ public class ChatController {
     @PostMapping("/chat")
     public BaseResponse<String> chatSingle(String msg) {
         ChatResponse response = ernieBotClient.chatSingle(msg);
-        return ResultUtils.success(response.getResult());
+        return BaseResponse.success(response.getResult());
     }
 
     // 连续对话
@@ -96,19 +96,21 @@ public class ChatController {
     public BaseResponse<String> chatCont(String msg) {
         String chatUID = "test-user-1001";
         ChatResponse response = ernieBotClient.chatCont(msg, chatUID);
-        return ResultUtils.success(response.getResult());
+        return BaseResponse.success(response.getResult());
     }
 
-    // 流式返回,单次对话
+    // 流式返回，单次对话
     @PostMapping(value = "/stream/chat", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public Flux<ChatResponse> chatSingleStream(String msg) {
-        return ernieBotClient.chatSingleOfStream(msg);
+    public BaseResponse<Flux<ChatResponse>> chatSingleStream(String msg) {
+        Flux<ChatResponse> chatResponseFlux = ernieBotClient.chatSingleOfStream(msg);
+        return BaseResponse.success(chatResponseFlux);
     }
 
-    // 流式返回,连续对话
+    // 流式返回，连续对话
     @PostMapping(value = "/stream/chats", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public Flux<ChatResponse> chatContStream(String msg, String msgUid) {
-        return ernieBotClient.chatContOfStream(msg, msgUid);
+    public BaseResponse<Flux<ChatResponse>> chatContStream(String msg, String msgUid) {
+        Flux<ChatResponse> chatResponseFlux = ernieBotClient.chatContOfStream(msg, msgUid);
+        return BaseResponse.success(chatResponseFlux);
     }
 
     // 模板对话
@@ -122,7 +124,7 @@ public class ChatController {
         promptRequest.setParamMap(map);
         PromptResponse promptResponse = promptBotClient.chatPrompt(promptRequest);
 
-        return ResultUtils.success(promptResponse);
+        return BaseResponse.success(promptResponse);
     }
 
 }
