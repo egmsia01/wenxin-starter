@@ -14,9 +14,16 @@ import java.util.Queue;
 public interface CommonBot<T> {
 
     /**
+     * 单独设置accessToken
+     *
+     * @param accessToken accessToken
+     */
+    void setAccessToken(String accessToken);
+
+    /**
      * 获取历史消息列表 MessageHistoryMap
      *
-     * @return accessToken
+     * @return MessageHistoryMap
      */
     Map<String, Queue<Message>> getMessageHistoryMap();
 

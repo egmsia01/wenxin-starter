@@ -123,9 +123,10 @@ public class ChatUtils {
         WebClient.Builder clientBuilder = WebClient.builder()
                 .baseUrl(url)
                 .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
-        // 屎山 待优化
+
         WebClient client;
 
+        // 屎山 待优化
         paramsMap.put("access_token", accessToken);
         client = clientBuilder.build();
         String queryParams = paramsMap.entrySet().stream()

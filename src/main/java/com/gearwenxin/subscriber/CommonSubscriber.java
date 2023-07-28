@@ -25,7 +25,7 @@ public class CommonSubscriber implements Subscriber<ChatResponse>, Disposable {
     private Subscription subscription;
     private final Queue<Message> messagesHistory;
 
-    private final StringBuilder stringBuilder = new StringBuilder();
+    private final StringBuffer stringBuffer = new StringBuffer();
 
     public CommonSubscriber(FluxSink<ChatResponse> emitter, Queue<Message> messagesHistory) {
         this.emitter = emitter;
@@ -47,7 +47,7 @@ public class CommonSubscriber implements Subscriber<ChatResponse>, Disposable {
         subscription.request(1);
         if (StringUtils.isNotEmpty(partResult)) {
             // 拼接每一部分的消息
-            stringBuilder.append(partResult);
+            stringBuffer.append(partResult);
         }
         emitter.next(response);
     }
@@ -56,7 +56,7 @@ public class CommonSubscriber implements Subscriber<ChatResponse>, Disposable {
     public void onError(Throwable throwable) {
         log.info("onError ==========>");
         // 如果出现错误，中断后立即保存当前已有部分
-        String errPartResult = stringBuilder.toString();
+        String errPartResult = stringBuffer.toString();
         Message message = buildAssistantMessage(errPartResult);
         WenXinUtils.offerMessage(messagesHistory, message);
         emitter.error(throwable);
@@ -65,7 +65,7 @@ public class CommonSubscriber implements Subscriber<ChatResponse>, Disposable {
     @Override
     public void onComplete() {
         log.info("onComplete ==========>");
-        String allResult = stringBuilder.toString();
+        String allResult = stringBuffer.toString();
         Message message = buildAssistantMessage(allResult);
         WenXinUtils.offerMessage(messagesHistory, message);
         emitter.complete();

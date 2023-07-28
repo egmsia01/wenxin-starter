@@ -49,6 +49,11 @@ public abstract class ErnieBotClient implements CommonBot<ChatErnieRequest> {
     }
 
     @Override
+    public void setAccessToken(String accessToken) {
+        this.accessToken = accessToken;
+    }
+
+    @Override
     public Map<String, Queue<Message>> getMessageHistoryMap() {
         return ERNIE_MESSAGES_HISTORY_MAP;
     }
@@ -117,11 +122,7 @@ public abstract class ErnieBotClient implements CommonBot<ChatErnieRequest> {
         ernieRequest.setStream(true);
         log.info(TAG + "singleRequest_stream => {}", ernieRequest.toString());
 
-        return ChatUtils.fluxPost(
-                getURL(),
-                getAccessToken(),
-                ernieRequest,
-                ChatResponse.class);
+        return ChatUtils.fluxPost(getURL(), getAccessToken(), ernieRequest, ChatResponse.class);
     }
 
     @Override

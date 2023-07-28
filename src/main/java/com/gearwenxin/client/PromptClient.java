@@ -11,8 +11,6 @@ import com.gearwenxin.model.request.PromptRequest;
 import com.gearwenxin.model.response.PromptResponse;
 import lombok.extern.slf4j.Slf4j;
 
-import org.springframework.beans.BeanUtils;
-import org.springframework.util.CollectionUtils;
 import reactor.core.publisher.Mono;
 
 import java.util.Map;
@@ -24,6 +22,7 @@ import java.util.Map;
 @Slf4j
 public abstract class PromptClient implements Prompt {
 
+    private String accessToken;
     private static final String TAG = "PromptBotClient_";
 
     private static final String URL = URLConstant.PROMPT_URL;
@@ -32,6 +31,11 @@ public abstract class PromptClient implements Prompt {
     }
 
     protected abstract String getAccessToken();
+
+    @Override
+    public void setAccessToken(String accessToken) {
+        this.accessToken = accessToken;
+    }
 
     @Override
     public String getURL() {

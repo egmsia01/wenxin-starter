@@ -44,6 +44,11 @@ public abstract class ErnieBotTurboClient implements CommonBot<ChatTurbo7BReques
     protected abstract String getAccessToken();
 
     @Override
+    public void setAccessToken(String accessToken) {
+        this.accessToken = accessToken;
+    }
+
+    @Override
     public Map<String, Queue<Message>> getMessageHistoryMap() {
         return TURBO_MESSAGES_HISTORY_MAP;
     }

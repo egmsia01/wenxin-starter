@@ -10,6 +10,13 @@ import com.gearwenxin.model.response.PromptResponse;
 public interface Prompt {
 
     /**
+     * 单独设置accessToken
+     *
+     * @param accessToken accessToken
+     */
+    void setAccessToken(String accessToken);
+
+    /**
      * 获取模型的URL
      * @return URL
      */
