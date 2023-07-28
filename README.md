@@ -22,7 +22,7 @@
 ![image](https://github.com/gemingjia/gear-wenxinworkshop-starter/assets/80268501/7225fb98-761a-4ead-b626-d59fc0931161)
 可直接查看下面文章：
 
-[申请文心一言&文心千帆大模型API资格、获取access_token，并使用SpringBoot接入文心一言API](https://blog.csdn.net/qq_30299877/article/details/131917097)
+[申请文心一言&文心千帆大模型API资格、获取access_token，并使用SpringBoot接入文心一言API](https://juejin.cn/post/7260418945721991227)
 
 ---
 
@@ -48,17 +48,17 @@
 Repository Path: [/io/github/gemingjia/gear-wenxinworkshop-starter/0.0.2/gear-wenxinworkshop-starter-0.0.2.jar](/io/github/gemingjia/gear-wenxinworkshop-starter/0.0.2/gear-wenxinworkshop-starter-0.0.2.jar)
 - Maven
 ```xml
-<!-- 若中央仓库未更新可等待1-2小时 -->
+<!-- 若中央仓库未更新可手动添加 -->
 <dependency>
   <groupId>io.github.gemingjia</groupId>
   <artifactId>gear-wenxinworkshop-starter</artifactId>
-  <version>0.0.3</version>
+  <version>0.0.3.2</version>
 </dependency>
 ```
 - Gradle
 ```gradle
 dependencies {
-  implementation 'io.github.gemingjia:gear-wenxinworkshop-starter:0.0.3' 
+  implementation 'io.github.gemingjia:gear-wenxinworkshop-starter:0.0.3.2' 
 }
 ```
 
@@ -80,7 +80,7 @@ dependencies {
 @RestController
 public class ChatController {
 
-    // 要调用的模型的客户端
+     // 要调用的模型的客户端
     @Resource
     private ErnieBotClient ernieBotClient;
 
@@ -88,7 +88,7 @@ public class ChatController {
     @PostMapping("/chat")
     public BaseResponse<String> chatSingle(String msg) {
         ChatResponse response = ernieBotClient.chatSingle(msg);
-        return ResultUtils.success(response.getResult());
+        return BaseResponse.success(response.getResult());
     }
 
     // 连续对话
@@ -96,19 +96,21 @@ public class ChatController {
     public BaseResponse<String> chatCont(String msg) {
         String chatUID = "test-user-1001";
         ChatResponse response = ernieBotClient.chatCont(msg, chatUID);
-        return ResultUtils.success(response.getResult());
+        return BaseResponse.success(response.getResult());
     }
 
-    // 流式返回,单次对话
+    // 流式返回，单次对话
     @PostMapping(value = "/stream/chat", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public Flux<ChatResponse> chatSingleStream(String msg) {
-        return ernieBotClient.chatSingleOfStream(msg);
+    public BaseResponse<Flux<ChatResponse>> chatSingleStream(String msg) {
+        Flux<ChatResponse> chatResponseFlux = ernieBotClient.chatSingleOfStream(msg);
+        return BaseResponse.success(chatResponseFlux);
     }
 
-    // 流式返回,连续对话
+    // 流式返回，连续对话
     @PostMapping(value = "/stream/chats", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public Flux<ChatResponse> chatContStream(String msg, String msgUid) {
-        return ernieBotClient.chatContOfStream(msg, msgUid);
+    public BaseResponse<Flux<ChatResponse>> chatContStream(String msg, String msgUid) {
+        Flux<ChatResponse> chatResponseFlux = ernieBotClient.chatContOfStream(msg, msgUid);
+        return BaseResponse.success(chatResponseFlux);
     }
 
     // 模板对话
@@ -122,7 +124,7 @@ public class ChatController {
         promptRequest.setParamMap(map);
         PromptResponse promptResponse = promptBotClient.chatPrompt(promptRequest);
 
-        return ResultUtils.success(promptResponse);
+        return BaseResponse.success(promptResponse);
     }
 
 }
