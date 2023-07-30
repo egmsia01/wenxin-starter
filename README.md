@@ -44,6 +44,9 @@
 
 
 ## 🚀 快速开始
+
+[使用demo](https://github.com/gemingjia/springboot-wenxin-demo)
+
 ### 1、添加依赖
 Repository Path: [/io/github/gemingjia/gear-wenxinworkshop-starter/0.0.2/gear-wenxinworkshop-starter-0.0.2.jar](/io/github/gemingjia/gear-wenxinworkshop-starter/0.0.2/gear-wenxinworkshop-starter-0.0.2.jar)
 - Maven
