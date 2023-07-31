@@ -85,7 +85,7 @@ public class ChatController {
     @PostMapping("/chat")
     public BaseResponse<String> chatSingle(String msg) {
         ChatResponse response = ernieBotClient.chatSingle(msg);
-        return ResultUtils.success(response.getResult());
+        return BaseResponse.success(response.getResult());
     }
 
     // Continuous chat
@@ -93,7 +93,7 @@ public class ChatController {
     public BaseResponse<String> chatCont(String msg) {
         String chatUID = "test-user-1001";
         ChatResponse response = ernieBotClient.chatCont(msg, chatUID);
-        return ResultUtils.success(response.getResult());
+        return BaseResponse.success(response.getResult());
     }
 
     // Single round chat with stream
@@ -119,7 +119,7 @@ public class ChatController {
         promptRequest.setParamMap(map);
         PromptResponse promptResponse = promptBotClient.chatPrompt(promptRequest);
 
-        return ResultUtils.success(promptResponse);
+        return BaseResponse.success(promptResponse);
     }
 
 }
