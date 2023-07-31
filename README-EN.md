@@ -33,7 +33,7 @@
  > https://aip.baidubce.com/oauth/2.0/token?grant_type=client_credentials&client_id=[API-Key]&client_secret=[Secret-Key]
 
 ## 📖 Project Introduction
-- The spring-boot-starter of Baidu's ** "Wenxin Qianfan WENXINWORKSHOP" ** large model can help you quickly access Baidu's AI capabilities. You can call Baidu's Wenxin Qianfan large model with only one line of code.
+- The spring-boot-starter of Baidu's **"Wenxin Qianfan WENXINWORKSHOP"** large model can help you quickly access Baidu's AI capabilities. You can call Baidu's Wenxin Qianfan large model with only one line of code.
 - Complete docking with the official API documentation of WenxinQianfan.
 - Support streaming back of conversations.
 - Full API support for ErnieBot, ERNIE-Bot-turbo, BLOOMZ-7B, Prompt Template models (single round conversation, continuous conversation, streaming return).
@@ -85,7 +85,7 @@ public class ChatController {
     @PostMapping("/chat")
     public BaseResponse<String> chatSingle(String msg) {
         ChatResponse response = ernieBotClient.chatSingle(msg);
-        return ResultUtils.success(response.getResult());
+        return BaseResponse.success(response.getResult());
     }
 
     // Continuous chat
@@ -93,7 +93,7 @@ public class ChatController {
     public BaseResponse<String> chatCont(String msg) {
         String chatUID = "test-user-1001";
         ChatResponse response = ernieBotClient.chatCont(msg, chatUID);
-        return ResultUtils.success(response.getResult());
+        return BaseResponse.success(response.getResult());
     }
 
     // Single round chat with stream
@@ -119,17 +119,18 @@ public class ChatController {
         promptRequest.setParamMap(map);
         PromptResponse promptResponse = promptBotClient.chatPrompt(promptRequest);
 
-        return ResultUtils.success(promptResponse);
+        return BaseResponse.success(promptResponse);
     }
 
 }
 ```
 
 ## 📑Documentation
-[~Owe first~](http://mopen.cloud/)
+
 <div>
 Click => 
 <a href="/wenxin-doc-en.md">Documents</a>
 </div>
+
 ## Open Source License
 [LICENSE](https://www.apache.org/licenses/LICENSE-2.0)
