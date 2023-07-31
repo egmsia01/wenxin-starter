@@ -19,6 +19,10 @@
 # Gear-WenXinWorkShop-Starter
 
 ## How to get access-token?
+
+[Apply for WenxinYiyan & WenxinQianfan Big model API qualification, get access_token, and use SpringBoot to access WenxinYiyan API](https://juejin.cn/post/7260418945721991227)
+
+
 1. Go to [WenXinYiYan qualification application](https://cloud.baidu.com/product/wenxinworkshop) 
 
 2. [Fill out the questionnaire](https://cloud.baidu.com/survey/qianfan.html)，and wait for approval (it took me one and a half days)
@@ -29,12 +33,16 @@
  > https://aip.baidubce.com/oauth/2.0/token?grant_type=client_credentials&client_id=[API-Key]&client_secret=[Secret-Key]
 
 ## 📖 Project Introduction
-- Use Baidu's ** "Wenxin Qianfan WENXINWORKSHOP"** large model spring-boot-starter to help you quickly access Baidu's AI capabilities with just one line of code to call Baidu Wenxin Qianfan large model.
-- Starter has supposed ErnieBot, Ernie-Bot-Turbo, BLOOMZ-7B models. This project is under rapid development and iteration, and more model support will be added later.
-- It currently basically supports the API of the "Wenxin Yiyian ErnieBot"、ErnieBot、Ernie-Bot-Turbo、BLOOMZ-7B models large model (single round dialogue, continuous dialog and return with stream).
-
+- The spring-boot-starter of Baidu's ** "Wenxin Qianfan WENXINWORKSHOP" ** large model can help you quickly access Baidu's AI capabilities. You can call Baidu's Wenxin Qianfan large model with only one line of code.
+- Complete docking with the official API documentation of WenxinQianfan.
+- Support streaming back of conversations.
+- Full API support for ErnieBot, ERNIE-Bot-turbo, BLOOMZ-7B, Prompt Template models (single round conversation, continuous conversation, streaming return).
+- Support for Embedding-V1 models will be added in version 0.0.4.
 
 ## 🚀 Quick Start
+
+[Project demo](https://github.com/gemingjia/springboot-wenxin-demo)
+
 ### 1、Add Dependencies
 - Maven
 ```xml
@@ -100,11 +108,11 @@ public class ChatController {
         return ernieBotClient.chatContOfStream(msg, msgUid);
     }
     
-    //prompt cha
+    //prompt chat
     @PostMapping("/rompt")
     public BaseResponse<PromptResponse> chatSingle() {
         Map<String, String> map = new HashMap<>();
-        map.put("article", "我看见过波澜壮阔的大海，玩赏过水平如镜的西湖，却从没看见过漓江这样的水。漓江的水真静啊，静得让你感觉不到它在流动。");
+        map.put("article", "I have seen the magnificent sea and enjoyed the horizontal West Lake as a mirror, but I have never seen such water as the Li River. The water in the Li River is really quiet, so quiet that you can't feel it flowing.");
         map.put("number", "20");
         PromptRequest promptRequest = new PromptRequest();
         promptRequest.setId(1234);
@@ -119,6 +127,9 @@ public class ChatController {
 
 ## 📑Documentation
 [~Owe first~](http://mopen.cloud/)
-
+<div>
+Click => 
+<a href="/wenxin-doc-en.md">Documents</a>
+</div>
 ## Open Source License
 [LICENSE](https://www.apache.org/licenses/LICENSE-2.0)
