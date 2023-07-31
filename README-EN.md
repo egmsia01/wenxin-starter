@@ -126,10 +126,11 @@ public class ChatController {
 ```
 
 ## 📑Documentation
-[~Owe first~](http://mopen.cloud/)
+
 <div>
 Click => 
 <a href="/wenxin-doc-en.md">Documents</a>
 </div>
+
 ## Open Source License
 [LICENSE](https://www.apache.org/licenses/LICENSE-2.0)
