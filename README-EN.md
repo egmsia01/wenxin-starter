@@ -33,7 +33,7 @@
  > https://aip.baidubce.com/oauth/2.0/token?grant_type=client_credentials&client_id=[API-Key]&client_secret=[Secret-Key]
 
 ## 📖 Project Introduction
-- The spring-boot-starter of Baidu's ** "Wenxin Qianfan WENXINWORKSHOP" ** large model can help you quickly access Baidu's AI capabilities. You can call Baidu's Wenxin Qianfan large model with only one line of code.
+- The spring-boot-starter of Baidu's **"Wenxin Qianfan WENXINWORKSHOP"** large model can help you quickly access Baidu's AI capabilities. You can call Baidu's Wenxin Qianfan large model with only one line of code.
 - Complete docking with the official API documentation of WenxinQianfan.
 - Support streaming back of conversations.
 - Full API support for ErnieBot, ERNIE-Bot-turbo, BLOOMZ-7B, Prompt Template models (single round conversation, continuous conversation, streaming return).
