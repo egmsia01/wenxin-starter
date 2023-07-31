@@ -19,7 +19,7 @@ import java.util.Map;
  * @date 2023/7/20
  */
 @Slf4j
-public abstract class V1Client implements Prompt<V1Request> {
+public abstract class V1Client {
 
     private String accessToken;
     private static final String TAG = "PromptBotClient_";
@@ -31,31 +31,29 @@ public abstract class V1Client implements Prompt<V1Request> {
 
     protected abstract String getAccessToken();
 
-    @Override
     public void setAccessToken(String accessToken) {
         this.accessToken = accessToken;
     }
 
-    @Override
     public String getURL() {
         return URL;
     }
 
-    @Override
-    public PromptResponse chatPrompt(V1Request v1Request) {
-        log.info("getAccessToken => {}", getAccessToken());
-        if (v1Request == null ||
-                v1Request.getContent().isEmpty()
-        ) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR);
-        }
-        Mono<PromptResponse> response = ChatUtils.monoGet(
-                URL,
-                getAccessToken(),
-                null,
-                PromptResponse.class);
-
-        return response.block();
-    }
+//    @Override
+//    public PromptResponse chatSingle(V1Request v1Request) {
+//        log.info("getAccessToken => {}", getAccessToken());
+//        if (v1Request == null ||
+//                v1Request.getContent().isEmpty()
+//        ) {
+//            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+//        }
+//        Mono<PromptResponse> response = ChatUtils.monoGet(
+//                URL,
+//                getAccessToken(),
+//                null,
+//                PromptResponse.class);
+//
+//        return response.block();
+//    }
 
 }

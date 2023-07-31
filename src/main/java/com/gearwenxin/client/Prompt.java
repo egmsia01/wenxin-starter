@@ -1,12 +1,13 @@
 package com.gearwenxin.client;
 
+import com.gearwenxin.model.chatmodel.ChatPromptRequest;
 import com.gearwenxin.model.response.PromptResponse;
 
 /**
  * @author Ge Mingjia
  * @date 2023/7/20
  */
-public interface Prompt<T> {
+public interface Prompt {
 
     /**
      * 单独设置accessToken
@@ -17,6 +18,7 @@ public interface Prompt<T> {
 
     /**
      * 获取模型的URL
+     *
      * @return URL
      */
     public String getURL();
@@ -28,6 +30,6 @@ public interface Prompt<T> {
      * @param request 请求实体类
      * @return ChatResponse 响应实体类
      */
-    PromptResponse chatPrompt(T request);
+    PromptResponse chatPrompt(ChatPromptRequest request);
 
 }
