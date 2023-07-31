@@ -48,7 +48,7 @@
 [使用demo](https://github.com/gemingjia/springboot-wenxin-demo)
 
 ### 1、添加依赖
-Repository Path: [/io/github/gemingjia/gear-wenxinworkshop-starter/0.0.2/gear-wenxinworkshop-starter-0.0.2.jar](/io/github/gemingjia/gear-wenxinworkshop-starter/0.0.2/gear-wenxinworkshop-starter-0.0.2.jar)
+Repository Path: [/io/github/gemingjia/gear-wenxinworkshop-starter)
 - Maven
 ```xml
 <!-- 若中央仓库未更新可手动添加 -->
