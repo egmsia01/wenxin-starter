@@ -6,6 +6,7 @@ import com.gearwenxin.common.ErrorCode;
 import com.gearwenxin.common.URLConstant;
 import com.gearwenxin.exception.BusinessException;
 
+import com.gearwenxin.model.Message;
 import com.gearwenxin.model.chatmodel.ChatPromptRequest;
 import com.gearwenxin.model.request.PromptRequest;
 import com.gearwenxin.model.response.PromptResponse;
@@ -14,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Mono;
 
 import java.util.Map;
+import java.util.Queue;
 
 /**
  * @author Ge Mingjia
@@ -38,13 +40,24 @@ public abstract class PromptClient implements Prompt, BaseBot {
     }
 
     @Override
+    public Map<String, Queue<Message>> getMessageHistoryMap() {
+        log.warn(TAG + "PromptClient not have MessageHistoryMap");
+        return null;
+    }
+
+    @Override
+    public void initMessageHistoryMap(Map<String, Queue<Message>> map) {
+        log.warn(TAG + "PromptClient not need init");
+    }
+
+    @Override
     public String getURL() {
         return URL;
     }
 
     @Override
     public PromptResponse chatPrompt(ChatPromptRequest chatPromptRequest) {
-        log.info("getAccessToken => {}", getAccessToken());
+        log.info(TAG + "getAccessToken => {}", getAccessToken());
         if (chatPromptRequest == null ||
                 chatPromptRequest.getId() <= 0 ||
                 chatPromptRequest.getParamMap().isEmpty()

@@ -18,6 +18,8 @@ public class GearWenXinConfig {
 
     private String accessToken;
 
+    private String VilGCustomURL;
+
     @Bean
     public ErnieBotClient ernieBotClient() {
         return new ErnieBotClient() {
@@ -54,6 +56,21 @@ public class GearWenXinConfig {
             @Override
             public String getAccessToken() {
                 return accessToken;
+            }
+        };
+    }
+
+    @Bean
+    public ErnieBotVilGClient ernieBotVilGClient() {
+        return new ErnieBotVilGClient() {
+            @Override
+            protected String getAccessToken() {
+                return accessToken;
+            }
+
+            @Override
+            protected String getCustomURL() {
+                return VilGCustomURL;
             }
         };
     }

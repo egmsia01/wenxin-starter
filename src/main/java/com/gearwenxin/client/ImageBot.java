@@ -1,6 +1,7 @@
 package com.gearwenxin.client;
 
 import com.gearwenxin.model.chatmodel.ChatPromptRequest;
+import com.gearwenxin.model.chatmodel.ChatVilGCRequest;
 import com.gearwenxin.model.response.PromptResponse;
 
 /**
@@ -12,9 +13,9 @@ public interface ImageBot {
     /**
      * 绘图
      *
-     * @param
-     * @return ChatResponse 响应实体类
+     * @param chatVilGCRequest 作图参数
+     * @return byte[] 图片的字节数组
      */
-    String chatImage(String content, int width, int height);
+    byte[] chatImage(ChatVilGCRequest chatVilGCRequest);
 
 }

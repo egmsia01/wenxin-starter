@@ -3,28 +3,21 @@ package com.gearwenxin.client;
 import com.gearwenxin.common.*;
 import com.gearwenxin.exception.BusinessException;
 import com.gearwenxin.model.Message;
-import com.gearwenxin.model.chatmodel.ChatTurbo7BRequest;
-import com.gearwenxin.model.request.Turbo7BRequest;
-import com.gearwenxin.model.response.ChatResponse;
-import com.gearwenxin.subscriber.CommonSubscriber;
+import com.gearwenxin.model.chatmodel.ChatVilGCRequest;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang.StringUtils;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
 
-import java.util.LinkedList;
 import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
-
-import static com.gearwenxin.common.WenXinUtils.*;
 
 /**
  * @author Ge Mingjia
  * @date 2023/7/20
  */
 @Slf4j
-public abstract class ErnieBotVilGClient implements CommonBot<ChatTurbo7BRequest>, BaseBot, ImageBot {
+public abstract class ErnieBotVilGClient implements BaseBot, ImageBot {
 
     private String accessToken;
     private static final String TAG = "ErnieBotVilGClient_";
@@ -41,7 +34,11 @@ public abstract class ErnieBotVilGClient implements CommonBot<ChatTurbo7BRequest
     protected ErnieBotVilGClient() {
     }
 
+    // 获取access-token
     protected abstract String getAccessToken();
+
+    // 获取不固定的模型URL
+    protected abstract String getCustomURL();
 
     @Override
     public void setAccessToken(String accessToken) {
@@ -60,49 +57,44 @@ public abstract class ErnieBotVilGClient implements CommonBot<ChatTurbo7BRequest
 
     @Override
     public String getURL() {
-        return URL;
+        return getCustomURL();
     }
 
     @Override
-    public String chatImage(String content, int width, int height) {
-        if (StringUtils.isEmpty(content)) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR);
-        }
-        Queue<Message> messageQueue = buildUserMessageQueue(content);
-        Turbo7BRequest request = new Turbo7BRequest();
-        request.setMessages(messageQueue);
-        log.info(TAG + "content_singleRequest => {}", request.toString());
+    public byte[] chatImage(ChatVilGCRequest chatVilGCRequest) {
+        validChatVilGCRequest(chatVilGCRequest);
 
-        Mono<String> response = ChatUtils.monoPost(
-                getURL(),
-                getAccessToken(),
-                request,
-                String.class);
-        return response.block();
+        log.info(TAG + "imageRequest => {}", chatVilGCRequest.toString());
+
+        String base64Image = ChatUtils.monoPost(
+                        getURL(),
+                        getAccessToken(),
+                        chatVilGCRequest,
+                        String.class)
+                .block();
+
+        return Base64.decodeBase64(base64Image);
     }
 
-//    public void validBaseRequest(ChatTurbo7BRequest request) {
-//        // 检查content不为空
-//        if (StringUtils.isEmpty(request.getContent())) {
-//            throw new BusinessException(ErrorCode.PARAMS_ERROR, "content cannot be empty");
-//        }
-//        // 检查单个content长度
-//        if (request.getContent().length() > MAX_CONTENT_LENGTH) {
-//            throw new BusinessException(ErrorCode.PARAMS_ERROR, "content's length cannot be more than 2000");
-//        }
-//    }
-//
-//    public <T> Flux<ChatResponse> historyFlux(T request, Queue<Message> messagesHistory) {
-//        return Flux.create(emitter -> {
-//            CommonSubscriber subscriber = new CommonSubscriber(emitter, messagesHistory);
-//            Flux<ChatResponse> chatResponse = ChatUtils.fluxPost(
-//                    getURL(),
-//                    getAccessToken(),
-//                    request,
-//                    ChatResponse.class);
-//            chatResponse.subscribe(subscriber);
-//            emitter.onDispose(subscriber);
-//        });
-//    }
+    public void validChatVilGCRequest(ChatVilGCRequest chatVilGCRequest) {
+        if (chatVilGCRequest == null) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "chatVilGCRequest is null");
+        }
+        // 检查content不为空
+        if (StringUtils.isEmpty(chatVilGCRequest.getContent())) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "content cannot be empty");
+        }
+        // 检查单个content长度
+        if (chatVilGCRequest.getContent().length() > MAX_CONTENT_LENGTH) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "content's length cannot be more than 2000");
+        }
+        if (chatVilGCRequest.getWidth() <= 0) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "width is less than or eq 0");
+        }
+        if (chatVilGCRequest.getHeight() <= 0) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "height is less than or eq 0");
+        }
+    }
+
 
 }
