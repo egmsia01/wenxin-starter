@@ -20,7 +20,7 @@ import java.util.Map;
  * @date 2023/7/20
  */
 @Slf4j
-public abstract class PromptClient implements Prompt {
+public abstract class PromptClient implements Prompt, BaseBot {
 
     private String accessToken;
     private static final String TAG = "PromptBotClient_";

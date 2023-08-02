@@ -14,32 +14,6 @@ import java.util.Queue;
 public interface CommonBot<T> {
 
     /**
-     * 单独设置accessToken
-     *
-     * @param accessToken accessToken
-     */
-    void setAccessToken(String accessToken);
-
-    /**
-     * 获取历史消息列表 MessageHistoryMap
-     *
-     * @return MessageHistoryMap
-     */
-    Map<String, Queue<Message>> getMessageHistoryMap();
-
-    /**
-     * 设置历史消息列表 MessageHistoryMap
-     * @param map 历史消息列表
-     */
-    void initMessageHistoryMap(Map<String, Queue<Message>> map);
-
-    /**
-     * 获取模型的URL
-     * @return URL
-     */
-    String getURL();
-
-    /**
      * 单轮对话，无上下文记忆，默认参数
      * （非流式）
      *

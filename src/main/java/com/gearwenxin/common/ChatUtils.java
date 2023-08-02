@@ -157,7 +157,7 @@ public class ChatUtils {
 
     public static String encodeURL(String component) {
         if (component == null) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "EncodeURL error!");
         }
         return URLEncoder.encode(component, StandardCharsets.UTF_8);
     }

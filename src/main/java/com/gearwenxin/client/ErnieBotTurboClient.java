@@ -24,7 +24,7 @@ import static com.gearwenxin.common.WenXinUtils.*;
  * @date 2023/7/20
  */
 @Slf4j
-public abstract class ErnieBotTurboClient implements CommonBot<ChatTurbo7BRequest> {
+public abstract class ErnieBotTurboClient implements CommonBot<ChatTurbo7BRequest>, BaseBot {
 
     private String accessToken;
     private static final String TAG = "ErnieBotTurboClient_";
