@@ -38,8 +38,9 @@
 ## 📖 项目简介
 - 百度 **“文心千帆 WENXINWORKSHOP”** 大模型的spring-boot-starter，可以帮助您快速接入百度的AI能力，只需一行代码即可调用百度文心千帆大模型。
 - 完整对接文心千帆的官方API文档。
+- 支持根据提示词生成图片。
 - 支持对话的流式返回。
-- 完整支持 `文心一言 ErnieBot`、`ERNIE-Bot-turbo`、`BLOOMZ-7B`、`Prompt模板`模型的API（单轮对话、连续对话、流式返回）。
+- 完整支持 `文心一言 ErnieBot`、`ERNIE-Bot-turbo`、`BLOOMZ-7B`、`Ernie-Bot-VilG`、`Prompt模板`模型的API（单轮对话、连续对话、流式返回、图片生成）。
 - 0.0.4版本中将增加Embedding-V1模型的支持。
 
 
