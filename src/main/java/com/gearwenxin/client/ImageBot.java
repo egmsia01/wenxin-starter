@@ -1,8 +1,6 @@
 package com.gearwenxin.client;
 
-import com.gearwenxin.model.chatmodel.ChatPromptRequest;
 import com.gearwenxin.model.chatmodel.ChatVilGCRequest;
-import com.gearwenxin.model.response.PromptResponse;
 
 /**
  * @author Ge Mingjia

@@ -24,7 +24,7 @@ import java.util.Queue;
 @Slf4j
 public abstract class PromptClient implements Prompt, BaseBot {
 
-    private String accessToken;
+    private String accessToken = null;
     private static final String TAG = "PromptBotClient_";
 
     private static final String URL = URLConstant.PROMPT_URL;
@@ -35,7 +35,12 @@ public abstract class PromptClient implements Prompt, BaseBot {
     protected abstract String getAccessToken();
 
     @Override
-    public void setAccessToken(String accessToken) {
+    public String getCustomAccessToken() {
+        return accessToken != null ? accessToken : getAccessToken();
+    }
+
+    @Override
+    public void setCustomAccessToken(String accessToken) {
         this.accessToken = accessToken;
     }
 
@@ -57,7 +62,6 @@ public abstract class PromptClient implements Prompt, BaseBot {
 
     @Override
     public PromptResponse chatPrompt(ChatPromptRequest chatPromptRequest) {
-        log.info(TAG + "getAccessToken => {}", getAccessToken());
         if (chatPromptRequest == null ||
                 chatPromptRequest.getId() <= 0 ||
                 chatPromptRequest.getParamMap().isEmpty()
@@ -70,7 +74,7 @@ public abstract class PromptClient implements Prompt, BaseBot {
         paramMap.put("id", id);
         Mono<PromptResponse> response = ChatUtils.monoGet(
                 URL,
-                getAccessToken(),
+                getCustomAccessToken(),
                 paramMap,
                 PromptResponse.class);
 

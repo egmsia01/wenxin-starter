@@ -1,8 +1,6 @@
 package com.gearwenxin.client;
 
 import com.gearwenxin.model.Message;
-import com.gearwenxin.model.response.ChatResponse;
-import reactor.core.publisher.Flux;
 
 import java.util.Map;
 import java.util.Queue;
@@ -18,7 +16,13 @@ public interface BaseBot {
      *
      * @param accessToken accessToken
      */
-    void setAccessToken(String accessToken);
+    void setCustomAccessToken(String accessToken);
+
+    /**
+     * 获取accessToken
+     *
+     */
+    String getCustomAccessToken();
 
     /**
      * 获取历史消息列表 MessageHistoryMap

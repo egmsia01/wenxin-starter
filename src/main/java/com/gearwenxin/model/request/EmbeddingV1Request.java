@@ -4,8 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Map;
-
 /**
  * @author Ge Mingjia
  * @date 2023/7/26
@@ -13,7 +11,7 @@ import java.util.Map;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class V1Request {
+public class EmbeddingV1Request {
 
     /**
      * 内容

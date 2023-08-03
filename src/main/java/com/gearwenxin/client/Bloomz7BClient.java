@@ -17,13 +17,18 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public abstract class Bloomz7BClient extends ErnieBotTurboClient {
 
-    private String accessToken;
+    private String accessToken = null;
     private static final String TAG = "Bloomz7BClient_";
     private static Map<String, Queue<Message>> BLOOMZ_MESSAGES_HISTORY_MAP = new ConcurrentHashMap<>();
     private static final String URL = URLConstant.BLOOMZ_7B_URL;
 
     @Override
     protected abstract String getAccessToken();
+
+    @Override
+    public String getCustomAccessToken() {
+        return accessToken != null ? accessToken : getAccessToken();
+    }
 
     @Override
     public Map<String, Queue<Message>> getMessageHistoryMap() {
@@ -41,7 +46,7 @@ public abstract class Bloomz7BClient extends ErnieBotTurboClient {
     }
 
     @Override
-    public void setAccessToken(String accessToken) {
+    public void setCustomAccessToken(String accessToken) {
         this.accessToken = accessToken;
     }
 
@@ -51,7 +56,7 @@ public abstract class Bloomz7BClient extends ErnieBotTurboClient {
             CommonSubscriber subscriber = new CommonSubscriber(emitter, messagesHistory);
             Flux<ChatResponse> chatResponse = ChatUtils.fluxPost(
                     getURL(),
-                    getAccessToken(),
+                    getCustomAccessToken(),
                     request,
                     ChatResponse.class);
             chatResponse.subscribe(subscriber);

@@ -25,10 +25,8 @@ import static com.gearwenxin.common.WenXinUtils.*;
 @Slf4j
 public abstract class ErnieBotClient implements CommonBot<ChatErnieRequest>, BaseBot {
 
-    private String accessToken;
+    private String accessToken = null;
     private static final String TAG = "ErnieBotClient_";
-    public static final String PREFIX_MSG_HISTORY_MONO = "Mono_";
-    public static final String PREFIX_MSG_HISTORY_FLUX = "Flux_";
 
     // 每个模型的历史消息Map
     private static Map<String, Queue<Message>> ERNIE_MESSAGES_HISTORY_MAP = new ConcurrentHashMap<>();
@@ -49,8 +47,13 @@ public abstract class ErnieBotClient implements CommonBot<ChatErnieRequest>, Bas
     }
 
     @Override
-    public void setAccessToken(String accessToken) {
+    public void setCustomAccessToken(String accessToken) {
         this.accessToken = accessToken;
+    }
+
+    @Override
+    public String getCustomAccessToken() {
+        return accessToken != null ? accessToken : getAccessToken();
     }
 
     @Override
@@ -75,7 +78,7 @@ public abstract class ErnieBotClient implements CommonBot<ChatErnieRequest>, Bas
 
         Mono<ChatResponse> response = ChatUtils.monoPost(
                 getURL(),
-                getAccessToken(),
+                getCustomAccessToken(),
                 request,
                 ChatResponse.class);
         return response.block();
@@ -93,7 +96,7 @@ public abstract class ErnieBotClient implements CommonBot<ChatErnieRequest>, Bas
         log.info(TAG + "content_singleRequest_stream => {}", ernieRequest.toString());
         return ChatUtils.fluxPost(
                 getURL(),
-                getAccessToken(),
+                getCustomAccessToken(),
                 ernieRequest,
                 ChatResponse.class);
     }
@@ -107,7 +110,7 @@ public abstract class ErnieBotClient implements CommonBot<ChatErnieRequest>, Bas
 
         Mono<ChatResponse> response = ChatUtils.monoPost(
                 getURL(),
-                getAccessToken(),
+                getCustomAccessToken(),
                 ernieRequest,
                 ChatResponse.class);
 
@@ -122,7 +125,7 @@ public abstract class ErnieBotClient implements CommonBot<ChatErnieRequest>, Bas
         ernieRequest.setStream(true);
         log.info(TAG + "singleRequest_stream => {}", ernieRequest.toString());
 
-        return ChatUtils.fluxPost(getURL(), getAccessToken(), ernieRequest, ChatResponse.class);
+        return ChatUtils.fluxPost(getURL(), getCustomAccessToken(), ernieRequest, ChatResponse.class);
     }
 
     @Override
@@ -141,7 +144,7 @@ public abstract class ErnieBotClient implements CommonBot<ChatErnieRequest>, Bas
 
         Mono<ChatResponse> response = ChatUtils.monoPost(
                 getURL(),
-                getAccessToken(),
+                getCustomAccessToken(),
                 ernieRequest,
                 ChatResponse.class);
         ChatResponse chatResponse = response.block();
@@ -191,7 +194,7 @@ public abstract class ErnieBotClient implements CommonBot<ChatErnieRequest>, Bas
 
         Mono<ChatResponse> response = ChatUtils.monoPost(
                 getURL(),
-                getAccessToken(),
+                getCustomAccessToken(),
                 ernieRequest,
                 ChatResponse.class);
         ChatResponse chatResponse = response.block();
@@ -260,7 +263,7 @@ public abstract class ErnieBotClient implements CommonBot<ChatErnieRequest>, Bas
             CommonSubscriber subscriber = new CommonSubscriber(emitter, messagesHistory);
             Flux<ChatResponse> chatResponse = ChatUtils.fluxPost(
                     getURL(),
-                    getAccessToken(),
+                    getCustomAccessToken(),
                     request,
                     ChatResponse.class);
             chatResponse.subscribe(subscriber);

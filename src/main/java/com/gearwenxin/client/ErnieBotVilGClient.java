@@ -10,7 +10,6 @@ import org.apache.commons.lang.StringUtils;
 
 import java.util.Map;
 import java.util.Queue;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author Ge Mingjia
@@ -19,14 +18,8 @@ import java.util.concurrent.ConcurrentHashMap;
 @Slf4j
 public abstract class ErnieBotVilGClient implements BaseBot, ImageBot {
 
-    private String accessToken;
+    private String accessToken = null;
     private static final String TAG = "ErnieBotVilGClient_";
-    public static final String PREFIX_MSG_HISTORY_MONO = "Mono_";
-    public static final String PREFIX_MSG_HISTORY_FLUX = "Flux_";
-    private static final String URL = URLConstant.ERNIE_BOT_TURBO_URL;
-
-    // 每个模型的历史消息Map
-    private static Map<String, Queue<Message>> TURBO_MESSAGES_HISTORY_MAP = new ConcurrentHashMap<>();
 
     // 最大的单个content字符数
     private static final int MAX_CONTENT_LENGTH = 2000;
@@ -41,18 +34,24 @@ public abstract class ErnieBotVilGClient implements BaseBot, ImageBot {
     protected abstract String getCustomURL();
 
     @Override
-    public void setAccessToken(String accessToken) {
+    public String getCustomAccessToken() {
+        return accessToken != null ? accessToken : getAccessToken();
+    }
+
+    @Override
+    public void setCustomAccessToken(String accessToken) {
         this.accessToken = accessToken;
     }
 
     @Override
     public Map<String, Queue<Message>> getMessageHistoryMap() {
-        return TURBO_MESSAGES_HISTORY_MAP;
+        log.warn(TAG + "ErnieBotVilGClient not have MessageHistoryMap");
+        return null;
     }
 
     @Override
     public void initMessageHistoryMap(Map<String, Queue<Message>> map) {
-        TURBO_MESSAGES_HISTORY_MAP = map;
+        log.warn(TAG + "ErnieBotVilGClient not need init");
     }
 
     @Override
@@ -68,7 +67,7 @@ public abstract class ErnieBotVilGClient implements BaseBot, ImageBot {
 
         String base64Image = ChatUtils.monoPost(
                         getURL(),
-                        getAccessToken(),
+                        getCustomAccessToken(),
                         chatVilGCRequest,
                         String.class)
                 .block();

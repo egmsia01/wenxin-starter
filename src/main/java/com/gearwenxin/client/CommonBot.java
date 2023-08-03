@@ -1,11 +1,7 @@
 package com.gearwenxin.client;
 
-import com.gearwenxin.model.Message;
 import com.gearwenxin.model.response.ChatResponse;
 import reactor.core.publisher.Flux;
-
-import java.util.Map;
-import java.util.Queue;
 
 /**
  * @author Ge Mingjia

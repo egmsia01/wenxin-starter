@@ -1,47 +1,49 @@
 package com.gearwenxin.client;
 
 import com.gearwenxin.common.ChatUtils;
-import com.gearwenxin.common.ConvertUtils;
 import com.gearwenxin.common.ErrorCode;
 import com.gearwenxin.common.URLConstant;
 import com.gearwenxin.exception.BusinessException;
-import com.gearwenxin.model.chatmodel.ChatPromptRequest;
-import com.gearwenxin.model.request.PromptRequest;
-import com.gearwenxin.model.request.V1Request;
+import com.gearwenxin.model.request.EmbeddingV1Request;
 import com.gearwenxin.model.response.PromptResponse;
 import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Mono;
-
-import java.util.Map;
 
 /**
  * @author Ge Mingjia
  * @date 2023/7/20
  */
 @Slf4j
-public abstract class V1Client {
+public abstract class EmbeddingV1Client implements BaseBot{
 
-    private String accessToken;
+    private String accessToken = null;
     private static final String TAG = "PromptBotClient_";
 
     private static final String URL = URLConstant.PROMPT_URL;
 
-    protected V1Client() {
+    protected EmbeddingV1Client() {
     }
 
     protected abstract String getAccessToken();
 
-    public void setAccessToken(String accessToken) {
+    @Override
+    public String getCustomAccessToken() {
+        return accessToken != null ? accessToken : getAccessToken();
+    }
+
+    @Override
+    public void setCustomAccessToken(String accessToken) {
         this.accessToken = accessToken;
     }
 
+    @Override
     public String getURL() {
         return URL;
     }
 
 //    @Override
-//    public PromptResponse chatSingle(V1Request v1Request) {
-//        log.info("getAccessToken => {}", getAccessToken());
+//    public String chatSingle(EmbeddingV1Request v1Request) {
+//        log.info("getAccessToken => {}", getCustomAccessToken());
 //        if (v1Request == null ||
 //                v1Request.getContent().isEmpty()
 //        ) {
@@ -49,7 +51,7 @@ public abstract class V1Client {
 //        }
 //        Mono<PromptResponse> response = ChatUtils.monoGet(
 //                URL,
-//                getAccessToken(),
+//                getCustomAccessToken(),
 //                null,
 //                PromptResponse.class);
 //
