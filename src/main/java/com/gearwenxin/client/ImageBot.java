@@ -1,6 +1,7 @@
 package com.gearwenxin.client;
 
 import com.gearwenxin.model.chatmodel.ChatVilGCRequest;
+import com.gearwenxin.model.response.VilGCResponse;
 
 /**
  * @author Ge Mingjia
@@ -14,6 +15,6 @@ public interface ImageBot {
      * @param chatVilGCRequest 作图参数
      * @return byte[] 图片的字节数组
      */
-    byte[] chatImage(ChatVilGCRequest chatVilGCRequest);
+    VilGCResponse chatImage(ChatVilGCRequest chatVilGCRequest);
 
 }

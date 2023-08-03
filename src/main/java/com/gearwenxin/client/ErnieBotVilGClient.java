@@ -4,8 +4,8 @@ import com.gearwenxin.common.*;
 import com.gearwenxin.exception.BusinessException;
 import com.gearwenxin.model.Message;
 import com.gearwenxin.model.chatmodel.ChatVilGCRequest;
+import com.gearwenxin.model.response.VilGCResponse;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang.StringUtils;
 
 import java.util.Map;
@@ -60,19 +60,17 @@ public abstract class ErnieBotVilGClient implements BaseBot, ImageBot {
     }
 
     @Override
-    public byte[] chatImage(ChatVilGCRequest chatVilGCRequest) {
+    public VilGCResponse chatImage(ChatVilGCRequest chatVilGCRequest) {
         validChatVilGCRequest(chatVilGCRequest);
 
         log.info(TAG + "imageRequest => {}", chatVilGCRequest.toString());
 
-        String base64Image = ChatUtils.monoPost(
+        return ChatUtils.monoPost(
                         getURL(),
                         getCustomAccessToken(),
                         chatVilGCRequest,
-                        String.class)
+                        VilGCResponse.class)
                 .block();
-
-        return Base64.decodeBase64(base64Image);
     }
 
     public void validChatVilGCRequest(ChatVilGCRequest chatVilGCRequest) {
