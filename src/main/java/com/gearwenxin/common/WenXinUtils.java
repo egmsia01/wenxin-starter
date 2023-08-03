@@ -1,7 +1,7 @@
 package com.gearwenxin.common;
 
 import com.gearwenxin.exception.BusinessException;
-import com.gearwenxin.model.Message;
+import com.gearwenxin.entity.Message;
 import org.apache.commons.lang.StringUtils;
 
 import java.util.LinkedList;

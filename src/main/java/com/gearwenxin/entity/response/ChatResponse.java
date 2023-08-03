@@ -1,7 +1,7 @@
-package com.gearwenxin.model.response;
+package com.gearwenxin.entity.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.gearwenxin.model.Usage;
+import com.gearwenxin.entity.Usage;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
  * @author Ge Mingjia
  * @date 2023/7/20
  * <p>
- * CommonBot 模型
+ * DefaultParamsBot 模型
  */
 @Data
 @NoArgsConstructor

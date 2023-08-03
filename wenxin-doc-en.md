@@ -200,7 +200,7 @@ Here's an example using `ErnieBotClient`, and the `BaseResponse` is defined as f
 @RestController
 public class ChatController {
  
-    // Client model to call
+    // Client entity to call
     @Resource
     private ErnieBotClient ernieBotClient;
  
@@ -220,7 +220,7 @@ public class ChatController {
 @RestController
 public class ChatController {
  
-    // Client model to call
+    // Client entity to call
     @Resource
     private ErnieBotClient ernieBotClient;
  
@@ -246,7 +246,7 @@ Continuous conversation is internally built-in.
 @RestController
 public class ChatController {
  
-    // Client model to call
+    // Client entity to call
     @Resource
     private ErnieBotClient ernieBotClient;
  
@@ -267,7 +267,7 @@ public class ChatController {
 @RestController
 public class ChatController {
  
-    // Client model to call
+    // Client entity to call
     @Resource
     private ErnieBotClient ernieBotClient;
  
@@ -288,7 +288,7 @@ public class ChatController {
 @RestController
 public class ChatController {
 
-    // Client model to call
+    // Client entity to call
     @Resource
     private PromptClient promptClient;
 
@@ -344,7 +344,7 @@ public class ChatService {
     public void importMsg() {
         Map<String, Queue<Message>> messageHistoryMap = new HashMap<>();
         Message userMessage = WenXinUtils.buildUserMessage("Hello");
-        Message assistantMessage = WenXinUtils.buildAssistantMessage("I am ErnieBot");
+        Message assistantMessage = WenXinUtils.buildAssistantMessage("I am ParamsBot");
         Queue<Message> messagesQueue = WenXinUtils.buildMessageQueue(userMessage, assistantMessage);
         messageHistoryMap1.put("test-user1-1001", messagesQueue);
         ernieBotClient.initMessageHistoryMap(messageHistoryMap1);

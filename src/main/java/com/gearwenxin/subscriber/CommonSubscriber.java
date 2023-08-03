@@ -1,8 +1,8 @@
 package com.gearwenxin.subscriber;
 
 import com.gearwenxin.common.WenXinUtils;
-import com.gearwenxin.model.Message;
-import com.gearwenxin.model.response.ChatResponse;
+import com.gearwenxin.entity.Message;
+import com.gearwenxin.entity.response.ChatResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.reactivestreams.Subscriber;

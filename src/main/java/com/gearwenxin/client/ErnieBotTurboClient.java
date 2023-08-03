@@ -2,10 +2,12 @@ package com.gearwenxin.client;
 
 import com.gearwenxin.common.*;
 import com.gearwenxin.exception.BusinessException;
-import com.gearwenxin.model.Message;
-import com.gearwenxin.model.response.ChatResponse;
-import com.gearwenxin.model.chatmodel.ChatTurbo7BRequest;
-import com.gearwenxin.model.request.Turbo7BRequest;
+import com.gearwenxin.entity.Message;
+import com.gearwenxin.entity.response.ChatResponse;
+import com.gearwenxin.entity.chatmodel.ChatTurboRequest;
+import com.gearwenxin.entity.request.TurboRequest;
+import com.gearwenxin.model.BaseBot;
+import com.gearwenxin.model.DefaultParamsBot;
 import com.gearwenxin.subscriber.CommonSubscriber;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
@@ -24,7 +26,7 @@ import static com.gearwenxin.common.WenXinUtils.*;
  * @date 2023/7/20
  */
 @Slf4j
-public abstract class ErnieBotTurboClient implements CommonBot<ChatTurbo7BRequest>, BaseBot {
+public abstract class ErnieBotTurboClient implements DefaultParamsBot<ChatTurboRequest>, BaseBot {
 
     private String accessToken = null;
     private static final String TAG = "ErnieBotTurboClient_";
@@ -72,7 +74,7 @@ public abstract class ErnieBotTurboClient implements CommonBot<ChatTurbo7BReques
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
         Queue<Message> messageQueue = buildUserMessageQueue(content);
-        Turbo7BRequest request = new Turbo7BRequest();
+        TurboRequest request = new TurboRequest();
         request.setMessages(messageQueue);
         log.info(TAG + "content_singleRequest => {}", request.toString());
 
@@ -90,7 +92,7 @@ public abstract class ErnieBotTurboClient implements CommonBot<ChatTurbo7BReques
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
         Queue<Message> messageQueue = buildUserMessageQueue(content);
-        Turbo7BRequest ernieRequest = new Turbo7BRequest();
+        TurboRequest ernieRequest = new TurboRequest();
         ernieRequest.setMessages(messageQueue);
         ernieRequest.setStream(true);
         log.info(TAG + "content_singleRequest_stream => {}", ernieRequest.toString());
@@ -102,10 +104,10 @@ public abstract class ErnieBotTurboClient implements CommonBot<ChatTurbo7BReques
     }
 
     @Override
-    public ChatResponse chatSingle(ChatTurbo7BRequest chatTurbo7BRequest) {
-        this.validBaseRequest(chatTurbo7BRequest);
+    public ChatResponse chatSingle(ChatTurboRequest chatTurboRequest) {
+        this.validBaseRequest(chatTurboRequest);
 
-        Turbo7BRequest ernieRequest = ConvertUtils.chatTurboReq7BToTurboReq(chatTurbo7BRequest);
+        TurboRequest ernieRequest = ConvertUtils.chatTurboReq7BToTurboReq(chatTurboRequest);
         log.info(TAG + "singleRequest => {}", ernieRequest.toString());
 
         Mono<ChatResponse> response = ChatUtils.monoPost(
@@ -118,10 +120,10 @@ public abstract class ErnieBotTurboClient implements CommonBot<ChatTurbo7BReques
     }
 
     @Override
-    public Flux<ChatResponse> chatSingleOfStream(ChatTurbo7BRequest chatTurbo7BRequest) {
-        this.validBaseRequest(chatTurbo7BRequest);
+    public Flux<ChatResponse> chatSingleOfStream(ChatTurboRequest chatTurboRequest) {
+        this.validBaseRequest(chatTurboRequest);
 
-        Turbo7BRequest ernieRequest = ConvertUtils.chatTurboReq7BToTurboReq(chatTurbo7BRequest);
+        TurboRequest ernieRequest = ConvertUtils.chatTurboReq7BToTurboReq(chatTurboRequest);
         ernieRequest.setStream(true);
         log.info(TAG + "singleRequest_stream => {}", ernieRequest.toString());
 
@@ -142,7 +144,7 @@ public abstract class ErnieBotTurboClient implements CommonBot<ChatTurbo7BReques
         Message message = buildUserMessage(content);
         WenXinUtils.offerMessage(messagesHistory, message);
 
-        Turbo7BRequest ernieRequest = new Turbo7BRequest();
+        TurboRequest ernieRequest = new TurboRequest();
         ernieRequest.setMessages(messagesHistory);
         log.info(TAG + "content_contRequest => {}", ernieRequest.toString());
 
@@ -171,7 +173,7 @@ public abstract class ErnieBotTurboClient implements CommonBot<ChatTurbo7BReques
         Message message = buildUserMessage(content);
         WenXinUtils.offerMessage(messagesHistory, message);
 
-        Turbo7BRequest ernieRequest = new Turbo7BRequest();
+        TurboRequest ernieRequest = new TurboRequest();
         ernieRequest.setMessages(messagesHistory);
         ernieRequest.setStream(true);
         log.info("content_contRequest_stream => {}", ernieRequest.toString());
@@ -180,17 +182,17 @@ public abstract class ErnieBotTurboClient implements CommonBot<ChatTurbo7BReques
     }
 
     @Override
-    public ChatResponse chatCont(ChatTurbo7BRequest chatTurbo7BRequest, String msgUid) {
+    public ChatResponse chatCont(ChatTurboRequest chatTurboRequest, String msgUid) {
         if (StringUtils.isBlank(msgUid)) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
-        this.validBaseRequest(chatTurbo7BRequest);
-        Turbo7BRequest ernieRequest = ConvertUtils.chatTurboReq7BToTurboReq(chatTurbo7BRequest);
+        this.validBaseRequest(chatTurboRequest);
+        TurboRequest ernieRequest = ConvertUtils.chatTurboReq7BToTurboReq(chatTurboRequest);
         Map<String, Queue<Message>> messageHistoryMap = getMessageHistoryMap();
         Queue<Message> messagesHistory = messageHistoryMap.computeIfAbsent(msgUid, key -> new LinkedList<>());
 
         // 添加到历史
-        Message message = buildUserMessage(chatTurbo7BRequest.getContent());
+        Message message = buildUserMessage(chatTurboRequest.getContent());
         WenXinUtils.offerMessage(messagesHistory, message);
 
         ernieRequest.setMessages(messagesHistory);
@@ -212,16 +214,16 @@ public abstract class ErnieBotTurboClient implements CommonBot<ChatTurbo7BReques
     }
 
     @Override
-    public Flux<ChatResponse> chatContOfStream(ChatTurbo7BRequest chatTurbo7BRequest, String msgUid) {
+    public Flux<ChatResponse> chatContOfStream(ChatTurboRequest chatTurboRequest, String msgUid) {
         if (StringUtils.isBlank(msgUid)) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
-        this.validBaseRequest(chatTurbo7BRequest);
-        Turbo7BRequest ernieRequest = ConvertUtils.chatTurboReq7BToTurboReq(chatTurbo7BRequest);
+        this.validBaseRequest(chatTurboRequest);
+        TurboRequest ernieRequest = ConvertUtils.chatTurboReq7BToTurboReq(chatTurboRequest);
         Map<String, Queue<Message>> messageHistoryMap = getMessageHistoryMap();
         Queue<Message> messagesHistory = messageHistoryMap.computeIfAbsent(msgUid, key -> new LinkedList<>());
         // 添加到历史
-        Message message = buildUserMessage(chatTurbo7BRequest.getContent());
+        Message message = buildUserMessage(chatTurboRequest.getContent());
         WenXinUtils.offerMessage(messagesHistory, message);
 
         ernieRequest.setMessages(messagesHistory);
@@ -231,7 +233,7 @@ public abstract class ErnieBotTurboClient implements CommonBot<ChatTurbo7BReques
         return this.historyFlux(ernieRequest, messagesHistory);
     }
 
-    public void validBaseRequest(ChatTurbo7BRequest request) {
+    public void validBaseRequest(ChatTurboRequest request) {
         // 检查content不为空
         if (StringUtils.isEmpty(request.getContent())) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "content cannot be empty");

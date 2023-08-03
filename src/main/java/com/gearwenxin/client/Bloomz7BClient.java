@@ -2,8 +2,8 @@ package com.gearwenxin.client;
 
 import com.gearwenxin.common.ChatUtils;
 import com.gearwenxin.common.URLConstant;
-import com.gearwenxin.model.Message;
-import com.gearwenxin.model.response.ChatResponse;
+import com.gearwenxin.entity.Message;
+import com.gearwenxin.entity.response.ChatResponse;
 import com.gearwenxin.subscriber.CommonSubscriber;
 import reactor.core.publisher.Flux;
 

@@ -1,4 +1,4 @@
-package com.gearwenxin.model;
+package com.gearwenxin.entity;
 
 import com.gearwenxin.common.RoleEnum;
 import lombok.AllArgsConstructor;

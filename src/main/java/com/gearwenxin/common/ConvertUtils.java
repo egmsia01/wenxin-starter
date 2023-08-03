@@ -1,11 +1,11 @@
 package com.gearwenxin.common;
 
 import com.gearwenxin.exception.BusinessException;
-import com.gearwenxin.model.Message;
-import com.gearwenxin.model.chatmodel.*;
-import com.gearwenxin.model.request.ErnieRequest;
-import com.gearwenxin.model.request.PromptRequest;
-import com.gearwenxin.model.request.Turbo7BRequest;
+import com.gearwenxin.entity.Message;
+import com.gearwenxin.entity.chatmodel.*;
+import com.gearwenxin.entity.request.ErnieRequest;
+import com.gearwenxin.entity.request.PromptRequest;
+import com.gearwenxin.entity.request.TurboRequest;
 
 import java.util.LinkedList;
 import java.util.Queue;
@@ -45,22 +45,22 @@ public class ConvertUtils {
         return ernieRequest;
     }
 
-    public static Turbo7BRequest chatTurboReq7BToTurboReq(ChatTurbo7BRequest chatTurbo7BRequest) {
-        Turbo7BRequest turbo7BRequest = new Turbo7BRequest();
+    public static TurboRequest chatTurboReq7BToTurboReq(ChatTurboRequest chatTurboRequest) {
+        TurboRequest turboRequest = new TurboRequest();
 
-        if (chatTurbo7BRequest == null) {
+        if (chatTurboRequest == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
-        if (chatTurbo7BRequest.getUserId() != null) {
-            turbo7BRequest.setUserId(chatTurbo7BRequest.getUserId());
+        if (chatTurboRequest.getUserId() != null) {
+            turboRequest.setUserId(chatTurboRequest.getUserId());
         }
-        if (chatTurbo7BRequest.getContent() != null) {
+        if (chatTurboRequest.getContent() != null) {
             Queue<Message> messageQueue = new LinkedList<>();
-            messageQueue.add(new Message(RoleEnum.user, chatTurbo7BRequest.getContent()));
-            turbo7BRequest.setMessages(messageQueue);
+            messageQueue.add(new Message(RoleEnum.user, chatTurboRequest.getContent()));
+            turboRequest.setMessages(messageQueue);
         }
 
-        return turbo7BRequest;
+        return turboRequest;
     }
 
     public static PromptRequest chatPromptReqToPromptReq(ChatPromptRequest chatPromptRequest) {

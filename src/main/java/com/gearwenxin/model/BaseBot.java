@@ -1,6 +1,6 @@
-package com.gearwenxin.client;
+package com.gearwenxin.model;
 
-import com.gearwenxin.model.Message;
+import com.gearwenxin.entity.Message;
 
 import java.util.Map;
 import java.util.Queue;
@@ -20,7 +20,6 @@ public interface BaseBot {
 
     /**
      * 获取accessToken
-     *
      */
     String getCustomAccessToken();
 

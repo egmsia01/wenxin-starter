@@ -6,10 +6,12 @@ import com.gearwenxin.common.ErrorCode;
 import com.gearwenxin.common.URLConstant;
 import com.gearwenxin.exception.BusinessException;
 
-import com.gearwenxin.model.Message;
-import com.gearwenxin.model.chatmodel.ChatPromptRequest;
-import com.gearwenxin.model.request.PromptRequest;
-import com.gearwenxin.model.response.PromptResponse;
+import com.gearwenxin.entity.Message;
+import com.gearwenxin.entity.chatmodel.ChatPromptRequest;
+import com.gearwenxin.entity.request.PromptRequest;
+import com.gearwenxin.entity.response.PromptResponse;
+import com.gearwenxin.model.BaseBot;
+import com.gearwenxin.model.Prompt;
 import lombok.extern.slf4j.Slf4j;
 
 import reactor.core.publisher.Mono;

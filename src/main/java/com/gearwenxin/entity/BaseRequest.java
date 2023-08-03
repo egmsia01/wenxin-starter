@@ -1,4 +1,4 @@
-package com.gearwenxin.model;
+package com.gearwenxin.entity;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;

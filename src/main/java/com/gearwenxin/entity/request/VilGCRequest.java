@@ -1,4 +1,4 @@
-package com.gearwenxin.model.request;
+package com.gearwenxin.entity.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -6,16 +6,26 @@ import lombok.NoArgsConstructor;
 
 /**
  * @author Ge Mingjia
- * @date 2023/7/26
+ * @date 2023/8/3
  */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class EmbeddingV1Request {
+public class VilGCRequest {
 
     /**
-     * 内容
+     * 提示词
      */
     private String content;
+
+    /**
+     * 宽 px
+     */
+    private int width;
+
+    /**
+     * 高 px
+     */
+    private int height;
 
 }

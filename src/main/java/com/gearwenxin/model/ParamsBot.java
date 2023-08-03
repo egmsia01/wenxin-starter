@@ -1,13 +1,13 @@
-package com.gearwenxin.client;
+package com.gearwenxin.model;
 
-import com.gearwenxin.model.response.ChatResponse;
+import com.gearwenxin.entity.response.ChatResponse;
 import reactor.core.publisher.Flux;
 
 /**
  * @author Ge Mingjia
  * @date 2023/7/20
  */
-public interface CommonBot<T> {
+public interface ParamsBot<T> {
 
     /**
      * 单轮对话，无上下文记忆，默认参数

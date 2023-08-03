@@ -1,6 +1,6 @@
-package com.gearwenxin.model.chatmodel;
+package com.gearwenxin.entity.chatmodel;
 
-import com.gearwenxin.model.request.VilGCRequest;
+import com.gearwenxin.entity.request.VilGCRequest;
 
 /**
  * @author Ge Mingjia

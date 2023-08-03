@@ -2,9 +2,11 @@ package com.gearwenxin.client;
 
 import com.gearwenxin.common.*;
 import com.gearwenxin.exception.BusinessException;
-import com.gearwenxin.model.Message;
-import com.gearwenxin.model.chatmodel.ChatVilGCRequest;
-import com.gearwenxin.model.response.VilGCResponse;
+import com.gearwenxin.entity.Message;
+import com.gearwenxin.entity.chatmodel.ChatVilGCRequest;
+import com.gearwenxin.entity.response.VilGCResponse;
+import com.gearwenxin.model.BaseBot;
+import com.gearwenxin.model.ImageBot;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 
@@ -16,7 +18,7 @@ import java.util.Queue;
  * @date 2023/7/20
  */
 @Slf4j
-public abstract class ErnieBotVilGClient implements BaseBot, ImageBot {
+public abstract class ErnieBotVilGClient implements BaseBot, ImageBot<ChatVilGCRequest> {
 
     private String accessToken = null;
     private static final String TAG = "ErnieBotVilGClient_";

@@ -1,8 +1,6 @@
-package com.gearwenxin.model.request;
+package com.gearwenxin.entity.chatmodel;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.Map;
 
@@ -11,18 +9,17 @@ import java.util.Map;
  * @date 2023/7/26
  */
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
-public class PromptRequest {
+@AllArgsConstructor
+public class ChatPromptRequest {
 
     /**
      * prompt工程里面对应的模板id
      */
-    private String id;
+    private int id;
 
     /**
      * 参数map
      */
     private Map<String, String> paramMap;
-
 }

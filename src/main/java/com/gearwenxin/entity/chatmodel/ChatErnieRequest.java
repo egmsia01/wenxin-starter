@@ -1,4 +1,4 @@
-package com.gearwenxin.model.chatmodel;
+package com.gearwenxin.entity.chatmodel;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
  * @author Ge Mingjia
  * @date 2023/7/20
  * <p>
- * CommonBot 模型
+ * DefaultParamsBot 模型
  */
 @Data
 @NoArgsConstructor

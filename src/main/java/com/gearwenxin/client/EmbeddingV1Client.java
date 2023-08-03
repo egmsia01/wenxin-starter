@@ -1,20 +1,15 @@
 package com.gearwenxin.client;
 
-import com.gearwenxin.common.ChatUtils;
-import com.gearwenxin.common.ErrorCode;
 import com.gearwenxin.common.URLConstant;
-import com.gearwenxin.exception.BusinessException;
-import com.gearwenxin.model.request.EmbeddingV1Request;
-import com.gearwenxin.model.response.PromptResponse;
+import com.gearwenxin.model.BaseBot;
 import lombok.extern.slf4j.Slf4j;
-import reactor.core.publisher.Mono;
 
 /**
  * @author Ge Mingjia
  * @date 2023/7/20
  */
 @Slf4j
-public abstract class EmbeddingV1Client implements BaseBot{
+public abstract class EmbeddingV1Client implements BaseBot {
 
     private String accessToken = null;
     private static final String TAG = "PromptBotClient_";

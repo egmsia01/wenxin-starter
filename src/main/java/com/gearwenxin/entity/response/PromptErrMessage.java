@@ -1,4 +1,4 @@
-package com.gearwenxin.model.response;
+package com.gearwenxin.entity.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
