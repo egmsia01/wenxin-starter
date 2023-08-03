@@ -7,7 +7,7 @@ import com.gearwenxin.entity.response.PromptResponse;
  * @author Ge Mingjia
  * @date 2023/7/20
  */
-public interface Prompt {
+public interface PromptBot {
 
     /**
      * Prompt模板对话 (Get请求 不支持流式返回)

@@ -6,5 +6,5 @@ import com.gearwenxin.entity.BaseRequest;
  * @author Ge Mingjia
  * @date 2023/8/3
  */
-public class GLM2Request extends BaseRequest {
+public class GLM26BRequest extends BaseRequest {
 }

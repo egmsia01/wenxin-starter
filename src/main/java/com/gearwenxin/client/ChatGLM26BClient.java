@@ -15,15 +15,18 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author Ge Mingjia
  * @date 2023/7/24
  */
-public abstract class Bloomz7BClient extends ErnieBotTurboClient {
+public abstract class ChatGLM26BClient extends ErnieBotTurboClient {
 
     private String accessToken = null;
-    private static final String TAG = "Bloomz7BClient_";
-    private static Map<String, Queue<Message>> BLOOMZ_MESSAGES_HISTORY_MAP = new ConcurrentHashMap<>();
-    private static final String URL = URLConstant.BLOOMZ_7B_URL;
+    private static final String TAG = "ChatGLM2-6BClient_";
+    private static Map<String, Queue<Message>> CHAT_GLM2_6B_MESSAGES_HISTORY_MAP = new ConcurrentHashMap<>();
 
+    // 获取access-token
     @Override
     protected abstract String getAccessToken();
+
+    // 获取不固定的模型URL
+    protected abstract String getCustomURL();
 
     @Override
     public String getCustomAccessToken() {
@@ -32,17 +35,17 @@ public abstract class Bloomz7BClient extends ErnieBotTurboClient {
 
     @Override
     public Map<String, Queue<Message>> getMessageHistoryMap() {
-        return BLOOMZ_MESSAGES_HISTORY_MAP;
+        return CHAT_GLM2_6B_MESSAGES_HISTORY_MAP;
     }
 
     @Override
     public void initMessageHistoryMap(Map<String, Queue<Message>> map) {
-        BLOOMZ_MESSAGES_HISTORY_MAP = map;
+        CHAT_GLM2_6B_MESSAGES_HISTORY_MAP = map;
     }
 
     @Override
     public String getURL() {
-        return URL;
+        return getCustomURL();
     }
 
     @Override

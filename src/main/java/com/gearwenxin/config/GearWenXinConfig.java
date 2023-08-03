@@ -41,8 +41,8 @@ public class GearWenXinConfig {
     }
 
     @Bean
-    public Bloomz7BClient bloomz7BClient() {
-        return new Bloomz7BClient() {
+    public BloomZ7BClient bloomz7BClient() {
+        return new BloomZ7BClient() {
             @Override
             public String getAccessToken() {
                 return accessToken;
@@ -51,8 +51,8 @@ public class GearWenXinConfig {
     }
 
     @Bean
-    public PromptClient promptClient() {
-        return new PromptClient() {
+    public PromptBotClient promptClient() {
+        return new PromptBotClient() {
             @Override
             public String getAccessToken() {
                 return accessToken;
@@ -63,6 +63,21 @@ public class GearWenXinConfig {
     @Bean
     public ErnieBotVilGClient ernieBotVilGClient() {
         return new ErnieBotVilGClient() {
+            @Override
+            protected String getAccessToken() {
+                return accessToken;
+            }
+
+            @Override
+            protected String getCustomURL() {
+                return VilGCustomURL;
+            }
+        };
+    }
+
+    @Bean
+    public ChatGLM26BClient chatGLM26BClient() {
+        return new ChatGLM26BClient() {
             @Override
             protected String getAccessToken() {
                 return accessToken;

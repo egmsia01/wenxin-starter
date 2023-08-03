@@ -11,7 +11,7 @@ import com.gearwenxin.entity.chatmodel.ChatPromptRequest;
 import com.gearwenxin.entity.request.PromptRequest;
 import com.gearwenxin.entity.response.PromptResponse;
 import com.gearwenxin.model.BaseBot;
-import com.gearwenxin.model.Prompt;
+import com.gearwenxin.model.PromptBot;
 import lombok.extern.slf4j.Slf4j;
 
 import reactor.core.publisher.Mono;
@@ -24,14 +24,14 @@ import java.util.Queue;
  * @date 2023/7/20
  */
 @Slf4j
-public abstract class PromptClient implements Prompt, BaseBot {
+public abstract class PromptBotClient implements PromptBot, BaseBot {
 
     private String accessToken = null;
     private static final String TAG = "PromptBotClient_";
 
     private static final String URL = URLConstant.PROMPT_URL;
 
-    protected PromptClient() {
+    protected PromptBotClient() {
     }
 
     protected abstract String getAccessToken();
@@ -48,13 +48,13 @@ public abstract class PromptClient implements Prompt, BaseBot {
 
     @Override
     public Map<String, Queue<Message>> getMessageHistoryMap() {
-        log.warn(TAG + "PromptClient not have MessageHistoryMap");
+        log.warn(TAG + "PromptBotClient not have MessageHistoryMap");
         return null;
     }
 
     @Override
     public void initMessageHistoryMap(Map<String, Queue<Message>> map) {
-        log.warn(TAG + "PromptClient not need init");
+        log.warn(TAG + "PromptBotClient not need init");
     }
 
     @Override
