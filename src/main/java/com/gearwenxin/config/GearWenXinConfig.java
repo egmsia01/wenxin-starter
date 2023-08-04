@@ -6,6 +6,7 @@ import com.gearwenxin.client.linly.LinlyChineseLLaMA27BClient;
 import com.gearwenxin.client.llama2.Llama213BClient;
 import com.gearwenxin.client.llama2.Llama270BClient;
 import com.gearwenxin.client.llama2.Llama27BClient;
+import com.gearwenxin.client.rwkv.RWKV4WorldClient;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -31,6 +32,9 @@ public class GearWenXinConfig {
     private String llama270bUrl;
     private String linlyChineseLlama27b;
     private String linlyChineseLlama213b;
+    private String falcon7bUrl;
+    private String rwky4WorldUrl;
+    private String openLlama7bUrl;
 
     @Bean
     public CommonModelClient commonModelClient() {
@@ -207,4 +211,48 @@ public class GearWenXinConfig {
         };
     }
 
+    @Bean
+    public Falcon7BClient falcon7BClient() {
+        return new Falcon7BClient() {
+            @Override
+            protected String getAccessToken() {
+                return accessToken;
+            }
+
+            @Override
+            protected String getCustomURL() {
+                return falcon7bUrl;
+            }
+        };
+    }
+
+    @Bean
+    public RWKV4WorldClient rwkv4WorldClient() {
+        return new RWKV4WorldClient() {
+            @Override
+            protected String getAccessToken() {
+                return accessToken;
+            }
+
+            @Override
+            protected String getCustomURL() {
+                return rwky4WorldUrl;
+            }
+        };
+    }
+
+    @Bean
+    public OpenLLaMA7BClient openLLaMA7BClient() {
+        return new OpenLLaMA7BClient() {
+            @Override
+            protected String getAccessToken() {
+                return accessToken;
+            }
+
+            @Override
+            protected String getCustomURL() {
+                return openLlama7bUrl;
+            }
+        };
+    }
 }
