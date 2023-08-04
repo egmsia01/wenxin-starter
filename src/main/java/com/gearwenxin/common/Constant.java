@@ -6,7 +6,17 @@ package com.gearwenxin.common;
  * @author Ge Mingjia
  * @date 2023/7/20
  */
-public interface URLConstant {
+public interface Constant {
+
+    /**
+     * 最大单条内容长度
+     */
+    int MAX_CONTENT_LENGTH = 2000;
+
+    /**
+     * 最大所有内容总长度
+     */
+    int MAX_TOTAL_LENGTH = 2000;
 
     /**
      * ErnieBot模型

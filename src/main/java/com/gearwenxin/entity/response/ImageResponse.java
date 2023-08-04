@@ -14,7 +14,7 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class VilGCResponse {
+public class ImageResponse {
 
     /**
      * base64编码的图片

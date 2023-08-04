@@ -18,6 +18,7 @@ import reactor.core.publisher.Mono;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
+import static com.gearwenxin.common.Constant.MAX_CONTENT_LENGTH;
 import static com.gearwenxin.common.WenXinUtils.*;
 
 /**
@@ -27,19 +28,16 @@ import static com.gearwenxin.common.WenXinUtils.*;
 @Slf4j
 public abstract class ErnieBotClient implements ParamsBot<ChatErnieRequest>, BaseBot {
 
+    protected ErnieBotClient() {
+    }
+
     private String accessToken = null;
     private static final String TAG = "ErnieBotClient_";
 
     // 每个模型的历史消息Map
     private static Map<String, Queue<Message>> ERNIE_MESSAGES_HISTORY_MAP = new ConcurrentHashMap<>();
 
-    private static final String URL = URLConstant.ERNIE_BOT_URL;
-
-    // 最大的单个content字符数
-    private static final int MAX_CONTENT_LENGTH = 2000;
-
-    protected ErnieBotClient() {
-    }
+    private static final String URL = Constant.ERNIE_BOT_URL;
 
     protected abstract String getAccessToken();
 

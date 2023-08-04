@@ -7,13 +7,13 @@ import org.apache.commons.lang.StringUtils;
 import java.util.LinkedList;
 import java.util.Queue;
 
+import static com.gearwenxin.common.Constant.MAX_TOTAL_LENGTH;
+
 /**
  * @author Ge Mingjia
  * @date 2023/7/23
  */
 public class WenXinUtils {
-
-    public static final int MAX_TOTAL_LENGTH = 2000;
 
     public static Queue<Message> buildUserMessageQueue(String content) {
         Queue<Message> messageQueue = new LinkedList<>();

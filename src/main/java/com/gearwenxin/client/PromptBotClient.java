@@ -3,7 +3,7 @@ package com.gearwenxin.client;
 import com.gearwenxin.common.ChatUtils;
 import com.gearwenxin.common.ConvertUtils;
 import com.gearwenxin.common.ErrorCode;
-import com.gearwenxin.common.URLConstant;
+import com.gearwenxin.common.Constant;
 import com.gearwenxin.exception.BusinessException;
 
 import com.gearwenxin.entity.Message;
@@ -26,13 +26,13 @@ import java.util.Queue;
 @Slf4j
 public abstract class PromptBotClient implements PromptBot, BaseBot {
 
-    private String accessToken = null;
-    private static final String TAG = "PromptBotClient_";
-
-    private static final String URL = URLConstant.PROMPT_URL;
-
     protected PromptBotClient() {
     }
+
+    private String accessToken = null;
+    private static final String TAG = "Prompt-Bot-Client_";
+
+    private static final String URL = Constant.PROMPT_URL;
 
     protected abstract String getAccessToken();
 

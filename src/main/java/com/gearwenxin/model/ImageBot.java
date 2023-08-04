@@ -1,19 +1,20 @@
 package com.gearwenxin.model;
 
-import com.gearwenxin.entity.response.VilGCResponse;
+import com.gearwenxin.entity.request.ImageBaseRequest;
+import com.gearwenxin.entity.response.ImageResponse;
 
 /**
  * @author Ge Mingjia
  * @date 2023/7/20
  */
-public interface ImageBot<T> {
+public interface ImageBot<T extends ImageBaseRequest> {
 
     /**
      * 绘图
      *
-     * @param chatRequest 作图参数
-     * @return byte[] 图片的字节数组
+     * @param imageBaseRequest 作图参数
+     * @return ImageResponse 图片响应
      */
-    VilGCResponse chatImage(T chatRequest);
+    ImageResponse chatImage(ImageBaseRequest imageBaseRequest);
 
 }

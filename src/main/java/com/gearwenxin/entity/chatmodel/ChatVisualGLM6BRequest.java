@@ -6,6 +6,6 @@ import com.gearwenxin.entity.request.ImageBaseRequest;
  * @author Ge Mingjia
  * @date 2023/8/3
  */
-public class ChatVilGCRequest extends ImageBaseRequest {
+public class ChatVisualGLM6BRequest extends ImageBaseRequest {
 
 }

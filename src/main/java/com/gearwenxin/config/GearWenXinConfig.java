@@ -17,8 +17,9 @@ import org.springframework.context.annotation.Configuration;
 public class GearWenXinConfig {
 
     private String accessToken;
-
     private String VilGCustomURL;
+    private String ChatGLM26BURL;
+    private String visualGLM6BURL;
 
     @Bean
     public ErnieBotClient ernieBotClient() {
@@ -85,7 +86,22 @@ public class GearWenXinConfig {
 
             @Override
             protected String getCustomURL() {
-                return VilGCustomURL;
+                return ChatGLM26BURL;
+            }
+        };
+    }
+
+    @Bean
+    public VisualGLM6BClient visualGLM6BClient() {
+        return new VisualGLM6BClient() {
+            @Override
+            protected String getAccessToken() {
+                return accessToken;
+            }
+
+            @Override
+            protected String getCustomURL() {
+                return visualGLM6BURL;
             }
         };
     }

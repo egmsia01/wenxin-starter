@@ -1,6 +1,6 @@
 package com.gearwenxin.client;
 
-import com.gearwenxin.common.URLConstant;
+import com.gearwenxin.common.Constant;
 import com.gearwenxin.model.BaseBot;
 import lombok.extern.slf4j.Slf4j;
 
@@ -11,13 +11,13 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public abstract class EmbeddingV1Client implements BaseBot {
 
+    protected EmbeddingV1Client() {
+    }
+
     private String accessToken = null;
     private static final String TAG = "PromptBotClient_";
 
-    private static final String URL = URLConstant.PROMPT_URL;
-
-    protected EmbeddingV1Client() {
-    }
+    private static final String URL = Constant.PROMPT_URL;
 
     protected abstract String getAccessToken();
 
@@ -35,22 +35,5 @@ public abstract class EmbeddingV1Client implements BaseBot {
     public String getURL() {
         return URL;
     }
-
-//    @Override
-//    public String chatSingle(EmbeddingV1Request v1Request) {
-//        log.info("getAccessToken => {}", getCustomAccessToken());
-//        if (v1Request == null ||
-//                v1Request.getContent().isEmpty()
-//        ) {
-//            throw new BusinessException(ErrorCode.PARAMS_ERROR);
-//        }
-//        Mono<PromptResponse> response = ChatUtils.monoGet(
-//                URL,
-//                getCustomAccessToken(),
-//                null,
-//                PromptResponse.class);
-//
-//        return response.block();
-//    }
 
 }

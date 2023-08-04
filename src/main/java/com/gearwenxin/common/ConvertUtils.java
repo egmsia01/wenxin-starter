@@ -1,5 +1,6 @@
 package com.gearwenxin.common;
 
+import com.gearwenxin.entity.BaseRequest;
 import com.gearwenxin.exception.BusinessException;
 import com.gearwenxin.entity.Message;
 import com.gearwenxin.entity.chatmodel.*;
@@ -61,6 +62,24 @@ public class ConvertUtils {
         }
 
         return turboRequest;
+    }
+
+    public static BaseRequest convertToBaseRequest(ChatBaseRequest chatBaseRequest) {
+        BaseRequest baseRequest = new BaseRequest();
+
+        if (chatBaseRequest == null) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        if (chatBaseRequest.getUserId() != null) {
+            baseRequest.setUserId(chatBaseRequest.getUserId());
+        }
+        if (chatBaseRequest.getContent() != null) {
+            Queue<Message> messageQueue = new LinkedList<>();
+            messageQueue.add(new Message(RoleEnum.user, chatBaseRequest.getContent()));
+            baseRequest.setMessages(messageQueue);
+        }
+
+        return baseRequest;
     }
 
     public static PromptRequest chatPromptReqToPromptReq(ChatPromptRequest chatPromptRequest) {

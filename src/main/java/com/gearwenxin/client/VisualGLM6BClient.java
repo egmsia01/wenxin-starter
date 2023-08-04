@@ -1,32 +1,32 @@
 package com.gearwenxin.client;
 
-import com.gearwenxin.common.*;
 import com.gearwenxin.entity.Message;
 
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.Collections;
 import java.util.Map;
 import java.util.Queue;
-import java.util.concurrent.ConcurrentHashMap;
-
 
 /**
  * @author Ge Mingjia
  * @date 2023/7/20
  */
 @Slf4j
-public abstract class ErnieBotTurboClient extends DefaultParamsClient {
+public abstract class VisualGLM6BClient extends ImageClient {
 
-    protected ErnieBotTurboClient() {
+    protected VisualGLM6BClient() {
     }
 
     private String accessToken = null;
-    private static final String TAG = "Ernie-Bot-Turbo-Client_";
-    private static final String URL = Constant.ERNIE_BOT_TURBO_URL;
 
-    private static Map<String, Queue<Message>> TURBO_MESSAGES_HISTORY_MAP = new ConcurrentHashMap<>();
+    private static final String TAG = "VisualGLM-6B-Client_";
 
+    // 获取access-token
     protected abstract String getAccessToken();
+
+    // 获取不固定的模型URL
+    protected abstract String getCustomURL();
 
     @Override
     public String getCustomAccessToken() {
@@ -40,17 +40,18 @@ public abstract class ErnieBotTurboClient extends DefaultParamsClient {
 
     @Override
     public Map<String, Queue<Message>> getMessageHistoryMap() {
-        return TURBO_MESSAGES_HISTORY_MAP;
+        log.error(TAG + "VisualGLM6BClient not have MessageHistoryMap");
+        return Collections.emptyMap();
     }
 
     @Override
     public void initMessageHistoryMap(Map<String, Queue<Message>> map) {
-        TURBO_MESSAGES_HISTORY_MAP = map;
+        log.error(TAG + "VisualGLM6BClient not need init");
     }
 
     @Override
     public String getURL() {
-        return URL;
+        return getCustomURL();
     }
 
     @Override

@@ -1,14 +1,9 @@
 package com.gearwenxin.client;
 
-import com.gearwenxin.common.*;
-import com.gearwenxin.exception.BusinessException;
 import com.gearwenxin.entity.Message;
-import com.gearwenxin.entity.chatmodel.ChatVilGCRequest;
-import com.gearwenxin.entity.response.VilGCResponse;
-import com.gearwenxin.model.BaseBot;
-import com.gearwenxin.model.ImageBot;
+import java.util.Collections;
+
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang.StringUtils;
 
 import java.util.Map;
 import java.util.Queue;
@@ -18,16 +13,13 @@ import java.util.Queue;
  * @date 2023/7/20
  */
 @Slf4j
-public abstract class ErnieBotVilGClient implements BaseBot, ImageBot<ChatVilGCRequest> {
-
-    private String accessToken = null;
-    private static final String TAG = "ErnieBotVilGClient_";
-
-    // 最大的单个content字符数
-    private static final int MAX_CONTENT_LENGTH = 2000;
+public abstract class ErnieBotVilGClient extends ImageClient {
 
     protected ErnieBotVilGClient() {
     }
+
+    private String accessToken = null;
+    private static final String TAG = "ErnieBotVilGClient_";
 
     // 获取access-token
     protected abstract String getAccessToken();
@@ -48,7 +40,7 @@ public abstract class ErnieBotVilGClient implements BaseBot, ImageBot<ChatVilGCR
     @Override
     public Map<String, Queue<Message>> getMessageHistoryMap() {
         log.warn(TAG + "ErnieBotVilGClient not have MessageHistoryMap");
-        return null;
+        return Collections.emptyMap();
     }
 
     @Override
@@ -62,38 +54,8 @@ public abstract class ErnieBotVilGClient implements BaseBot, ImageBot<ChatVilGCR
     }
 
     @Override
-    public VilGCResponse chatImage(ChatVilGCRequest chatVilGCRequest) {
-        validChatVilGCRequest(chatVilGCRequest);
-
-        log.info(TAG + "imageRequest => {}", chatVilGCRequest.toString());
-
-        return ChatUtils.monoPost(
-                        getURL(),
-                        getCustomAccessToken(),
-                        chatVilGCRequest,
-                        VilGCResponse.class)
-                .block();
+    public String getTag() {
+        return TAG;
     }
-
-    public void validChatVilGCRequest(ChatVilGCRequest chatVilGCRequest) {
-        if (chatVilGCRequest == null) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR, "chatVilGCRequest is null");
-        }
-        // 检查content不为空
-        if (StringUtils.isEmpty(chatVilGCRequest.getContent())) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR, "content cannot be empty");
-        }
-        // 检查单个content长度
-        if (chatVilGCRequest.getContent().length() > MAX_CONTENT_LENGTH) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR, "content's length cannot be more than 2000");
-        }
-        if (chatVilGCRequest.getWidth() <= 0) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR, "width is less than or eq 0");
-        }
-        if (chatVilGCRequest.getHeight() <= 0) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR, "height is less than or eq 0");
-        }
-    }
-
 
 }

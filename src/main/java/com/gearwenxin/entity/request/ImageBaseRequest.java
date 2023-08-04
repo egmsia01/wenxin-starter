@@ -1,6 +1,7 @@
-package com.gearwenxin.entity.chatmodel;
+package com.gearwenxin.entity.request;
 
 import com.gearwenxin.common.ErrorCode;
+import com.gearwenxin.entity.chatmodel.ChatVilGCRequest;
 import com.gearwenxin.exception.BusinessException;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -16,17 +17,22 @@ import static com.gearwenxin.common.Constant.MAX_CONTENT_LENGTH;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ChatBaseRequest {
+public class ImageBaseRequest {
 
     /**
-     * 表示最终用户的唯一标识符，可以监视和检测滥用行为，防止接口恶意调用
-     */
-    private String userId;
-
-    /**
-     * 聊天信息,不能为空
+     * 提示词
      */
     private String content;
+
+    /**
+     * 宽 px
+     */
+    private int width;
+
+    /**
+     * 高 px
+     */
+    private int height;
 
     public void validSelf() {
 
@@ -37,6 +43,12 @@ public class ChatBaseRequest {
         // 检查单个content长度
         if (content.length() > MAX_CONTENT_LENGTH) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "content's length cannot be more than 2000");
+        }
+        if (width <= 0) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "width is less than or eq 0");
+        }
+        if (height <= 0) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "height is less than or eq 0");
         }
     }
 

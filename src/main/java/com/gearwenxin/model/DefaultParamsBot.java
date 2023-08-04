@@ -86,5 +86,4 @@ public interface DefaultParamsBot<T extends ChatBaseRequest> {
      */
     Flux<ChatResponse> chatContOfStream(T chatRequest, String msgUid);
 
-
 }
