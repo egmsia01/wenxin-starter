@@ -49,7 +49,7 @@
 <dependency>
   <groupId>io.github.gemingjia</groupId>
   <artifactId>gear-wenxinworkshop-starter</artifactId>
-  <version>0.0.3.2</version>
+  <version>0.0.5</version>
 </dependency>
 ```
 - Gradle

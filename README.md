@@ -48,6 +48,10 @@
 
 [使用demo](https://github.com/gemingjia/springboot-wenxin-demo)
 
+此版本近乎重构整个项目，与之前版本的存在一定的不兼容情况，请重新导包。
+"Bloomz7B" -> "BloomZ7B"
+除 "ErnieBot"外，其余的接收参数统一为 ChatBaseRequest
+
 ### 1、添加依赖
 Repository Path: [/io/github/gemingjia/gear-wenxinworkshop-starter)
 - Maven
@@ -56,7 +60,7 @@ Repository Path: [/io/github/gemingjia/gear-wenxinworkshop-starter)
 <dependency>
   <groupId>io.github.gemingjia</groupId>
   <artifactId>gear-wenxinworkshop-starter</artifactId>
-  <version>0.0.3.2</version>
+  <version>0.0.5</version>
 </dependency>
 ```
 - Gradle
