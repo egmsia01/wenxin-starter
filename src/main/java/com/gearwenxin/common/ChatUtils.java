@@ -4,11 +4,10 @@ import com.gearwenxin.exception.BusinessException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.http.codec.json.Jackson2JsonDecoder;
+import org.springframework.http.codec.json.Jackson2JsonEncoder;
 import org.springframework.web.reactive.function.BodyInserters;
-import org.springframework.web.reactive.function.client.ClientRequest;
-import org.springframework.web.reactive.function.client.ExchangeFilterFunction;
-import org.springframework.web.reactive.function.client.WebClient;
-import org.springframework.web.reactive.function.client.WebClientResponseException;
+import org.springframework.web.reactive.function.client.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -88,6 +87,13 @@ public class ChatUtils {
         WebClient client = WebClient.builder()
                 .baseUrl(completeUrl)
                 .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                .exchangeStrategies(ExchangeStrategies.builder()
+                        .codecs(configurer -> {
+                            configurer.defaultCodecs().maxInMemorySize(-1);
+                            configurer.defaultCodecs().jackson2JsonDecoder(new Jackson2JsonDecoder());
+                            configurer.defaultCodecs().jackson2JsonEncoder(new Jackson2JsonEncoder());
+                        })
+                        .build())
                 .build();
 
         return client.post()

@@ -7,6 +7,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.apache.commons.lang.StringUtils;
 
+import java.io.Serializable;
+
 import static com.gearwenxin.common.Constant.MAX_CONTENT_LENGTH;
 
 /**
@@ -16,7 +18,7 @@ import static com.gearwenxin.common.Constant.MAX_CONTENT_LENGTH;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ChatBaseRequest {
+public class ChatBaseRequest implements Serializable {
 
     /**
      * 表示最终用户的唯一标识符，可以监视和检测滥用行为，防止接口恶意调用
