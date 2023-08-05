@@ -1,28 +1,25 @@
-package com.gearwenxin.client;
+package com.gearwenxin.client.glm;
 
+import com.gearwenxin.client.DefaultParamsClient;
 import com.gearwenxin.entity.Message;
 
-import lombok.extern.slf4j.Slf4j;
-
-import java.util.Collections;
 import java.util.Map;
 import java.util.Queue;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author Ge Mingjia
- * @date 2023/7/20
+ * @date 2023/7/24
  */
-@Slf4j
-public abstract class VisualGLM6BClient extends ImageClient {
+public abstract class ChatGLM26BClient extends DefaultParamsClient {
 
-    protected VisualGLM6BClient() {
+    protected ChatGLM26BClient() {
     }
 
     private String accessToken = null;
+    private static final String TAG = "ChatGLM2-6B-Client_";
+    private static Map<String, Queue<Message>> CHAT_GLM2_6B_MESSAGES_HISTORY_MAP = new ConcurrentHashMap<>();
 
-    private static final String TAG = "VisualGLM-6B-Client_";
-
-    // 获取access-token
     protected abstract String getAccessToken();
 
     // 获取不固定的模型URL
@@ -34,19 +31,13 @@ public abstract class VisualGLM6BClient extends ImageClient {
     }
 
     @Override
-    public void setCustomAccessToken(String accessToken) {
-        this.accessToken = accessToken;
-    }
-
-    @Override
     public Map<String, Queue<Message>> getMessageHistoryMap() {
-        log.error(TAG + "VisualGLM6BClient not have MessageHistoryMap");
-        return Collections.emptyMap();
+        return CHAT_GLM2_6B_MESSAGES_HISTORY_MAP;
     }
 
     @Override
     public void initMessageHistoryMap(Map<String, Queue<Message>> map) {
-        log.error(TAG + "VisualGLM6BClient not need init");
+        CHAT_GLM2_6B_MESSAGES_HISTORY_MAP = map;
     }
 
     @Override
@@ -55,8 +46,12 @@ public abstract class VisualGLM6BClient extends ImageClient {
     }
 
     @Override
+    public void setCustomAccessToken(String accessToken) {
+        this.accessToken = accessToken;
+    }
+
+    @Override
     public String getTag() {
         return TAG;
     }
-
 }

@@ -1,22 +1,35 @@
 package com.gearwenxin.config;
 
 import com.gearwenxin.client.*;
+import com.gearwenxin.client.cerebras.CerebrasGPT13BClient;
+import com.gearwenxin.client.cerebras.CerebrasGPT6_7BClient;
 import com.gearwenxin.client.ernie.ErnieBotClient;
 import com.gearwenxin.client.ernie.ErnieBotTurboClient;
 import com.gearwenxin.client.ernie.ErnieBotVilGClient;
 import com.gearwenxin.client.falcon.Falcon40BClient;
 import com.gearwenxin.client.falcon.Falcon7BClient;
+import com.gearwenxin.client.glm.ChatGLM26BClient;
+import com.gearwenxin.client.glm.VisualGLM6BClient;
+import com.gearwenxin.client.gpt.GPT4AllJClient;
+import com.gearwenxin.client.gpt.GPTJ6BClient;
+import com.gearwenxin.client.gpt.GPTNeoX20BClient;
 import com.gearwenxin.client.linly.LinlyChineseLLaMA213BClient;
 import com.gearwenxin.client.linly.LinlyChineseLLaMA27BClient;
 import com.gearwenxin.client.llama2.Llama213BClient;
 import com.gearwenxin.client.llama2.Llama270BClient;
 import com.gearwenxin.client.llama2.Llama27BClient;
+import com.gearwenxin.client.llama2.OpenLLaMA7BClient;
 import com.gearwenxin.client.mpt.MPT30BInstructClient;
 import com.gearwenxin.client.mpt.MPT7BInstructClient;
+import com.gearwenxin.client.pythia.OAPythia12BSFT4Client;
+import com.gearwenxin.client.pythia.Pythia12BClient;
+import com.gearwenxin.client.pythia.Pythia6_9BClient;
 import com.gearwenxin.client.rwkv.RWKV4Pile14BClient;
 import com.gearwenxin.client.rwkv.RWKV4WorldClient;
 import com.gearwenxin.client.rwkv.RWKV5WorldClient;
 import com.gearwenxin.client.rwkv.RWKVRaven14BClient;
+import com.gearwenxin.client.stable.StableDiffusionV1_5Client;
+import com.gearwenxin.client.stable.StableLMAlpha7BClient;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -54,6 +67,16 @@ public class GearWenXinConfig {
     private String dolly_12b_url;
     private String stable_diffusion_v1_5_url;
     private String flan_ul2_url;
+    private String cerebras_gpt_13b_url;
+    private String cerebras_gpt_6_7b_url;
+    private String pythia_12b_url;
+    private String pythia_6_9b_url;
+    private String gpt_j_6b_url;
+    private String gpt_neox_20b_url;
+    private String oa_pythia_12b_sft_4_url;
+    private String gpt4all_j_url;
+    private String stablelm_alpha_7b_url;
+    private String star_coder_url;
 
     @Bean
     public CommonModelClient commonModelClient() {
@@ -408,5 +431,156 @@ public class GearWenXinConfig {
             }
         };
     }
+
+    @Bean
+    public CerebrasGPT13BClient cerebrasGPT13BClient() {
+        return new CerebrasGPT13BClient() {
+            @Override
+            protected String getAccessToken() {
+                return access_token;
+            }
+
+            @Override
+            protected String getCustomURL() {
+                return cerebras_gpt_13b_url;
+            }
+        };
+    }
+
+    @Bean
+    public CerebrasGPT6_7BClient cerebrasGPT67BClient() {
+        return new CerebrasGPT6_7BClient() {
+            @Override
+            protected String getAccessToken() {
+                return access_token;
+            }
+
+            @Override
+            protected String getCustomURL() {
+                return cerebras_gpt_6_7b_url;
+            }
+        };
+    }
+
+    @Bean
+    public Pythia12BClient pythia12BClient() {
+        return new Pythia12BClient() {
+            @Override
+            protected String getAccessToken() {
+                return access_token;
+            }
+
+            @Override
+            protected String getCustomURL() {
+                return pythia_12b_url;
+            }
+        };
+    }
+
+    @Bean
+    public Pythia6_9BClient pythia69BClient() {
+        return new Pythia6_9BClient() {
+            @Override
+            protected String getAccessToken() {
+                return access_token;
+            }
+
+            @Override
+            protected String getCustomURL() {
+                return pythia_6_9b_url;
+            }
+        };
+    }
+
+    @Bean
+    public GPTJ6BClient gptJ6BClient() {
+        return new GPTJ6BClient() {
+            @Override
+            protected String getAccessToken() {
+                return access_token;
+            }
+
+            @Override
+            protected String getCustomURL() {
+                return gpt_j_6b_url;
+            }
+        };
+    }
+
+    @Bean
+    public GPTNeoX20BClient gptNeoX20BClient() {
+        return new GPTNeoX20BClient() {
+            @Override
+            protected String getAccessToken() {
+                return access_token;
+            }
+
+            @Override
+            protected String getCustomURL() {
+                return gpt_neox_20b_url;
+            }
+        };
+    }
+
+    @Bean
+    public OAPythia12BSFT4Client oaPythia12BSFT4Client() {
+        return new OAPythia12BSFT4Client() {
+            @Override
+            protected String getAccessToken() {
+                return access_token;
+            }
+
+            @Override
+            protected String getCustomURL() {
+                return oa_pythia_12b_sft_4_url;
+            }
+        };
+    }
+
+    @Bean
+    public GPT4AllJClient gpt4AllJClient() {
+        return new GPT4AllJClient() {
+            @Override
+            protected String getAccessToken() {
+                return access_token;
+            }
+
+            @Override
+            protected String getCustomURL() {
+                return gpt4all_j_url;
+            }
+        };
+    }
+
+    @Bean
+    public StableLMAlpha7BClient stableLMAlpha7BClient() {
+        return new StableLMAlpha7BClient() {
+            @Override
+            protected String getAccessToken() {
+                return access_token;
+            }
+
+            @Override
+            protected String getCustomURL() {
+                return stablelm_alpha_7b_url;
+            }
+        };
+    }
+
+    @Bean
+    public StarCoderClient starCoderClient() {
+        return new StarCoderClient() {
+            @Override
+            protected String getAccessToken() {
+                return access_token;
+            }
+
+            @Override
+            protected String getCustomURL() {
+                return star_coder_url;
+            }
+        };
+    }
+
 
 }

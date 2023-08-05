@@ -1,27 +1,25 @@
-package com.gearwenxin.client;
+package com.gearwenxin.client.cerebras;
 
+import com.gearwenxin.client.DefaultParamsClient;
 import com.gearwenxin.entity.Message;
-import lombok.extern.slf4j.Slf4j;
 
-import java.util.Collections;
 import java.util.Map;
 import java.util.Queue;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author Ge Mingjia
- * @date 2023/7/20
+ * @date 2023/8/5
  */
-@Slf4j
-public abstract class StableDiffusionV1_5Client extends ImageClient {
+public abstract class CerebrasGPT13BClient extends DefaultParamsClient {
 
-    protected StableDiffusionV1_5Client() {
+    protected CerebrasGPT13BClient() {
     }
 
     private String accessToken = null;
+    private static final String TAG = "Cerebras-GPT-13B-Client_";
+    private static Map<String, Queue<Message>> CEREBRAS_GPT_13B_MESSAGES_HISTORY_MAP = new ConcurrentHashMap<>();
 
-    private static final String TAG = "Stable-Diffusion-V1_5-Client_";
-
-    // 获取access-token
     protected abstract String getAccessToken();
 
     // 获取不固定的模型URL
@@ -33,19 +31,13 @@ public abstract class StableDiffusionV1_5Client extends ImageClient {
     }
 
     @Override
-    public void setCustomAccessToken(String accessToken) {
-        this.accessToken = accessToken;
-    }
-
-    @Override
     public Map<String, Queue<Message>> getMessageHistoryMap() {
-        log.error(TAG + "StableDiffusionV1_5Client not have MessageHistoryMap");
-        return Collections.emptyMap();
+        return CEREBRAS_GPT_13B_MESSAGES_HISTORY_MAP;
     }
 
     @Override
     public void initMessageHistoryMap(Map<String, Queue<Message>> map) {
-        log.error(TAG + "StableDiffusionV1_5Client not need init");
+        CEREBRAS_GPT_13B_MESSAGES_HISTORY_MAP = map;
     }
 
     @Override
@@ -54,8 +46,12 @@ public abstract class StableDiffusionV1_5Client extends ImageClient {
     }
 
     @Override
+    public void setCustomAccessToken(String accessToken) {
+        this.accessToken = accessToken;
+    }
+
+    @Override
     public String getTag() {
         return TAG;
     }
-
 }

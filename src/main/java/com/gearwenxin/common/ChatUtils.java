@@ -150,7 +150,6 @@ public class ChatUtils {
                 .build();
         log.info("monoGet => {}", queryParams);
 
-
         return client.get()
                 .uri("")
                 .retrieve()
