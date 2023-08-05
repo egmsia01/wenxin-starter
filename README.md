@@ -35,7 +35,7 @@
 5. 将你的 `API Key` 与 `Secret Key` 替换链接的[Key]，访问以下地址
  > https://aip.baidubce.com/oauth/2.0/token?grant_type=client_credentials&client_id=[API-Key]&client_secret=[Secret-Key]
 
-## 📖 项目简介
+## 项目简介
 - 百度 **“文心千帆 WENXINWORKSHOP”** 大模型的spring-boot-starter，可以帮助您快速接入百度的AI能力，只需一行代码即可调用百度文心千帆大模型。
 - 完整对接文心千帆的官方API文档。
 - 支持根据提示词生成图片。
@@ -44,7 +44,7 @@
 - 后续将增加更多模型的支持。
 
 
-## 🚀 快速开始
+## 快速开始
 
 [使用demo](https://github.com/gemingjia/springboot-wenxin-demo)
 
@@ -143,7 +143,21 @@ public class ChatController {
 }
 ```
 
-## 📑使用文档
+## 更新日志
+v0.0.6
+
+！此版本与之前版本客户端路径不兼容，请重新导包
+
+- 重构 客户端的实现方式，大幅增加了拓展性
+- 修复 URL错乱问题
+- 优化 导入/导出历史消息记录方法
+- 新增 access-token的设置方法，优先级 setCustomAccessToken > extend and override > application.yaml
+- 新增 支持图片生成
+- 新增 通用客户端CommonClient，新模型未适配时可使用这个，大概率可用
+- 新增 高度自定义设计，直接extends DefaltParamsClient并重写方法即可
+- 新增 大量模型适配，支持文心千帆所有模型，包括：文心一言 ErnieBot、ERNIE-Bot-turbo、BLOOMZ-7B、Ernie-Bot-VilG、VisualGLM-6B、Llama-2、Linly-Chinese-LLaMA-2-7B、Linly-Chinese-LLaMA-2-13B、ChatGLM2-6B、RWKV-4-World、OpenLLaMA-7B、Falcon-7B、Dolly-12B、MPT-7B-Instruct、Stable-Diffusion-v1.5、RWKV-4-pile-14B、RWKV-5-World、RWKV-Raven-14B、Falcon-40B、MPT-30B-instruct、Flan-UL2、Cerebras-GPT-13B、Cerebras-GPT-6.7B、Pythia-12B、Pythia-6.9B、GPT-J-6B、GPT-NeoX-20B、OA-Pythia-12B-SFT-4、GPT4All-J、StableLM-Alpha-7B 、 StarCoder、Prompt模板。
+
+## 使用文档
 
 <div>
 点击跳转 => 
