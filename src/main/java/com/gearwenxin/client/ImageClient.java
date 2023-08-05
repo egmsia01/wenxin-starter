@@ -18,7 +18,7 @@ import java.util.Queue;
  * @date 2023/7/20
  */
 @Slf4j
-public abstract class ImageClient implements ImageBot<ChatVilGCRequest> {
+public abstract class ImageClient implements ImageBot<ImageBaseRequest> {
 
     public abstract String getCustomAccessToken();
 

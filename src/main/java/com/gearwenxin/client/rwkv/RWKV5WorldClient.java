@@ -1,27 +1,25 @@
-package com.gearwenxin.client;
+package com.gearwenxin.client.rwkv;
 
+import com.gearwenxin.client.DefaultParamsClient;
 import com.gearwenxin.entity.Message;
-import java.util.Collections;
-
-import lombok.extern.slf4j.Slf4j;
 
 import java.util.Map;
 import java.util.Queue;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author Ge Mingjia
- * @date 2023/7/20
+ * @date 2023/7/24
  */
-@Slf4j
-public abstract class ErnieBotVilGClient extends ImageClient {
+public abstract class RWKV5WorldClient extends DefaultParamsClient {
 
-    protected ErnieBotVilGClient() {
+    protected RWKV5WorldClient() {
     }
 
     private String accessToken = null;
-    private static final String TAG = "ErnieBotVilGClient_";
+    private static final String TAG = "RWKV-5-World-Client_";
+    private static Map<String, Queue<Message>> RWKV_5_WORLD_MESSAGES_HISTORY_MAP = new ConcurrentHashMap<>();
 
-    // 获取access-token
     protected abstract String getAccessToken();
 
     // 获取不固定的模型URL
@@ -33,19 +31,13 @@ public abstract class ErnieBotVilGClient extends ImageClient {
     }
 
     @Override
-    public void setCustomAccessToken(String accessToken) {
-        this.accessToken = accessToken;
-    }
-
-    @Override
     public Map<String, Queue<Message>> getMessageHistoryMap() {
-        log.warn(TAG + "ErnieBotVilGClient not have MessageHistoryMap");
-        return Collections.emptyMap();
+        return RWKV_5_WORLD_MESSAGES_HISTORY_MAP;
     }
 
     @Override
     public void initMessageHistoryMap(Map<String, Queue<Message>> map) {
-        log.warn(TAG + "ErnieBotVilGClient not need init");
+        RWKV_5_WORLD_MESSAGES_HISTORY_MAP = map;
     }
 
     @Override
@@ -54,8 +46,12 @@ public abstract class ErnieBotVilGClient extends ImageClient {
     }
 
     @Override
+    public void setCustomAccessToken(String accessToken) {
+        this.accessToken = accessToken;
+    }
+
+    @Override
     public String getTag() {
         return TAG;
     }
-
 }

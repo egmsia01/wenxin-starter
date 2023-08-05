@@ -1,4 +1,4 @@
-package com.gearwenxin.client;
+package com.gearwenxin.client.ernie;
 
 import com.gearwenxin.common.*;
 import com.gearwenxin.exception.BusinessException;

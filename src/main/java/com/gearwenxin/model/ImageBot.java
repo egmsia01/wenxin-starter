@@ -15,6 +15,6 @@ public interface ImageBot<T extends ImageBaseRequest> {
      * @param imageBaseRequest 作图参数
      * @return ImageResponse 图片响应
      */
-    ImageResponse chatImage(ImageBaseRequest imageBaseRequest);
+    ImageResponse chatImage(T imageBaseRequest);
 
 }

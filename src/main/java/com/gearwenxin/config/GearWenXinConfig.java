@@ -1,12 +1,22 @@
 package com.gearwenxin.config;
 
 import com.gearwenxin.client.*;
+import com.gearwenxin.client.ernie.ErnieBotClient;
+import com.gearwenxin.client.ernie.ErnieBotTurboClient;
+import com.gearwenxin.client.ernie.ErnieBotVilGClient;
+import com.gearwenxin.client.falcon.Falcon40BClient;
+import com.gearwenxin.client.falcon.Falcon7BClient;
 import com.gearwenxin.client.linly.LinlyChineseLLaMA213BClient;
 import com.gearwenxin.client.linly.LinlyChineseLLaMA27BClient;
 import com.gearwenxin.client.llama2.Llama213BClient;
 import com.gearwenxin.client.llama2.Llama270BClient;
 import com.gearwenxin.client.llama2.Llama27BClient;
+import com.gearwenxin.client.mpt.MPT30BInstructClient;
+import com.gearwenxin.client.mpt.MPT7BInstructClient;
+import com.gearwenxin.client.rwkv.RWKV4Pile14BClient;
 import com.gearwenxin.client.rwkv.RWKV4WorldClient;
+import com.gearwenxin.client.rwkv.RWKV5WorldClient;
+import com.gearwenxin.client.rwkv.RWKVRaven14BClient;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -33,8 +43,16 @@ public class GearWenXinConfig {
     private String linly_chinese_llama2_7b_url;
     private String linly_chinese_llama2_13b_url;
     private String falcon_7b_url;
+    private String falcon_40b_url;
     private String rwky_4_world_url;
+    private String rwky_5_world_url;
+    private String rwky_4_pile_url;
+    private String rwky_raven_14b_url;
     private String open_llama_7b_url;
+    private String mpt_7b_instruct_url;
+    private String mpt_30b_instruct_url;
+    private String dolly_12b_url;
+    private String stable_diffusion_v1_5_url;
 
     @Bean
     public CommonModelClient commonModelClient() {
@@ -225,6 +243,20 @@ public class GearWenXinConfig {
             }
         };
     }
+    @Bean
+    public Falcon40BClient falcon40BClient() {
+        return new Falcon40BClient() {
+            @Override
+            protected String getAccessToken() {
+                return access_token;
+            }
+
+            @Override
+            protected String getCustomURL() {
+                return falcon_40b_url;
+            }
+        };
+    }
 
     @Bean
     public RWKV4WorldClient rwkv4WorldClient() {
@@ -237,6 +269,51 @@ public class GearWenXinConfig {
             @Override
             protected String getCustomURL() {
                 return rwky_4_world_url;
+            }
+        };
+    }
+
+    @Bean
+    public RWKV5WorldClient rwkv5WorldClient() {
+        return new RWKV5WorldClient() {
+            @Override
+            protected String getAccessToken() {
+                return access_token;
+            }
+
+            @Override
+            protected String getCustomURL() {
+                return rwky_5_world_url;
+            }
+        };
+    }
+
+    @Bean
+    public RWKV4Pile14BClient rwkv4Pile14BClient() {
+        return new RWKV4Pile14BClient() {
+            @Override
+            protected String getAccessToken() {
+                return access_token;
+            }
+
+            @Override
+            protected String getCustomURL() {
+                return rwky_4_pile_url;
+            }
+        };
+    }
+
+    @Bean
+    public RWKVRaven14BClient rwkvRaven14BClient() {
+        return new RWKVRaven14BClient() {
+            @Override
+            protected String getAccessToken() {
+                return access_token;
+            }
+
+            @Override
+            protected String getCustomURL() {
+                return rwky_raven_14b_url;
             }
         };
     }
@@ -255,4 +332,65 @@ public class GearWenXinConfig {
             }
         };
     }
+
+    @Bean
+    public MPT7BInstructClient mpt7BInstructClient() {
+        return new MPT7BInstructClient() {
+            @Override
+            protected String getAccessToken() {
+                return access_token;
+            }
+
+            @Override
+            protected String getCustomURL() {
+                return mpt_7b_instruct_url;
+            }
+        };
+    }
+
+    @Bean
+    public MPT30BInstructClient mpt30BInstructClient() {
+        return new MPT30BInstructClient() {
+            @Override
+            protected String getAccessToken() {
+                return access_token;
+            }
+
+            @Override
+            protected String getCustomURL() {
+                return mpt_30b_instruct_url;
+            }
+        };
+    }
+
+    @Bean
+    public Dolly12BClient dolly12BClient() {
+        return new Dolly12BClient() {
+            @Override
+            protected String getAccessToken() {
+                return access_token;
+            }
+
+            @Override
+            protected String getCustomURL() {
+                return dolly_12b_url;
+            }
+        };
+    }
+
+    @Bean
+    public StableDiffusionV1_5Client stableDiffusionV15Client() {
+        return new StableDiffusionV1_5Client() {
+            @Override
+            protected String getAccessToken() {
+                return access_token;
+            }
+
+            @Override
+            protected String getCustomURL() {
+                return stable_diffusion_v1_5_url;
+            }
+        };
+    }
+
 }
