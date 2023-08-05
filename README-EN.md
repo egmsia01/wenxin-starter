@@ -36,8 +36,8 @@
 - The spring-boot-starter of Baidu's **"Wenxin Qianfan WENXINWORKSHOP"** large model can help you quickly access Baidu's AI capabilities. You can call Baidu's Wenxin Qianfan large model with only one line of code.
 - Complete docking with the official API documentation of WenxinQianfan.
 - Support streaming back of conversations.
-- Full API support for ErnieBot, ERNIE-Bot-turbo, BLOOMZ-7B, Prompt Template models (single round conversation, continuous conversation, streaming return).
-- Support for Embedding-V1 models will be added in version 0.0.4.
+- Full API support for `ErnieBot`、`ERNIE-Bot-turbo`、`BLOOMZ-7B`、`Ernie-Bot-VilG`、`VisualGLM-6B`、`Llama-2`、`Linly-Chinese-LLaMA-2-7B`、`Linly-Chinese-LLaMA-2-13B`、`ChatGLM2-6B`、`RWKV-4-World`、`OpenLLaMA-7B`、`Falcon-7B`、`Dolly-12B`、`MPT-7B-Instruct`、`Stable-Diffusion-v1.5`、`RWKV-4-pile-14B`、`RWKV-5-World`、`RWKV-Raven-14B`、`Falcon-40B`、`MPT-30B-instruct`、`Flan-UL2`、`Cerebras-GPT-13B`、`Cerebras-GPT-6.7B`、`Pythia-12B`、`Pythia-6.9B`、`GPT-J-6B`、`GPT-NeoX-20B`、`OA-Pythia-12B-SFT-4`、`GPT4All-J`、`StableLM-Alpha-7B` 、 `StarCoder`、`Prompt Template`  models (single round conversation, continuous conversation, streaming return).
+- Support formore models will be added in behind version.
 
 ## 🚀 Quick Start
 

@@ -53,6 +53,7 @@ public class GearWenXinConfig {
     private String mpt_30b_instruct_url;
     private String dolly_12b_url;
     private String stable_diffusion_v1_5_url;
+    private String flan_ul2_url;
 
     @Bean
     public CommonModelClient commonModelClient() {
@@ -389,6 +390,21 @@ public class GearWenXinConfig {
             @Override
             protected String getCustomURL() {
                 return stable_diffusion_v1_5_url;
+            }
+        };
+    }
+
+    @Bean
+    public FlanUL2Client flanUL2Client() {
+        return new FlanUL2Client() {
+            @Override
+            protected String getAccessToken() {
+                return access_token;
+            }
+
+            @Override
+            protected String getCustomURL() {
+                return flan_ul2_url;
             }
         };
     }
