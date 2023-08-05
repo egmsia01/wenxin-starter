@@ -22,31 +22,31 @@ import org.springframework.context.annotation.Configuration;
 @ConfigurationProperties("gear.wenxin")
 public class GearWenXinConfig {
 
-    private String accessToken;
-    private String commonUrl;
-    private String vilgUrl;
-    private String chatGlm26bUrl;
-    private String visualGlm6bUrl;
-    private String llama27bUrl;
-    private String llama213bUrl;
-    private String llama270bUrl;
-    private String linlyChineseLlama27b;
-    private String linlyChineseLlama213b;
-    private String falcon7bUrl;
-    private String rwky4WorldUrl;
-    private String openLlama7bUrl;
+    private String access_token;
+    private String common_url;
+    private String vilg_url;
+    private String chat_glm2_6b_url;
+    private String visual_glm_6b_url;
+    private String llama2_7b_url;
+    private String llama2_13b_url;
+    private String llama2_70b_url;
+    private String linly_chinese_llama2_7b_url;
+    private String linly_chinese_llama2_13b_url;
+    private String falcon_7b_url;
+    private String rwky_4_world_url;
+    private String open_llama_7b_url;
 
     @Bean
     public CommonModelClient commonModelClient() {
         return new CommonModelClient() {
             @Override
             protected String getAccessToken() {
-                return accessToken;
+                return access_token;
             }
 
             @Override
             protected String getCustomURL() {
-                return commonUrl;
+                return common_url;
             }
         };
     }
@@ -56,7 +56,7 @@ public class GearWenXinConfig {
         return new ErnieBotClient() {
             @Override
             public String getAccessToken() {
-                return accessToken;
+                return access_token;
             }
         };
     }
@@ -66,7 +66,7 @@ public class GearWenXinConfig {
         return new ErnieBotTurboClient() {
             @Override
             public String getAccessToken() {
-                return accessToken;
+                return access_token;
             }
         };
     }
@@ -76,7 +76,7 @@ public class GearWenXinConfig {
         return new BloomZ7BClient() {
             @Override
             public String getAccessToken() {
-                return accessToken;
+                return access_token;
             }
         };
     }
@@ -86,7 +86,7 @@ public class GearWenXinConfig {
         return new PromptBotClient() {
             @Override
             public String getAccessToken() {
-                return accessToken;
+                return access_token;
             }
         };
     }
@@ -96,12 +96,12 @@ public class GearWenXinConfig {
         return new ErnieBotVilGClient() {
             @Override
             protected String getAccessToken() {
-                return accessToken;
+                return access_token;
             }
 
             @Override
             protected String getCustomURL() {
-                return vilgUrl;
+                return vilg_url;
             }
         };
     }
@@ -111,12 +111,12 @@ public class GearWenXinConfig {
         return new ChatGLM26BClient() {
             @Override
             protected String getAccessToken() {
-                return accessToken;
+                return access_token;
             }
 
             @Override
             protected String getCustomURL() {
-                return chatGlm26bUrl;
+                return chat_glm2_6b_url;
             }
         };
     }
@@ -126,12 +126,12 @@ public class GearWenXinConfig {
         return new VisualGLM6BClient() {
             @Override
             protected String getAccessToken() {
-                return accessToken;
+                return access_token;
             }
 
             @Override
             protected String getCustomURL() {
-                return visualGlm6bUrl;
+                return visual_glm_6b_url;
             }
         };
     }
@@ -141,12 +141,12 @@ public class GearWenXinConfig {
         return new Llama27BClient() {
             @Override
             protected String getAccessToken() {
-                return accessToken;
+                return access_token;
             }
 
             @Override
             protected String getCustomURL() {
-                return llama27bUrl;
+                return llama2_7b_url;
             }
         };
     }
@@ -156,12 +156,12 @@ public class GearWenXinConfig {
         return new Llama213BClient() {
             @Override
             protected String getAccessToken() {
-                return accessToken;
+                return access_token;
             }
 
             @Override
             protected String getCustomURL() {
-                return llama213bUrl;
+                return llama2_13b_url;
             }
         };
     }
@@ -171,12 +171,12 @@ public class GearWenXinConfig {
         return new Llama270BClient() {
             @Override
             protected String getAccessToken() {
-                return accessToken;
+                return access_token;
             }
 
             @Override
             protected String getCustomURL() {
-                return llama270bUrl;
+                return llama2_70b_url;
             }
         };
     }
@@ -186,12 +186,12 @@ public class GearWenXinConfig {
         return new LinlyChineseLLaMA27BClient() {
             @Override
             protected String getAccessToken() {
-                return accessToken;
+                return access_token;
             }
 
             @Override
             protected String getCustomURL() {
-                return linlyChineseLlama27b;
+                return linly_chinese_llama2_7b_url;
             }
         };
     }
@@ -201,12 +201,12 @@ public class GearWenXinConfig {
         return new LinlyChineseLLaMA213BClient() {
             @Override
             protected String getAccessToken() {
-                return accessToken;
+                return access_token;
             }
 
             @Override
             protected String getCustomURL() {
-                return linlyChineseLlama213b;
+                return linly_chinese_llama2_13b_url;
             }
         };
     }
@@ -216,12 +216,12 @@ public class GearWenXinConfig {
         return new Falcon7BClient() {
             @Override
             protected String getAccessToken() {
-                return accessToken;
+                return access_token;
             }
 
             @Override
             protected String getCustomURL() {
-                return falcon7bUrl;
+                return falcon_7b_url;
             }
         };
     }
@@ -231,12 +231,12 @@ public class GearWenXinConfig {
         return new RWKV4WorldClient() {
             @Override
             protected String getAccessToken() {
-                return accessToken;
+                return access_token;
             }
 
             @Override
             protected String getCustomURL() {
-                return rwky4WorldUrl;
+                return rwky_4_world_url;
             }
         };
     }
@@ -246,12 +246,12 @@ public class GearWenXinConfig {
         return new OpenLLaMA7BClient() {
             @Override
             protected String getAccessToken() {
-                return accessToken;
+                return access_token;
             }
 
             @Override
             protected String getCustomURL() {
-                return openLlama7bUrl;
+                return open_llama_7b_url;
             }
         };
     }
