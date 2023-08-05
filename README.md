@@ -49,7 +49,9 @@
 [使用demo](https://github.com/gemingjia/springboot-wenxin-demo)
 
 此版本近乎重构整个项目，与之前版本的存在一定的不兼容情况，请重新导包。
+
 "Bloomz7B" -> "BloomZ7B"
+
 除 "ErnieBot"外，其余的接收参数统一为 ChatBaseRequest
 
 ### 1、添加依赖
@@ -109,16 +111,16 @@ public class ChatController {
 
     // 流式返回，单次对话
     @PostMapping(value = "/stream/chat", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public BaseResponse<Flux<ChatResponse>> chatSingleStream(String msg) {
+    public Flux<ChatResponse> chatSingleStream(String msg) {
         Flux<ChatResponse> chatResponseFlux = ernieBotClient.chatSingleOfStream(msg);
-        return BaseResponse.success(chatResponseFlux);
+        return chatResponseFlux;
     }
 
     // 流式返回，连续对话
     @PostMapping(value = "/stream/chats", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public BaseResponse<Flux<ChatResponse>> chatContStream(String msg, String msgUid) {
+    public Flux<ChatResponse> chatContStream(String msg, String msgUid) {
         Flux<ChatResponse> chatResponseFlux = ernieBotClient.chatContOfStream(msg, msgUid);
-        return BaseResponse.success(chatResponseFlux);
+        return chatResponseFlux;
     }
 
     // 模板对话
