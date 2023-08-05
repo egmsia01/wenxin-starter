@@ -48,11 +48,14 @@
 
 [使用demo](https://github.com/gemingjia/springboot-wenxin-demo)
 
-此版本近乎重构整个项目，与之前版本的存在一定的不兼容情况，请重新导包。
+```text
+此版本近乎重构整个项目，客户端与参数类的路径有变化，与之前版本的存在一定的不兼容情况，方法未改变，重新导包即可。
 
-"Bloomz7B" -> "BloomZ7B"
+"Bloomz7BClient" -> "BloomZ7BClient"
 
-除 "ErnieBot"外，其余的接收参数统一为 ChatBaseRequest
+除"ErnieBot"与"Prompt"外，其余的对话型模型接收参数类统一为 ChatBaseRequest，响应类为 ChatResponse
+图片生成型模型接收参数类统一为 ChatImageRequest，响应类为 ImageBaseRequest，内容为base64编码的图片。
+```
 
 ### 1、添加依赖
 Repository Path: [/io/github/gemingjia/gear-wenxinworkshop-starter)
@@ -62,13 +65,13 @@ Repository Path: [/io/github/gemingjia/gear-wenxinworkshop-starter)
 <dependency>
   <groupId>io.github.gemingjia</groupId>
   <artifactId>gear-wenxinworkshop-starter</artifactId>
-  <version>0.0.5</version>
+  <version>0.0.6</version>
 </dependency>
 ```
 - Gradle
 ```gradle
 dependencies {
-  implementation 'io.github.gemingjia:gear-wenxinworkshop-starter:0.0.3.2' 
+  implementation 'io.github.gemingjia:gear-wenxinworkshop-starter:0.0.6' 
 }
 ```
 

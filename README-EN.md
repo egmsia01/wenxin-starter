@@ -43,19 +43,28 @@
 
 [Project demo](https://github.com/gemingjia/springboot-wenxin-demo)
 
+```text
+This version almost refactoring the entire project, the path between the client and the parameter class has changed, there is a certain incompatibility with the previous version, the method has not changed, just re-guide the package.
+
+"Bloomz7BClient" -> "BloomZ7BClient"
+
+Except "ErnieBot" and "Prompt", the receiving parameter class of the other conversational models is unified as ChatBaseRequest, and the response class is ChatResponse
+The receiving parameter class of the image generation model is unified as ChatImageRequest, the response class is ImageBaseRequest, and the content is base64 encoded image.
+```
+
 ### 1、Add Dependencies
 - Maven
 ```xml
 <dependency>
   <groupId>io.github.gemingjia</groupId>
   <artifactId>gear-wenxinworkshop-starter</artifactId>
-  <version>0.0.5</version>
+  <version>0.0.6</version>
 </dependency>
 ```
 - Gradle
 ```gradle
 dependencies {
-  implementation 'io.github.gemingjia:gear-wenxinworkshop-starter:0.0.3.2' 
+  implementation 'io.github.gemingjia:gear-wenxinworkshop-starter:0.0.6' 
 }
 ```
 
