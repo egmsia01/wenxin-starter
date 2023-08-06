@@ -1,12 +1,10 @@
 package com.gearwenxin.entity.request;
 
 import com.gearwenxin.common.ErrorCode;
-import com.gearwenxin.entity.chatmodel.ChatVilGCRequest;
 import com.gearwenxin.exception.BusinessException;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.apache.commons.lang.StringUtils;
 
 import static com.gearwenxin.common.Constant.MAX_CONTENT_LENGTH;
 

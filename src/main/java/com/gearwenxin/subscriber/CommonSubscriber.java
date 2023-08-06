@@ -4,7 +4,6 @@ import com.gearwenxin.common.WenXinUtils;
 import com.gearwenxin.entity.Message;
 import com.gearwenxin.entity.response.ChatResponse;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang.StringUtils;
 import org.reactivestreams.Subscriber;
 import org.reactivestreams.Subscription;
 import reactor.core.Disposable;
@@ -45,7 +44,7 @@ public class CommonSubscriber implements Subscriber<ChatResponse>, Disposable {
         String partResult = response.getResult();
         // 消费一条任务
         subscription.request(1);
-        if (StringUtils.isNotEmpty(partResult)) {
+        if (!partResult.isEmpty()) {
             // 拼接每一部分的消息
             stringBuffer.append(partResult);
         }
