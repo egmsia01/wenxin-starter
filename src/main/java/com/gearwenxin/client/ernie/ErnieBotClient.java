@@ -41,6 +41,10 @@ public abstract class ErnieBotClient implements ParamsBot<ChatErnieRequest>, Bas
 
     protected abstract String getAccessToken();
 
+    private String getTag() {
+        return TAG;
+    }
+
     @Override
     public String getURL() {
         return URL;
@@ -74,7 +78,7 @@ public abstract class ErnieBotClient implements ParamsBot<ChatErnieRequest>, Bas
         Queue<Message> messageQueue = buildUserMessageQueue(content);
         ErnieRequest request = new ErnieRequest();
         request.setMessages(messageQueue);
-        log.info(TAG + "content_singleRequest => {}", request.toString());
+        log.info("{}content_singleRequest => {}", getTag(), request.toString());
 
         Mono<ChatResponse> response = ChatUtils.monoPost(
                 getURL(),
@@ -93,7 +97,7 @@ public abstract class ErnieBotClient implements ParamsBot<ChatErnieRequest>, Bas
         ErnieRequest ernieRequest = new ErnieRequest();
         ernieRequest.setMessages(messageQueue);
         ernieRequest.setStream(true);
-        log.info(TAG + "content_singleRequest_stream => {}", ernieRequest.toString());
+        log.info("{}content_singleRequest_stream => {}", getTag(), ernieRequest.toString());
         return ChatUtils.fluxPost(
                 getURL(),
                 getCustomAccessToken(),
@@ -106,7 +110,7 @@ public abstract class ErnieBotClient implements ParamsBot<ChatErnieRequest>, Bas
         this.validChatErnieRequest(chatErnieRequest);
 
         ErnieRequest ernieRequest = ConvertUtils.chatErnieReqToErnieReq(chatErnieRequest);
-        log.info(TAG + "singleRequest => {}", ernieRequest.toString());
+        log.info("{}singleRequest => {}", getTag(), ernieRequest.toString());
 
         Mono<ChatResponse> response = ChatUtils.monoPost(
                 getURL(),
@@ -123,7 +127,7 @@ public abstract class ErnieBotClient implements ParamsBot<ChatErnieRequest>, Bas
 
         ErnieRequest ernieRequest = ConvertUtils.chatErnieReqToErnieReq(chatErnieRequest);
         ernieRequest.setStream(true);
-        log.info(TAG + "singleRequest_stream => {}", ernieRequest.toString());
+        log.info("{}singleRequest_stream => {}", getTag(), ernieRequest.toString());
 
         return ChatUtils.fluxPost(getURL(), getCustomAccessToken(), ernieRequest, ChatResponse.class);
     }
@@ -140,7 +144,7 @@ public abstract class ErnieBotClient implements ParamsBot<ChatErnieRequest>, Bas
 
         ErnieRequest ernieRequest = new ErnieRequest();
         ernieRequest.setMessages(messagesHistory);
-        log.info(TAG + "content_contRequest => {}", ernieRequest.toString());
+        log.info("{}content_contRequest => {}", getTag(), ernieRequest.toString());
 
         Mono<ChatResponse> response = ChatUtils.monoPost(
                 getURL(),
@@ -170,7 +174,7 @@ public abstract class ErnieBotClient implements ParamsBot<ChatErnieRequest>, Bas
         ErnieRequest ernieRequest = new ErnieRequest();
         ernieRequest.setMessages(messagesHistory);
         ernieRequest.setStream(true);
-        log.info(TAG + "content_contRequest_stream => {}", ernieRequest.toString());
+        log.info("{}content_contRequest_stream => {}", getTag(), ernieRequest.toString());
 
         return this.historyFlux(ernieRequest, messagesHistory);
     }
@@ -190,7 +194,7 @@ public abstract class ErnieBotClient implements ParamsBot<ChatErnieRequest>, Bas
         WenXinUtils.offerMessage(messagesHistory, message);
 
         ernieRequest.setMessages(messagesHistory);
-        log.info(TAG + "contRequest => {}", ernieRequest.toString());
+        log.info("{}contRequest => {}", getTag(), ernieRequest.toString());
 
         Mono<ChatResponse> response = ChatUtils.monoPost(
                 getURL(),
@@ -222,7 +226,7 @@ public abstract class ErnieBotClient implements ParamsBot<ChatErnieRequest>, Bas
 
         ernieRequest.setMessages(messagesHistory);
         ernieRequest.setStream(true);
-        log.info(TAG + "contRequest_stream => {}", ernieRequest.toString());
+        log.info("{}contRequest_stream => {}", getTag(), ernieRequest.toString());
 
         return this.historyFlux(ernieRequest, messagesHistory);
     }

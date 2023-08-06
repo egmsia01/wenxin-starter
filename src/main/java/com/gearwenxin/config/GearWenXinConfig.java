@@ -267,6 +267,7 @@ public class GearWenXinConfig {
             }
         };
     }
+
     @Bean
     public Falcon40BClient falcon40BClient() {
         return new Falcon40BClient() {
@@ -581,6 +582,5 @@ public class GearWenXinConfig {
             }
         };
     }
-
 
 }

@@ -92,7 +92,7 @@ public abstract class DefaultParamsClient implements DefaultParamsBot<ChatBaseRe
         BaseRequest baseRequest = new BaseRequest();
         baseRequest.setMessages(messageQueue);
         baseRequest.setStream(true);
-        log.info(getTag() + "content_singleRequest_stream => {}", baseRequest.toString());
+        log.info("{}content_singleRequest_stream => {}", getTag(), baseRequest.toString());
         return ChatUtils.fluxPost(
                 getURL(),
                 getCustomAccessToken(),
@@ -107,7 +107,7 @@ public abstract class DefaultParamsClient implements DefaultParamsBot<ChatBaseRe
         }
         chatBaseRequest.validSelf();
         BaseRequest baseRequest = ConvertUtils.convertToBaseRequest(chatBaseRequest);
-        log.info(getTag() + "singleRequest => {}", baseRequest.toString());
+        log.info("{}singleRequest => {}", getTag(), baseRequest.toString());
 
         Mono<ChatResponse> response = ChatUtils.monoPost(
                 getURL(),
@@ -127,7 +127,7 @@ public abstract class DefaultParamsClient implements DefaultParamsBot<ChatBaseRe
 
         BaseRequest baseRequest = ConvertUtils.convertToBaseRequest(chatBaseRequest);
         baseRequest.setStream(true);
-        log.info(getTag() + "singleRequest_stream => {}", baseRequest.toString());
+        log.info("{}singleRequest_stream => {}", getTag(), baseRequest.toString());
 
         return ChatUtils.fluxPost(
                 getURL(),
@@ -148,7 +148,7 @@ public abstract class DefaultParamsClient implements DefaultParamsBot<ChatBaseRe
 
         BaseRequest baseRequest = new BaseRequest();
         baseRequest.setMessages(messagesHistory);
-        log.info(getTag() + "content_contRequest => {}", baseRequest.toString());
+        log.info("{}content_contRequest => {}", getTag(), baseRequest.toString());
 
         Mono<ChatResponse> response = ChatUtils.monoPost(
                 getURL(),
@@ -180,7 +180,7 @@ public abstract class DefaultParamsClient implements DefaultParamsBot<ChatBaseRe
         BaseRequest baseRequest = new BaseRequest();
         baseRequest.setMessages(messagesHistory);
         baseRequest.setStream(true);
-        log.info("content_contRequest_stream => {}", baseRequest.toString());
+        log.info("{}content_contRequest_stream => {}", getTag(), baseRequest.toString());
 
         return this.historyFlux(baseRequest, messagesHistory);
     }
@@ -200,7 +200,7 @@ public abstract class DefaultParamsClient implements DefaultParamsBot<ChatBaseRe
         WenXinUtils.offerMessage(messagesHistory, message);
 
         baseRequest.setMessages(messagesHistory);
-        log.info(getTag() + "contRequest => {}", baseRequest.toString());
+        log.info("{}contRequest => {}", getTag(), baseRequest.toString());
 
         Mono<ChatResponse> response = ChatUtils.monoPost(
                 getURL(),
@@ -232,7 +232,7 @@ public abstract class DefaultParamsClient implements DefaultParamsBot<ChatBaseRe
 
         baseRequest.setMessages(messagesHistory);
         baseRequest.setStream(true);
-        log.info(getTag() + "contRequest_stream => {}", baseRequest.toString());
+        log.info("{}contRequest_stream => {}", getTag(), baseRequest.toString());
 
         return this.historyFlux(baseRequest, messagesHistory);
     }
