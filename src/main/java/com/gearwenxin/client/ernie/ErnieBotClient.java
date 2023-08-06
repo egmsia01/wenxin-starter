@@ -11,7 +11,6 @@ import com.gearwenxin.model.BaseBot;
 import com.gearwenxin.model.ParamsBot;
 import com.gearwenxin.subscriber.CommonSubscriber;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang.StringUtils;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -72,7 +71,7 @@ public abstract class ErnieBotClient implements ParamsBot<ChatErnieRequest>, Bas
 
     @Override
     public ChatResponse chatSingle(String content) {
-        if (StringUtils.isEmpty(content)) {
+        if (content.isBlank()) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
         Queue<Message> messageQueue = buildUserMessageQueue(content);
@@ -90,7 +89,7 @@ public abstract class ErnieBotClient implements ParamsBot<ChatErnieRequest>, Bas
 
     @Override
     public Flux<ChatResponse> chatSingleOfStream(String content) {
-        if (StringUtils.isEmpty(content)) {
+        if (content.isBlank()) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
         Queue<Message> messageQueue = buildUserMessageQueue(content);
@@ -134,7 +133,7 @@ public abstract class ErnieBotClient implements ParamsBot<ChatErnieRequest>, Bas
 
     @Override
     public ChatResponse chatCont(String content, String msgUid) {
-        if (StringUtils.isEmpty(content) || StringUtils.isEmpty(msgUid)) {
+        if (content.isBlank() || msgUid.isBlank()) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
         Map<String, Queue<Message>> messageHistoryMap = getMessageHistoryMap();
@@ -163,7 +162,7 @@ public abstract class ErnieBotClient implements ParamsBot<ChatErnieRequest>, Bas
 
     @Override
     public Flux<ChatResponse> chatContOfStream(String content, String msgUid) {
-        if (StringUtils.isBlank(content) || StringUtils.isEmpty(msgUid)) {
+        if (content.isBlank() || msgUid.isBlank()) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
         Map<String, Queue<Message>> messageHistoryMap = getMessageHistoryMap();
@@ -181,7 +180,7 @@ public abstract class ErnieBotClient implements ParamsBot<ChatErnieRequest>, Bas
 
     @Override
     public ChatResponse chatCont(ChatErnieRequest chatErnieRequest, String msgUid) {
-        if (StringUtils.isBlank(msgUid)) {
+        if (msgUid.isBlank()) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
         this.validChatErnieRequest(chatErnieRequest);
@@ -213,7 +212,7 @@ public abstract class ErnieBotClient implements ParamsBot<ChatErnieRequest>, Bas
 
     @Override
     public Flux<ChatResponse> chatContOfStream(ChatErnieRequest chatErnieRequest, String msgUid) {
-        if (StringUtils.isBlank(msgUid)) {
+        if (msgUid.isBlank()) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
         this.validChatErnieRequest(chatErnieRequest);
@@ -234,7 +233,7 @@ public abstract class ErnieBotClient implements ParamsBot<ChatErnieRequest>, Bas
     public void validChatErnieRequest(ChatErnieRequest request) {
 
         // 检查content不为空
-        if (StringUtils.isEmpty(request.getContent())) {
+        if (request.getContent().isBlank()) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "content cannot be empty");
         }
         // 检查单个content长度

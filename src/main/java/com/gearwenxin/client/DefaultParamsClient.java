@@ -9,7 +9,6 @@ import com.gearwenxin.exception.BusinessException;
 import com.gearwenxin.model.DefaultParamsBot;
 import com.gearwenxin.subscriber.CommonSubscriber;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang.StringUtils;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -67,7 +66,7 @@ public abstract class DefaultParamsClient implements DefaultParamsBot<ChatBaseRe
 
     @Override
     public ChatResponse chatSingle(String content) {
-        if (StringUtils.isEmpty(content)) {
+        if (content.isBlank()) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
         Queue<Message> messageQueue = buildUserMessageQueue(content);
@@ -85,7 +84,7 @@ public abstract class DefaultParamsClient implements DefaultParamsBot<ChatBaseRe
 
     @Override
     public Flux<ChatResponse> chatSingleOfStream(String content) {
-        if (StringUtils.isEmpty(content)) {
+        if (content.isBlank()) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
         Queue<Message> messageQueue = buildUserMessageQueue(content);
@@ -138,7 +137,7 @@ public abstract class DefaultParamsClient implements DefaultParamsBot<ChatBaseRe
 
     @Override
     public ChatResponse chatCont(String content, String msgUid) {
-        if (StringUtils.isEmpty(content) || StringUtils.isEmpty(msgUid)) {
+        if (content.isBlank() || msgUid.isBlank()) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
         Map<String, Queue<Message>> messageHistoryMap = getMessageHistoryMap();
@@ -169,7 +168,7 @@ public abstract class DefaultParamsClient implements DefaultParamsBot<ChatBaseRe
 
     @Override
     public Flux<ChatResponse> chatContOfStream(String content, String msgUid) {
-        if (StringUtils.isBlank(content) || StringUtils.isEmpty(msgUid)) {
+        if (content.isBlank() || msgUid.isBlank()) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
         Map<String, Queue<Message>> messageHistoryMap = getMessageHistoryMap();
@@ -187,7 +186,7 @@ public abstract class DefaultParamsClient implements DefaultParamsBot<ChatBaseRe
 
     @Override
     public ChatResponse chatCont(ChatBaseRequest chatBaseRequest, String msgUid) {
-        if (StringUtils.isBlank(msgUid) || chatBaseRequest == null) {
+        if (msgUid.isBlank() || chatBaseRequest == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
         chatBaseRequest.validSelf();
@@ -219,7 +218,7 @@ public abstract class DefaultParamsClient implements DefaultParamsBot<ChatBaseRe
 
     @Override
     public Flux<ChatResponse> chatContOfStream(ChatBaseRequest chatBaseRequest, String msgUid) {
-        if (StringUtils.isBlank(msgUid) || chatBaseRequest == null) {
+        if (msgUid.isBlank() || chatBaseRequest == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
         chatBaseRequest.validSelf();

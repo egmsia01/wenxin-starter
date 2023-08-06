@@ -37,7 +37,7 @@ public class ImageBaseRequest {
     public void validSelf() {
 
         // 检查content不为空
-        if (StringUtils.isEmpty(content)) {
+        if (content.isBlank()) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "content cannot be empty");
         }
         // 检查单个content长度
