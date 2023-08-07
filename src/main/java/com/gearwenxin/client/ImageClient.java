@@ -3,7 +3,6 @@ package com.gearwenxin.client;
 import com.gearwenxin.common.ChatUtils;
 import com.gearwenxin.common.ErrorCode;
 import com.gearwenxin.entity.Message;
-import com.gearwenxin.entity.chatmodel.ChatVilGCRequest;
 import com.gearwenxin.entity.request.ImageBaseRequest;
 import com.gearwenxin.entity.response.ImageResponse;
 import com.gearwenxin.exception.BusinessException;

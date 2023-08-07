@@ -6,7 +6,6 @@ import com.gearwenxin.entity.Message;
 import com.gearwenxin.entity.chatmodel.*;
 import com.gearwenxin.entity.request.ErnieRequest;
 import com.gearwenxin.entity.request.PromptRequest;
-import com.gearwenxin.entity.request.TurboRequest;
 
 import java.util.LinkedList;
 import java.util.Queue;
@@ -46,24 +45,6 @@ public class ConvertUtils {
         return ernieRequest;
     }
 
-    public static TurboRequest chatTurboReq7BToTurboReq(ChatTurboRequest chatTurboRequest) {
-        TurboRequest turboRequest = new TurboRequest();
-
-        if (chatTurboRequest == null) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR);
-        }
-        if (chatTurboRequest.getUserId() != null) {
-            turboRequest.setUserId(chatTurboRequest.getUserId());
-        }
-        if (chatTurboRequest.getContent() != null) {
-            Queue<Message> messageQueue = new LinkedList<>();
-            messageQueue.add(new Message(RoleEnum.user, chatTurboRequest.getContent()));
-            turboRequest.setMessages(messageQueue);
-        }
-
-        return turboRequest;
-    }
-
     public static BaseRequest convertToBaseRequest(ChatBaseRequest chatBaseRequest) {
         BaseRequest baseRequest = new BaseRequest();
 
@@ -96,6 +77,5 @@ public class ConvertUtils {
         }
         return promptRequest;
     }
-
 
 }
