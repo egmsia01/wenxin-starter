@@ -74,7 +74,7 @@ public abstract class PromptBotClient implements PromptBot, BaseBot {
         String id = promptRequest.getId();
         Map<String, String> paramMap = promptRequest.getParamMap();
         paramMap.put("id", id);
-        Mono<PromptResponse> response = ChatUtils.monoGet(
+        Mono<PromptResponse> response = ChatUtils.monoChatGet(
                 URL,
                 getCustomAccessToken(),
                 paramMap,

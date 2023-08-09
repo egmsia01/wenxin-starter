@@ -40,7 +40,7 @@ public abstract class ImageClient implements ImageBot<ImageBaseRequest> {
 
         log.info(getTag() + "imageRequest => {}", imageBaseRequest.toString());
 
-        return ChatUtils.monoPost(
+        return ChatUtils.monoChatPost(
                         getURL(),
                         getCustomAccessToken(),
                         imageBaseRequest,

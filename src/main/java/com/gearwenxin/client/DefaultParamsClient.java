@@ -74,7 +74,7 @@ public abstract class DefaultParamsClient implements DefaultParamsBot<ChatBaseRe
         request.setMessages(messageQueue);
         log.info(getTag() + "content_singleRequest => {}", request.toString());
 
-        Mono<ChatResponse> response = ChatUtils.monoPost(
+        Mono<ChatResponse> response = ChatUtils.monoChatPost(
                 getURL(),
                 getCustomAccessToken(),
                 request,
@@ -92,7 +92,7 @@ public abstract class DefaultParamsClient implements DefaultParamsBot<ChatBaseRe
         baseRequest.setMessages(messageQueue);
         baseRequest.setStream(true);
         log.info("{}content_singleRequest_stream => {}", getTag(), baseRequest.toString());
-        return ChatUtils.fluxPost(
+        return ChatUtils.fluxChatPost(
                 getURL(),
                 getCustomAccessToken(),
                 baseRequest,
@@ -108,7 +108,7 @@ public abstract class DefaultParamsClient implements DefaultParamsBot<ChatBaseRe
         BaseRequest baseRequest = ConvertUtils.convertToBaseRequest(chatBaseRequest);
         log.info("{}singleRequest => {}", getTag(), baseRequest.toString());
 
-        Mono<ChatResponse> response = ChatUtils.monoPost(
+        Mono<ChatResponse> response = ChatUtils.monoChatPost(
                 getURL(),
                 getCustomAccessToken(),
                 baseRequest,
@@ -128,7 +128,7 @@ public abstract class DefaultParamsClient implements DefaultParamsBot<ChatBaseRe
         baseRequest.setStream(true);
         log.info("{}singleRequest_stream => {}", getTag(), baseRequest.toString());
 
-        return ChatUtils.fluxPost(
+        return ChatUtils.fluxChatPost(
                 getURL(),
                 getCustomAccessToken(),
                 baseRequest,
@@ -149,7 +149,7 @@ public abstract class DefaultParamsClient implements DefaultParamsBot<ChatBaseRe
         baseRequest.setMessages(messagesHistory);
         log.info("{}content_contRequest => {}", getTag(), baseRequest.toString());
 
-        Mono<ChatResponse> response = ChatUtils.monoPost(
+        Mono<ChatResponse> response = ChatUtils.monoChatPost(
                 getURL(),
                 getCustomAccessToken(),
                 baseRequest,
@@ -201,7 +201,7 @@ public abstract class DefaultParamsClient implements DefaultParamsBot<ChatBaseRe
         baseRequest.setMessages(messagesHistory);
         log.info("{}contRequest => {}", getTag(), baseRequest.toString());
 
-        Mono<ChatResponse> response = ChatUtils.monoPost(
+        Mono<ChatResponse> response = ChatUtils.monoChatPost(
                 getURL(),
                 getCustomAccessToken(),
                 baseRequest,
@@ -239,7 +239,7 @@ public abstract class DefaultParamsClient implements DefaultParamsBot<ChatBaseRe
     public <T> Flux<ChatResponse> historyFlux(T request, Queue<Message> messagesHistory) {
         return Flux.create(emitter -> {
             CommonSubscriber subscriber = new CommonSubscriber(emitter, messagesHistory);
-            Flux<ChatResponse> chatResponse = ChatUtils.fluxPost(
+            Flux<ChatResponse> chatResponse = ChatUtils.fluxChatPost(
                     getURL(),
                     getCustomAccessToken(),
                     request,

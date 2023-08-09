@@ -1,5 +1,6 @@
 package com.gearwenxin.common;
 
+import com.gearwenxin.entity.response.TokenResponse;
 import com.gearwenxin.exception.BusinessException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
@@ -34,7 +35,7 @@ public class ChatUtils {
      * @param request     请求类
      * @return Mono<T>
      */
-    public static <T> Mono<T> monoPost(
+    public static <T> Mono<T> monoChatPost(
             String url,
             String accessToken,
             Object request,
@@ -72,7 +73,7 @@ public class ChatUtils {
      * @param request     请求类
      * @return Flux<T>
      */
-    public static <T> Flux<T> fluxPost(
+    public static <T> Flux<T> fluxChatPost(
             String url,
             String accessToken,
             Object request,
@@ -116,7 +117,7 @@ public class ChatUtils {
      * @param paramsMap   请求参数Map
      * @return Mono<T>
      */
-    public static <T> Mono<T> monoGet(
+    public static <T> Mono<T> monoChatGet(
             String url,
             String accessToken,
             Map<String, String> paramsMap,
@@ -154,6 +155,27 @@ public class ChatUtils {
                 .uri("")
                 .retrieve()
                 .bodyToMono(type)
+                .doOnError(WebClientResponseException.class, err -> {
+                    log.error("请求错误 => {} {}", err.getStatusCode(), err.getResponseBodyAsString());
+                    throw new BusinessException(ErrorCode.SYSTEM_NET_ERROR);
+                });
+    }
+
+    public static Mono<TokenResponse> getAccessTokenByAKSK(String apiKey, String secretKey) {
+
+        if (apiKey.isBlank() || secretKey.isBlank()) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        String url = "https://aip.baidubce.com/oauth/2.0/token?grant_type=client_credentials&client_id=" + apiKey + "&client_secret=" + secretKey;
+
+        WebClient webClient = WebClient.builder()
+                .baseUrl(url)
+                .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                .build();
+
+        return webClient.get()
+                .retrieve()
+                .bodyToMono(TokenResponse.class)
                 .doOnError(WebClientResponseException.class, err -> {
                     log.error("请求错误 => {} {}", err.getStatusCode(), err.getResponseBodyAsString());
                     throw new BusinessException(ErrorCode.SYSTEM_NET_ERROR);

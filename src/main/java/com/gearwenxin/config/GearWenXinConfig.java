@@ -30,22 +30,31 @@ import com.gearwenxin.client.rwkv.RWKV5WorldClient;
 import com.gearwenxin.client.rwkv.RWKVRaven14BClient;
 import com.gearwenxin.client.stable.StableDiffusionV1_5Client;
 import com.gearwenxin.client.stable.StableLMAlpha7BClient;
+import com.gearwenxin.common.ChatUtils;
+import com.gearwenxin.entity.response.TokenResponse;
+import jakarta.annotation.PostConstruct;
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import reactor.core.publisher.Mono;
 
 /**
  * @author Ge Mingjia
  */
 @Data
+@Slf4j
 @Configuration
-@ComponentScan
 @ConfigurationProperties("gear.wenxin")
-public class GearWenXinConfig {
+public class GearWenXinConfig implements CommandLineRunner {
 
     private String access_token;
+    private String api_key;
+    private String secret_key;
     private String common_url;
     private String vilg_url;
     private String chat_glm2_6b_url;
@@ -77,6 +86,14 @@ public class GearWenXinConfig {
     private String gpt4all_j_url;
     private String stablelm_alpha_7b_url;
     private String star_coder_url;
+
+    @Override
+    public void run(String... args) {
+        TokenResponse tokenResponse = ChatUtils.getAccessTokenByAKSK(api_key, secret_key).block();
+        if (tokenResponse != null) {
+            this.access_token = tokenResponse.getAccessToken();
+        }
+    }
 
     @Bean
     public CommonModelClient commonModelClient() {

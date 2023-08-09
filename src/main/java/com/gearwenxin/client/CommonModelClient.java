@@ -1,6 +1,5 @@
 package com.gearwenxin.client;
 
-import com.gearwenxin.common.Constant;
 import com.gearwenxin.entity.Message;
 
 import java.util.Map;
