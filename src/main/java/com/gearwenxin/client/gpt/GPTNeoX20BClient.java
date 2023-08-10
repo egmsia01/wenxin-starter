@@ -1,6 +1,6 @@
 package com.gearwenxin.client.gpt;
 
-import com.gearwenxin.client.DefaultParamsClient;
+import com.gearwenxin.client.DefaultClient;
 import com.gearwenxin.entity.Message;
 
 import java.util.Map;
@@ -11,7 +11,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author Ge Mingjia
  * @date 2023/8/5
  */
-public abstract class GPTNeoX20BClient extends DefaultParamsClient {
+public abstract class GPTNeoX20BClient extends DefaultClient {
 
     protected GPTNeoX20BClient() {
     }

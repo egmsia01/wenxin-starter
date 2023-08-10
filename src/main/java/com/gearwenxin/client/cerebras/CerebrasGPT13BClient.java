@@ -1,6 +1,6 @@
 package com.gearwenxin.client.cerebras;
 
-import com.gearwenxin.client.DefaultParamsClient;
+import com.gearwenxin.client.DefaultClient;
 import com.gearwenxin.entity.Message;
 
 import java.util.Map;
@@ -11,7 +11,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author Ge Mingjia
  * @date 2023/8/5
  */
-public abstract class CerebrasGPT13BClient extends DefaultParamsClient {
+public abstract class CerebrasGPT13BClient extends DefaultClient {
 
     protected CerebrasGPT13BClient() {
     }

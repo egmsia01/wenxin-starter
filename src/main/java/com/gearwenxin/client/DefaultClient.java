@@ -6,7 +6,7 @@ import com.gearwenxin.entity.Message;
 import com.gearwenxin.entity.chatmodel.ChatBaseRequest;
 import com.gearwenxin.entity.response.ChatResponse;
 import com.gearwenxin.exception.BusinessException;
-import com.gearwenxin.model.DefaultParamsBot;
+import com.gearwenxin.model.DefaultBot;
 import com.gearwenxin.subscriber.CommonSubscriber;
 import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Flux;
@@ -24,7 +24,7 @@ import static com.gearwenxin.common.WenXinUtils.buildUserMessage;
  * @date 2023/8/4
  */
 @Slf4j
-public abstract class DefaultParamsClient implements DefaultParamsBot<ChatBaseRequest> {
+public abstract class DefaultClient implements DefaultBot<ChatBaseRequest> {
 
     /**
      * 获取自定义access-token

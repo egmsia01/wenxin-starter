@@ -11,7 +11,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author Ge Mingjia
  * @date 2023/7/24
  */
-public abstract class BloomZ7BClient extends DefaultParamsClient {
+public abstract class BloomZ7BClient extends DefaultClient {
 
     protected BloomZ7BClient() {
     }

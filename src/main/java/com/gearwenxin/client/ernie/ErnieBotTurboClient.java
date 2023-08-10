@@ -1,6 +1,6 @@
 package com.gearwenxin.client.ernie;
 
-import com.gearwenxin.client.DefaultParamsClient;
+import com.gearwenxin.client.DefaultClient;
 import com.gearwenxin.common.*;
 import com.gearwenxin.entity.Message;
 
@@ -16,7 +16,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @date 2023/7/20
  */
 @Slf4j
-public abstract class ErnieBotTurboClient extends DefaultParamsClient {
+public abstract class ErnieBotTurboClient extends DefaultClient {
 
     protected ErnieBotTurboClient() {
     }

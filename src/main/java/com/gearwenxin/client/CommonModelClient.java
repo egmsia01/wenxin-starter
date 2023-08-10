@@ -10,7 +10,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author Ge Mingjia
  * @date 2023/7/24
  */
-public abstract class CommonModelClient extends DefaultParamsClient {
+public abstract class CommonModelClient extends DefaultClient {
 
     protected CommonModelClient() {
     }

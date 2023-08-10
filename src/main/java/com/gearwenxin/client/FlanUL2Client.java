@@ -10,7 +10,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author Ge Mingjia
  * @date 2023/7/24
  */
-public abstract class FlanUL2Client extends DefaultParamsClient {
+public abstract class FlanUL2Client extends DefaultClient {
 
     protected FlanUL2Client() {
     }

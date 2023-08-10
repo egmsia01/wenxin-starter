@@ -1,6 +1,6 @@
 package com.gearwenxin.client.linly;
 
-import com.gearwenxin.client.DefaultParamsClient;
+import com.gearwenxin.client.DefaultClient;
 import com.gearwenxin.entity.Message;
 
 import java.util.Map;
@@ -11,7 +11,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author Ge Mingjia
  * @date 2023/7/24
  */
-public abstract class LinlyChineseLLaMA27BClient extends DefaultParamsClient {
+public abstract class LinlyChineseLLaMA27BClient extends DefaultClient {
 
     protected LinlyChineseLLaMA27BClient() {
     }

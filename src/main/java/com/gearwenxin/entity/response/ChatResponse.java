@@ -12,7 +12,7 @@ import java.io.Serializable;
  * @author Ge Mingjia
  * @date 2023/7/20
  * <p>
- * DefaultParamsBot 模型
+ * DefaultBot 模型
  */
 @Data
 @NoArgsConstructor

@@ -8,7 +8,7 @@ import reactor.core.publisher.Flux;
  * @author Ge Mingjia
  * @date 2023/7/20
  */
-public interface DefaultParamsBot<T extends ChatBaseRequest> {
+public interface DefaultBot<T extends ChatBaseRequest> {
 
     /**
      * 单轮对话，无上下文记忆，默认参数

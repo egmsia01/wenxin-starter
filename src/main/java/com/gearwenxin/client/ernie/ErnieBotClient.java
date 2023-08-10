@@ -8,7 +8,7 @@ import com.gearwenxin.entity.Message;
 import com.gearwenxin.entity.request.ErnieRequest;
 import com.gearwenxin.common.ChatUtils;
 import com.gearwenxin.model.BaseBot;
-import com.gearwenxin.model.ParamsBot;
+import com.gearwenxin.model.DefaultBot;
 import com.gearwenxin.subscriber.CommonSubscriber;
 import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Flux;
@@ -25,7 +25,7 @@ import static com.gearwenxin.common.WenXinUtils.*;
  * @date 2023/7/20
  */
 @Slf4j
-public abstract class ErnieBotClient implements ParamsBot<ChatErnieRequest>, BaseBot {
+public abstract class ErnieBotClient implements DefaultBot<ChatErnieRequest>, BaseBot {
 
     protected ErnieBotClient() {
     }
