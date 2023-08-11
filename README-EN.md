@@ -58,13 +58,13 @@ The receiving parameter class of the image generation model is unified as ChatIm
 <dependency>
   <groupId>io.github.gemingjia</groupId>
   <artifactId>gear-wenxinworkshop-starter</artifactId>
-  <version>0.0.6</version>
+  <version>0.0.7</version>
 </dependency>
 ```
 - Gradle
 ```gradle
 dependencies {
-  implementation 'io.github.gemingjia:gear-wenxinworkshop-starter:0.0.6' 
+  implementation 'io.github.gemingjia:gear-wenxinworkshop-starter:0.0.7' 
 }
 ```
 
