@@ -13,6 +13,7 @@ import com.gearwenxin.subscriber.CommonSubscriber;
 import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -70,7 +71,7 @@ public abstract class ErnieBotClient implements DefaultBot<ChatErnieRequest>, Ba
     }
 
     @Override
-    public ChatResponse chatSingle(String content) {
+    public Mono<ChatResponse> chatSingle(String content) {
         if (content.isBlank()) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
@@ -79,12 +80,9 @@ public abstract class ErnieBotClient implements DefaultBot<ChatErnieRequest>, Ba
         request.setMessages(messageQueue);
         log.info("{}content_singleRequest => {}", getTag(), request.toString());
 
-        Mono<ChatResponse> response = ChatUtils.monoChatPost(
-                getURL(),
-                getCustomAccessToken(),
-                request,
-                ChatResponse.class);
-        return response.block();
+        return ChatUtils.monoChatPost(
+                getURL(), getCustomAccessToken(), request, ChatResponse.class
+        );
     }
 
     @Override
@@ -98,26 +96,20 @@ public abstract class ErnieBotClient implements DefaultBot<ChatErnieRequest>, Ba
         ernieRequest.setStream(true);
         log.info("{}content_singleRequest_stream => {}", getTag(), ernieRequest.toString());
         return ChatUtils.fluxChatPost(
-                getURL(),
-                getCustomAccessToken(),
-                ernieRequest,
-                ChatResponse.class);
+                getURL(), getCustomAccessToken(), ernieRequest, ChatResponse.class
+        );
     }
 
     @Override
-    public ChatResponse chatSingle(ChatErnieRequest chatErnieRequest) {
+    public Mono<ChatResponse> chatSingle(ChatErnieRequest chatErnieRequest) {
         this.validChatErnieRequest(chatErnieRequest);
 
         ErnieRequest ernieRequest = ConvertUtils.chatErnieReqToErnieReq(chatErnieRequest);
         log.info("{}singleRequest => {}", getTag(), ernieRequest.toString());
 
-        Mono<ChatResponse> response = ChatUtils.monoChatPost(
-                getURL(),
-                getCustomAccessToken(),
-                ernieRequest,
-                ChatResponse.class);
-
-        return response.block();
+        return ChatUtils.monoChatPost(
+                getURL(), getCustomAccessToken(), ernieRequest, ChatResponse.class
+        );
     }
 
     @Override
@@ -128,16 +120,21 @@ public abstract class ErnieBotClient implements DefaultBot<ChatErnieRequest>, Ba
         ernieRequest.setStream(true);
         log.info("{}singleRequest_stream => {}", getTag(), ernieRequest.toString());
 
-        return ChatUtils.fluxChatPost(getURL(), getCustomAccessToken(), ernieRequest, ChatResponse.class);
+        return ChatUtils.fluxChatPost(
+                getURL(), getCustomAccessToken(), ernieRequest, ChatResponse.class
+        );
     }
 
     @Override
-    public ChatResponse chatCont(String content, String msgUid) {
+    public Mono<ChatResponse> chatCont(String content, String msgUid) {
+
         if (content.isBlank() || msgUid.isBlank()) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
         Map<String, Queue<Message>> messageHistoryMap = getMessageHistoryMap();
-        Queue<Message> messagesHistory = messageHistoryMap.computeIfAbsent(msgUid, k -> new LinkedList<>());
+        Queue<Message> messagesHistory = messageHistoryMap.computeIfAbsent(
+                msgUid, k -> new LinkedList<>()
+        );
         Message message = buildUserMessage(content);
         WenXinUtils.offerMessage(messagesHistory, message);
 
@@ -145,19 +142,8 @@ public abstract class ErnieBotClient implements DefaultBot<ChatErnieRequest>, Ba
         ernieRequest.setMessages(messagesHistory);
         log.info("{}content_contRequest => {}", getTag(), ernieRequest.toString());
 
-        Mono<ChatResponse> response = ChatUtils.monoChatPost(
-                getURL(),
-                getCustomAccessToken(),
-                ernieRequest,
-                ChatResponse.class);
-        ChatResponse chatResponse = response.block();
-        if (chatResponse == null) {
-            throw new BusinessException(ErrorCode.SYSTEM_NET_ERROR);
-        }
-        Message messageResult = buildAssistantMessage(chatResponse.getResult());
-        WenXinUtils.offerMessage(messagesHistory, messageResult);
+        return this.historyMono(ernieRequest, messagesHistory);
 
-        return chatResponse;
     }
 
     @Override
@@ -166,7 +152,9 @@ public abstract class ErnieBotClient implements DefaultBot<ChatErnieRequest>, Ba
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
         Map<String, Queue<Message>> messageHistoryMap = getMessageHistoryMap();
-        Queue<Message> messagesHistory = messageHistoryMap.computeIfAbsent(msgUid, k -> new LinkedList<>());
+        Queue<Message> messagesHistory = messageHistoryMap.computeIfAbsent(
+                msgUid, k -> new LinkedList<>()
+        );
         Message message = buildUserMessage(content);
         WenXinUtils.offerMessage(messagesHistory, message);
 
@@ -179,14 +167,16 @@ public abstract class ErnieBotClient implements DefaultBot<ChatErnieRequest>, Ba
     }
 
     @Override
-    public ChatResponse chatCont(ChatErnieRequest chatErnieRequest, String msgUid) {
+    public Mono<ChatResponse> chatCont(ChatErnieRequest chatErnieRequest, String msgUid) {
         if (msgUid.isBlank()) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
         this.validChatErnieRequest(chatErnieRequest);
         ErnieRequest ernieRequest = ConvertUtils.chatErnieReqToErnieReq(chatErnieRequest);
         Map<String, Queue<Message>> messageHistoryMap = getMessageHistoryMap();
-        Queue<Message> messagesHistory = messageHistoryMap.computeIfAbsent(msgUid, key -> new LinkedList<>());
+        Queue<Message> messagesHistory = messageHistoryMap.computeIfAbsent(
+                msgUid, key -> new LinkedList<>()
+        );
 
         // 添加到历史
         Message message = buildUserMessage(chatErnieRequest.getContent());
@@ -195,19 +185,8 @@ public abstract class ErnieBotClient implements DefaultBot<ChatErnieRequest>, Ba
         ernieRequest.setMessages(messagesHistory);
         log.info("{}contRequest => {}", getTag(), ernieRequest.toString());
 
-        Mono<ChatResponse> response = ChatUtils.monoChatPost(
-                getURL(),
-                getCustomAccessToken(),
-                ernieRequest,
-                ChatResponse.class);
-        ChatResponse chatResponse = response.block();
-        if (chatResponse == null) {
-            throw new BusinessException(ErrorCode.SYSTEM_NET_ERROR);
-        }
-        Message messageResult = buildAssistantMessage(chatResponse.getResult());
-        WenXinUtils.offerMessage(messagesHistory, messageResult);
 
-        return chatResponse;
+        return this.historyMono(ernieRequest, messagesHistory);
     }
 
     @Override
@@ -218,7 +197,9 @@ public abstract class ErnieBotClient implements DefaultBot<ChatErnieRequest>, Ba
         this.validChatErnieRequest(chatErnieRequest);
         ErnieRequest ernieRequest = ConvertUtils.chatErnieReqToErnieReq(chatErnieRequest);
         Map<String, Queue<Message>> messageHistoryMap = getMessageHistoryMap();
-        Queue<Message> messagesHistory = messageHistoryMap.computeIfAbsent(msgUid, key -> new LinkedList<>());
+        Queue<Message> messagesHistory = messageHistoryMap.computeIfAbsent(
+                msgUid, key -> new LinkedList<>()
+        );
         // 添加到历史
         Message message = buildUserMessage(chatErnieRequest.getContent());
         WenXinUtils.offerMessage(messagesHistory, message);
@@ -245,18 +226,15 @@ public abstract class ErnieBotClient implements DefaultBot<ChatErnieRequest>, Ba
             log.warn("Temperature and topP cannot both have value");
         }
         // 检查temperature范围
-        if (request.getTemperature() != null &&
-                (request.getTemperature() <= 0 || request.getTemperature() > 1.0)) {
+        if (request.getTemperature() != null && (request.getTemperature() <= 0 || request.getTemperature() > 1.0)) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "temperature should be in (0, 1]");
         }
         // 检查topP范围
-        if (request.getTopP() != null &&
-                (request.getTopP() < 0 || request.getTopP() > 1.0)) {
+        if (request.getTopP() != null && (request.getTopP() < 0 || request.getTopP() > 1.0)) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "topP should be in [0, 1]");
         }
         // 检查penaltyScore范围
-        if (request.getTemperature() != null &&
-                (request.getPenaltyScore() < 1.0 || request.getPenaltyScore() > 2.0)) {
+        if (request.getTemperature() != null && (request.getPenaltyScore() < 1.0 || request.getPenaltyScore() > 2.0)) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "penaltyScore should be in [1, 2]");
         }
     }
@@ -265,12 +243,27 @@ public abstract class ErnieBotClient implements DefaultBot<ChatErnieRequest>, Ba
         return Flux.create(emitter -> {
             CommonSubscriber subscriber = new CommonSubscriber(emitter, messagesHistory);
             Flux<ChatResponse> chatResponse = ChatUtils.fluxChatPost(
-                    getURL(),
-                    getCustomAccessToken(),
-                    request,
-                    ChatResponse.class);
+                    getURL(), getCustomAccessToken(), request, ChatResponse.class
+            );
             chatResponse.subscribe(subscriber);
             emitter.onDispose(subscriber);
+        });
+    }
+
+    public <T> Mono<ChatResponse> historyMono(T request, Queue<Message> messagesHistory) {
+        Mono<ChatResponse> response = ChatUtils.monoChatPost(
+                getURL(), getCustomAccessToken(), request, ChatResponse.class
+        ).subscribeOn(Schedulers.boundedElastic());
+
+        return response.flatMap(chatResponse -> {
+            if (chatResponse == null) {
+                return Mono.error(new BusinessException(ErrorCode.SYSTEM_NET_ERROR));
+            }
+            // 构建聊天响应消息
+            Message messageResult = buildAssistantMessage(chatResponse.getResult());
+            WenXinUtils.offerMessage(messagesHistory, messageResult);
+
+            return Mono.just(chatResponse);
         });
     }
 }

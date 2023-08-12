@@ -2,6 +2,7 @@ package com.gearwenxin.model;
 
 import com.gearwenxin.entity.request.ImageBaseRequest;
 import com.gearwenxin.entity.response.ImageResponse;
+import reactor.core.publisher.Mono;
 
 /**
  * @author Ge Mingjia
@@ -15,6 +16,6 @@ public interface ImageBot<T extends ImageBaseRequest> {
      * @param imageBaseRequest 作图参数
      * @return ImageResponse 图片响应
      */
-    ImageResponse chatImage(T imageBaseRequest);
+    Mono<ImageResponse> chatImage(T imageBaseRequest);
 
 }

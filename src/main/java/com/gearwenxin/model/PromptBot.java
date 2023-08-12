@@ -2,6 +2,7 @@ package com.gearwenxin.model;
 
 import com.gearwenxin.entity.chatmodel.ChatPromptRequest;
 import com.gearwenxin.entity.response.PromptResponse;
+import reactor.core.publisher.Mono;
 
 /**
  * @author Ge Mingjia
@@ -16,6 +17,6 @@ public interface PromptBot {
      * @param request 请求实体类
      * @return ChatResponse 响应实体类
      */
-    PromptResponse chatPrompt(ChatPromptRequest request);
+    Mono<PromptResponse> chatPrompt(ChatPromptRequest request);
 
 }

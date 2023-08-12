@@ -8,6 +8,7 @@ import com.gearwenxin.entity.response.ImageResponse;
 import com.gearwenxin.exception.BusinessException;
 import com.gearwenxin.model.ImageBot;
 import lombok.extern.slf4j.Slf4j;
+import reactor.core.publisher.Mono;
 
 import java.util.Map;
 import java.util.Queue;
@@ -32,7 +33,7 @@ public abstract class ImageClient implements ImageBot<ImageBaseRequest> {
     public abstract String getTag();
 
     @Override
-    public ImageResponse chatImage(ImageBaseRequest imageBaseRequest) {
+    public Mono<ImageResponse> chatImage(ImageBaseRequest imageBaseRequest) {
         if (imageBaseRequest == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
@@ -41,11 +42,8 @@ public abstract class ImageClient implements ImageBot<ImageBaseRequest> {
         log.info(getTag() + "imageRequest => {}", imageBaseRequest.toString());
 
         return ChatUtils.monoChatPost(
-                        getURL(),
-                        getCustomAccessToken(),
-                        imageBaseRequest,
-                        ImageResponse.class)
-                .block();
+                getURL(), getCustomAccessToken(), imageBaseRequest, ImageResponse.class
+        );
     }
 
 }

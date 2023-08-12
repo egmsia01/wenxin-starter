@@ -3,6 +3,7 @@ package com.gearwenxin.model;
 import com.gearwenxin.entity.chatmodel.ChatBaseRequest;
 import com.gearwenxin.entity.response.ChatResponse;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 /**
  * @author Ge Mingjia
@@ -17,7 +18,7 @@ public interface DefaultBot<T extends ChatBaseRequest> {
      * @param content 对话内容
      * @return ChatResponse 响应实体类
      */
-    ChatResponse chatSingle(String content);
+    Mono<ChatResponse> chatSingle(String content);
 
     /**
      * 单轮对话，无上下文记忆，默认参数
@@ -35,7 +36,7 @@ public interface DefaultBot<T extends ChatBaseRequest> {
      * @param chatRequest 请求实体类
      * @return ChatResponse 响应实体类
      */
-    ChatResponse chatSingle(T chatRequest);
+    Mono<ChatResponse> chatSingle(T chatRequest);
 
     /**
      * 单轮对话，无上下文记忆，默认参数
@@ -54,7 +55,7 @@ public interface DefaultBot<T extends ChatBaseRequest> {
      * @param msgUid  对话唯一识别码
      * @return ChatResponse 响应实体类
      */
-    ChatResponse chatCont(String content, String msgUid);
+    Mono<ChatResponse> chatCont(String content, String msgUid);
 
     /**
      * 多轮对话，有上下文记忆，默认参数
@@ -74,7 +75,7 @@ public interface DefaultBot<T extends ChatBaseRequest> {
      * @param msgUid      对话唯一识别码
      * @return ChatResponse 响应实体类
      */
-    ChatResponse chatCont(T chatRequest, String msgUid);
+    Mono<ChatResponse> chatCont(T chatRequest, String msgUid);
 
     /**
      * 多轮对话，有上下文记忆，支持参数配置

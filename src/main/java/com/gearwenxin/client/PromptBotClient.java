@@ -63,7 +63,7 @@ public abstract class PromptBotClient implements PromptBot, BaseBot {
     }
 
     @Override
-    public PromptResponse chatPrompt(ChatPromptRequest chatPromptRequest) {
+    public Mono<PromptResponse> chatPrompt(ChatPromptRequest chatPromptRequest) {
         if (chatPromptRequest == null ||
                 chatPromptRequest.getId() <= 0 ||
                 chatPromptRequest.getParamMap().isEmpty()
@@ -74,13 +74,10 @@ public abstract class PromptBotClient implements PromptBot, BaseBot {
         String id = promptRequest.getId();
         Map<String, String> paramMap = promptRequest.getParamMap();
         paramMap.put("id", id);
-        Mono<PromptResponse> response = ChatUtils.monoChatGet(
-                URL,
-                getCustomAccessToken(),
-                paramMap,
-                PromptResponse.class);
 
-        return response.block();
+        return ChatUtils.monoChatGet(
+                URL, getCustomAccessToken(), paramMap, PromptResponse.class
+        );
     }
 
 }
