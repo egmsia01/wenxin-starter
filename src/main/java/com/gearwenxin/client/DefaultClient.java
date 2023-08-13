@@ -226,8 +226,8 @@ public abstract class DefaultClient implements DefaultBot<ChatBaseRequest> {
         ).subscribeOn(Schedulers.boundedElastic());
 
         return response.flatMap(chatResponse -> {
-            if (chatResponse == null) {
-                return Mono.error(new BusinessException(ErrorCode.SYSTEM_NET_ERROR));
+            if (chatResponse == null || chatResponse.getResult() == null) {
+                return Mono.error(new BusinessException(ErrorCode.SYSTEM_ERROR));
             }
             // 构建聊天响应消息
             Message messageResult = buildAssistantMessage(chatResponse.getResult());

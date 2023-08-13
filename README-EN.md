@@ -82,54 +82,50 @@ dependencies {
 
 ### 3、Invoke Example
 ```java
-
 @RestController
 public class ChatController {
 
-    // Model client to call
-    @Resource
-    private ErnieBotClient ernieBotClient;
+  // 要调用的模型的客户端
+  @Resource
+  private ErnieBotClient ernieBotClient;
 
-    // Single round chat
-    @PostMapping("/chat")
-    public BaseResponse<String> chatSingle(String msg) {
-        ChatResponse response = ernieBotClient.chatSingle(msg);
-        return BaseResponse.success(response.getResult());
-    }
+  // 单次对话
+  @PostMapping("/chat")
+  public Mono<ChatResponse> chatSingle(String msg) {
+    return ernieBotClient.chatSingle(msg);
+  }
 
-    // Continuous chat
-    @PostMapping("/chats")
-    public BaseResponse<String> chatCont(String msg) {
-        String chatUID = "test-user-1001";
-        ChatResponse response = ernieBotClient.chatCont(msg, chatUID);
-        return BaseResponse.success(response.getResult());
-    }
+  // 连续对话
+  @PostMapping("/chats")
+  public Mono<ChatResponse> chatCont(String msg) {
+    String chatUID = "test-user-1001";
+    return ernieBotClient.chatCont(msg, chatUID);
+  }
 
-    // Single round chat with stream
-    @PostMapping(value = "/stream/chat", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public Flux<ChatResponse> chatSingleStream(String msg) {
-        return ernieBotClient.chatSingleOfStream(msg);
-    }
+  // 流式返回，单次对话
+  @PostMapping(value = "/stream/chat", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+  public Flux<ChatResponse> chatSingleStream(String msg) {
+    return ernieBotClient.chatSingleOfStream(msg);
+  }
 
-    //Continuous chat with stream
-    @PostMapping(value = "/stream/chats", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public Flux<ChatResponse> chatContStream(String msg, String msgUid) {
-        return ernieBotClient.chatContOfStream(msg, msgUid);
-    }
-    
-    //prompt chat
-    @PostMapping("/rompt")
-    public BaseResponse<PromptResponse> chatSingle() {
-        Map<String, String> map = new HashMap<>();
-        map.put("article", "I have seen the magnificent sea and enjoyed the horizontal West Lake as a mirror, but I have never seen such water as the Li River. The water in the Li River is really quiet, so quiet that you can't feel it flowing.");
-        map.put("number", "20");
-        PromptRequest promptRequest = new PromptRequest();
-        promptRequest.setId(1234);
-        promptRequest.setParamMap(map);
-        PromptResponse promptResponse = promptBotClient.chatPrompt(promptRequest);
+  // 流式返回，连续对话
+  @PostMapping(value = "/stream/chats", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+  public Flux<ChatResponse> chatContStream(String msg, String msgUid) {
+    return ernieBotClient.chatContOfStream(msg, msgUid);
+  }
 
-        return BaseResponse.success(promptResponse);
-    }
+  // 模板对话
+  @PostMapping("/prompt")
+  public Mono<PromptResponse> chatSingle() {
+    Map<String, String> map = new HashMap<>();
+    map.put("article", "我看见过波澜壮阔的大海，玩赏过水平如镜的西湖，却从没看见过漓江这样的水。漓江的水真静啊，静得让你感觉不到它在流动。");
+    map.put("number", "20");
+    PromptRequest promptRequest = new PromptRequest();
+    promptRequest.setId(1234);
+    promptRequest.setParamMap(map);
+
+    return promptBotClient.chatPrompt(promptRequest);
+  }
 
 }
 ```
