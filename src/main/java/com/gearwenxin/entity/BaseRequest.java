@@ -2,10 +2,8 @@ package com.gearwenxin.entity;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.experimental.SuperBuilder;
 
 import java.util.Queue;
 
@@ -14,7 +12,6 @@ import java.util.Queue;
  * @date 2023/7/21
  */
 @Data
-@SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
 public class BaseRequest {
@@ -42,4 +39,37 @@ public class BaseRequest {
     @JsonProperty("stream")
     private Boolean stream;
 
+    public static class BaseRequestBuilder {
+        private String userId;
+        private Queue<Message> messages;
+        private Boolean stream;
+
+        public BaseRequestBuilder userId(String userId) {
+            this.userId = userId;
+            return this;
+        }
+
+        public BaseRequestBuilder messages(Queue<Message> messages) {
+            this.messages = messages;
+            return this;
+        }
+
+        public BaseRequestBuilder stream(Boolean stream) {
+            this.stream = stream;
+            return this;
+        }
+
+        public BaseRequest build() {
+            BaseRequest baseRequest = new BaseRequest();
+            baseRequest.setUserId(userId);
+            baseRequest.setMessages(messages);
+            baseRequest.setStream(stream);
+
+            return baseRequest;
+        }
+    }
+
+    public static BaseRequestBuilder builder() {
+        return new BaseRequestBuilder();
+    }
 }

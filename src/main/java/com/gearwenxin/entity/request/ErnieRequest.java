@@ -3,9 +3,10 @@ package com.gearwenxin.entity.request;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.gearwenxin.entity.BaseRequest;
 
+import com.gearwenxin.entity.Message;
 import lombok.*;
-import lombok.experimental.SuperBuilder;
 
+import java.util.Queue;
 
 /**
  * @author Ge Mingjia
@@ -14,7 +15,6 @@ import lombok.experimental.SuperBuilder;
  * DefaultBot 模型
  */
 @Data
-@SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString(callSuper = true)
@@ -47,5 +47,63 @@ public class ErnieRequest extends BaseRequest {
      */
     @JsonProperty("penalty_score")
     private Float penaltyScore;
+
+    public static class ErnieRequestBuilder extends BaseRequestBuilder {
+        private Float temperature;
+        private Float topP;
+        private Float penaltyScore;
+        private String userId;
+        private Queue<Message> messages;
+        private Boolean stream;
+
+        public ErnieRequestBuilder temperature(Float temperature) {
+            this.temperature = temperature;
+            return this;
+        }
+
+        public ErnieRequestBuilder topP(Float topP) {
+            this.topP = topP;
+            return this;
+        }
+
+        public ErnieRequestBuilder penaltyScore(Float penaltyScore) {
+            this.penaltyScore = penaltyScore;
+            return this;
+        }
+
+        @Override
+        public ErnieRequestBuilder userId(String userId) {
+            this.userId = userId;
+            return this;
+        }
+
+        @Override
+        public ErnieRequestBuilder messages(Queue<Message> messages) {
+            this.messages = messages;
+            return this;
+        }
+
+        @Override
+        public ErnieRequestBuilder stream(Boolean stream) {
+            this.stream = stream;
+            return this;
+        }
+
+        @Override
+        public ErnieRequest build() {
+            ErnieRequest ernieRequest = new ErnieRequest();
+            ernieRequest.setTemperature(temperature);
+            ernieRequest.setTopP(topP);
+            ernieRequest.setPenaltyScore(penaltyScore);
+            ernieRequest.setUserId(userId);
+            ernieRequest.setMessages(messages);
+            ernieRequest.setStream(stream);
+            return ernieRequest;
+        }
+    }
+
+    public static ErnieRequestBuilder builder() {
+        return new ErnieRequestBuilder();
+    }
 
 }

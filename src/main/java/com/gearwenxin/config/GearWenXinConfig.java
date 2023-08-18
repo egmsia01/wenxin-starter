@@ -89,16 +89,13 @@ public class GearWenXinConfig implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-
         if (api_key == null || secret_key == null) {
             return;
         }
-
         TokenResponse tokenResponse = ChatUtils.getAccessTokenByAKSK(api_key, secret_key).block();
         if (tokenResponse != null) {
             this.access_token = tokenResponse.getAccessToken();
         }
-
     }
 
     @Bean

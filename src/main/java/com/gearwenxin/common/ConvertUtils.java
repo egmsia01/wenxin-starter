@@ -15,8 +15,7 @@ import java.util.Objects;
  */
 public class ConvertUtils {
 
-    @SuppressWarnings("unchecked")
-    public static ErnieRequest.ErnieRequestBuilder<?, ?> toErnieReq(ChatErnieRequest chatRequest) {
+    public static ErnieRequest.ErnieRequestBuilder toErnieReq(ChatErnieRequest chatRequest) {
 
         Objects.requireNonNull(chatRequest, "ChatErnieRequest is null");
 
@@ -28,7 +27,7 @@ public class ConvertUtils {
                 .penaltyScore(chatRequest.getPenaltyScore());
     }
 
-    public static BaseRequest.BaseRequestBuilder<?, ?> convertToBaseRequest(ChatBaseRequest chatRequest) {
+    public static BaseRequest.BaseRequestBuilder convertToBaseRequest(ChatBaseRequest chatRequest) {
 
         Objects.requireNonNull(chatRequest, "ChatBaseRequest is null");
 
