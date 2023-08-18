@@ -71,8 +71,11 @@ public abstract class DefaultClient implements DefaultBot<ChatBaseRequest> {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
         Queue<Message> messageQueue = buildUserMessageQueue(content);
-        BaseRequest request = new BaseRequest();
-        request.setMessages(messageQueue);
+
+        BaseRequest request = BaseRequest.builder()
+                .messages(messageQueue)
+                .build();
+
         log.info(getTag() + "content_singleRequest => {}", request.toString());
 
         return ChatUtils.monoChatPost(
@@ -86,9 +89,12 @@ public abstract class DefaultClient implements DefaultBot<ChatBaseRequest> {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
         Queue<Message> messageQueue = buildUserMessageQueue(content);
-        BaseRequest baseRequest = new BaseRequest();
-        baseRequest.setMessages(messageQueue);
-        baseRequest.setStream(true);
+
+        BaseRequest baseRequest = BaseRequest.builder()
+                .messages(messageQueue)
+                .stream(true)
+                .build();
+
         log.info("{}content_singleRequest_stream => {}", getTag(), baseRequest.toString());
         return ChatUtils.fluxChatPost(
                 getURL(), getCustomAccessToken(), baseRequest, ChatResponse.class
@@ -101,7 +107,7 @@ public abstract class DefaultClient implements DefaultBot<ChatBaseRequest> {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
         chatBaseRequest.validSelf();
-        BaseRequest baseRequest = ConvertUtils.convertToBaseRequest(chatBaseRequest);
+        BaseRequest baseRequest = ConvertUtils.convertToBaseRequest(chatBaseRequest).build();
         log.info("{}singleRequest => {}", getTag(), baseRequest.toString());
 
         return ChatUtils.monoChatPost(
@@ -116,8 +122,10 @@ public abstract class DefaultClient implements DefaultBot<ChatBaseRequest> {
         }
         chatBaseRequest.validSelf();
 
-        BaseRequest baseRequest = ConvertUtils.convertToBaseRequest(chatBaseRequest);
-        baseRequest.setStream(true);
+        BaseRequest baseRequest = ConvertUtils.convertToBaseRequest(chatBaseRequest)
+                .stream(true)
+                .build();
+
         log.info("{}singleRequest_stream => {}", getTag(), baseRequest.toString());
 
         return ChatUtils.fluxChatPost(
@@ -131,17 +139,19 @@ public abstract class DefaultClient implements DefaultBot<ChatBaseRequest> {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
         Map<String, Queue<Message>> messageHistoryMap = getMessageHistoryMap();
-        Queue<Message> messagesHistory = messageHistoryMap.computeIfAbsent(
+        Queue<Message> messageQueue = messageHistoryMap.computeIfAbsent(
                 msgUid, k -> new LinkedList<>()
         );
         Message message = buildUserMessage(content);
-        WenXinUtils.offerMessage(messagesHistory, message);
+        WenXinUtils.offerMessage(messageQueue, message);
 
-        BaseRequest baseRequest = new BaseRequest();
-        baseRequest.setMessages(messagesHistory);
+        BaseRequest baseRequest = BaseRequest.builder()
+                .messages(messageQueue)
+                .build();
+
         log.info("{}content_contRequest => {}", getTag(), baseRequest.toString());
 
-        return this.historyMono(baseRequest, messagesHistory);
+        return this.historyMono(baseRequest, messageQueue);
 
     }
 
@@ -151,18 +161,20 @@ public abstract class DefaultClient implements DefaultBot<ChatBaseRequest> {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
         Map<String, Queue<Message>> messageHistoryMap = getMessageHistoryMap();
-        Queue<Message> messagesHistory = messageHistoryMap.computeIfAbsent(
+        Queue<Message> messageQueue = messageHistoryMap.computeIfAbsent(
                 msgUid, k -> new LinkedList<>()
         );
         Message message = buildUserMessage(content);
-        WenXinUtils.offerMessage(messagesHistory, message);
+        WenXinUtils.offerMessage(messageQueue, message);
 
-        BaseRequest baseRequest = new BaseRequest();
-        baseRequest.setMessages(messagesHistory);
-        baseRequest.setStream(true);
-        log.info("{}content_contRequest_stream => {}", getTag(), baseRequest.toString());
+        BaseRequest request = BaseRequest.builder()
+                .messages(messageQueue)
+                .stream(true)
+                .build();
 
-        return this.historyFlux(baseRequest, messagesHistory);
+        log.info("{}content_contRequest_stream => {}", getTag(), request.toString());
+
+        return this.historyFlux(request, messageQueue);
     }
 
     @Override
@@ -171,7 +183,7 @@ public abstract class DefaultClient implements DefaultBot<ChatBaseRequest> {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
         chatBaseRequest.validSelf();
-        BaseRequest baseRequest = ConvertUtils.convertToBaseRequest(chatBaseRequest);
+
         Map<String, Queue<Message>> messageHistoryMap = getMessageHistoryMap();
         Queue<Message> messagesHistory = messageHistoryMap.computeIfAbsent(
                 msgUid, key -> new LinkedList<>()
@@ -181,7 +193,10 @@ public abstract class DefaultClient implements DefaultBot<ChatBaseRequest> {
         Message message = buildUserMessage(chatBaseRequest.getContent());
         WenXinUtils.offerMessage(messagesHistory, message);
 
-        baseRequest.setMessages(messagesHistory);
+        BaseRequest baseRequest = ConvertUtils.convertToBaseRequest(chatBaseRequest)
+                .messages(messagesHistory)
+                .build();
+
         log.info("{}contRequest => {}", getTag(), baseRequest.toString());
 
         return this.historyMono(baseRequest, messagesHistory);
@@ -193,7 +208,7 @@ public abstract class DefaultClient implements DefaultBot<ChatBaseRequest> {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
         chatBaseRequest.validSelf();
-        BaseRequest baseRequest = ConvertUtils.convertToBaseRequest(chatBaseRequest);
+
         Map<String, Queue<Message>> messageHistoryMap = getMessageHistoryMap();
         Queue<Message> messagesHistory = messageHistoryMap.computeIfAbsent(
                 msgUid, key -> new LinkedList<>()
@@ -202,8 +217,11 @@ public abstract class DefaultClient implements DefaultBot<ChatBaseRequest> {
         Message message = buildUserMessage(chatBaseRequest.getContent());
         WenXinUtils.offerMessage(messagesHistory, message);
 
-        baseRequest.setMessages(messagesHistory);
-        baseRequest.setStream(true);
+        BaseRequest baseRequest = ConvertUtils.convertToBaseRequest(chatBaseRequest)
+                .messages(messagesHistory)
+                .stream(true)
+                .build();
+
         log.info("{}contRequest_stream => {}", getTag(), baseRequest.toString());
 
         return this.historyFlux(baseRequest, messagesHistory);

@@ -1,14 +1,11 @@
 package com.gearwenxin.common;
 
 import com.gearwenxin.entity.BaseRequest;
-import com.gearwenxin.exception.BusinessException;
-import com.gearwenxin.entity.Message;
 import com.gearwenxin.entity.chatmodel.*;
 import com.gearwenxin.entity.request.ErnieRequest;
 import com.gearwenxin.entity.request.PromptRequest;
 
-import java.util.LinkedList;
-import java.util.Queue;
+import java.util.Objects;
 
 /**
  * 类型转换工具类
@@ -18,64 +15,36 @@ import java.util.Queue;
  */
 public class ConvertUtils {
 
-    public static ErnieRequest chatErnieReqToErnieReq(ChatErnieRequest chatErnieRequest) {
-        ErnieRequest ernieRequest = new ErnieRequest();
+    @SuppressWarnings("unchecked")
+    public static ErnieRequest.ErnieRequestBuilder<?, ?> toErnieReq(ChatErnieRequest chatRequest) {
 
-        if (chatErnieRequest == null) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR);
-        }
-        if (chatErnieRequest.getUserId() != null) {
-            ernieRequest.setUserId(chatErnieRequest.getUserId());
-        }
-        if (chatErnieRequest.getContent() != null) {
-            Queue<Message> messageQueue = new LinkedList<>();
-            messageQueue.add(new Message(RoleEnum.user, chatErnieRequest.getContent()));
-            ernieRequest.setMessages(messageQueue);
-        }
-        if (chatErnieRequest.getTemperature() != null) {
-            ernieRequest.setTemperature(chatErnieRequest.getTemperature());
-        }
-        if (chatErnieRequest.getTopP() != null) {
-            ernieRequest.setTopP(chatErnieRequest.getTopP());
-        }
-        if (chatErnieRequest.getPenaltyScore() != null) {
-            ernieRequest.setPenaltyScore(chatErnieRequest.getPenaltyScore());
-        }
+        Objects.requireNonNull(chatRequest, "ChatErnieRequest is null");
 
-        return ernieRequest;
+        return ErnieRequest.builder()
+                .userId(chatRequest.getUserId())
+                .messages(WenXinUtils.buildUserMessageQueue(chatRequest.getContent()))
+                .temperature(chatRequest.getTemperature())
+                .topP(chatRequest.getTopP())
+                .penaltyScore(chatRequest.getPenaltyScore());
     }
 
-    public static BaseRequest convertToBaseRequest(ChatBaseRequest chatBaseRequest) {
-        BaseRequest baseRequest = new BaseRequest();
+    public static BaseRequest.BaseRequestBuilder<?, ?> convertToBaseRequest(ChatBaseRequest chatRequest) {
 
-        if (chatBaseRequest == null) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR);
-        }
-        if (chatBaseRequest.getUserId() != null) {
-            baseRequest.setUserId(chatBaseRequest.getUserId());
-        }
-        if (chatBaseRequest.getContent() != null) {
-            Queue<Message> messageQueue = new LinkedList<>();
-            messageQueue.add(new Message(RoleEnum.user, chatBaseRequest.getContent()));
-            baseRequest.setMessages(messageQueue);
-        }
+        Objects.requireNonNull(chatRequest, "ChatBaseRequest is null");
 
-        return baseRequest;
+        return BaseRequest.builder()
+                .userId(chatRequest.getUserId())
+                .messages(WenXinUtils.buildUserMessageQueue(chatRequest.getContent()));
     }
 
-    public static PromptRequest chatPromptReqToPromptReq(ChatPromptRequest chatPromptRequest) {
-        PromptRequest promptRequest = new PromptRequest();
+    public static PromptRequest chatPromptReqToPromptReq(ChatPromptRequest chatRequest) {
 
-        if (chatPromptRequest == null) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR);
-        }
-        if (chatPromptRequest.getId() > 0) {
-            promptRequest.setId(String.valueOf(chatPromptRequest.getId()));
-        }
-        if (chatPromptRequest.getParamMap() != null && !chatPromptRequest.getParamMap().isEmpty()) {
-            promptRequest.setParamMap(chatPromptRequest.getParamMap());
-        }
-        return promptRequest;
+        Objects.requireNonNull(chatRequest, "ChatPromptRequest is null");
+
+        return PromptRequest.builder()
+                .id(String.valueOf(chatRequest.getId()))
+                .paramMap(chatRequest.getParamMap())
+                .build();
     }
 
 }

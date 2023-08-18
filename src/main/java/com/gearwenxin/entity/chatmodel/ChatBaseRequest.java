@@ -3,6 +3,7 @@ package com.gearwenxin.entity.chatmodel;
 import com.gearwenxin.common.ErrorCode;
 import com.gearwenxin.exception.BusinessException;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -15,6 +16,7 @@ import static com.gearwenxin.common.Constant.MAX_CONTENT_LENGTH;
  * @date 2023/8/3
  */
 @Data
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class ChatBaseRequest implements Serializable {
