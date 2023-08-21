@@ -140,6 +140,10 @@ public class ChatController {
 }
 ```
 
+## Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=gemingjia/gear-wenxinworkshop-starter&type=Date)](https://star-history.com/#gemingjia/gear-wenxinworkshop-starter)
+
 ## 更新日志
 v0.0.7
 
