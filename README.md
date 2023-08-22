@@ -59,10 +59,11 @@
 ```
 
 ### 1、添加依赖
+
 Repository Path: [/io/github/gemingjia/gear-wenxinworkshop-starter)
+
 - Maven
 ```xml
-<!-- 若中央仓库未更新可手动添加 -->
 <dependency>
   <groupId>io.github.gemingjia</groupId>
   <artifactId>gear-wenxinworkshop-starter</artifactId>
