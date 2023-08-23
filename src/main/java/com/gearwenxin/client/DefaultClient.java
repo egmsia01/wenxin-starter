@@ -29,8 +29,6 @@ public abstract class DefaultClient implements DefaultBot<ChatBaseRequest> {
 
     /**
      * 获取自定义access-token
-     *
-     * @return AccessToken
      */
     public abstract String getCustomAccessToken();
 
@@ -41,8 +39,6 @@ public abstract class DefaultClient implements DefaultBot<ChatBaseRequest> {
 
     /**
      * 获取此模型的历史消息
-     *
-     * @return 历史消息 Map<String, Queue<Message>>
      */
     public abstract Map<String, Queue<Message>> getMessageHistoryMap();
 
@@ -53,15 +49,11 @@ public abstract class DefaultClient implements DefaultBot<ChatBaseRequest> {
 
     /**
      * 获取模型URL
-     *
-     * @return URL
      */
     public abstract String getURL();
 
     /**
      * 获取模型 TAG
-     *
-     * @return TAG
      */
     public abstract String getTag();
 
@@ -96,6 +88,7 @@ public abstract class DefaultClient implements DefaultBot<ChatBaseRequest> {
                 .build();
 
         log.info("{}content_singleRequest_stream => {}", getTag(), baseRequest.toString());
+
         return ChatUtils.fluxChatPost(
                 getURL(), getCustomAccessToken(), baseRequest, ChatResponse.class
         );
@@ -107,7 +100,8 @@ public abstract class DefaultClient implements DefaultBot<ChatBaseRequest> {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
         chatBaseRequest.validSelf();
-        BaseRequest baseRequest = ConvertUtils.convertToBaseRequest(chatBaseRequest).build();
+        BaseRequest baseRequest = ConvertUtils.toBaseRequest(chatBaseRequest).build();
+
         log.info("{}singleRequest => {}", getTag(), baseRequest.toString());
 
         return ChatUtils.monoChatPost(
@@ -122,7 +116,7 @@ public abstract class DefaultClient implements DefaultBot<ChatBaseRequest> {
         }
         chatBaseRequest.validSelf();
 
-        BaseRequest baseRequest = ConvertUtils.convertToBaseRequest(chatBaseRequest)
+        BaseRequest baseRequest = ConvertUtils.toBaseRequest(chatBaseRequest)
                 .stream(true)
                 .build();
 
@@ -138,10 +132,12 @@ public abstract class DefaultClient implements DefaultBot<ChatBaseRequest> {
         if (content.isBlank() || msgUid.isBlank()) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
+
         Map<String, Queue<Message>> messageHistoryMap = getMessageHistoryMap();
         Queue<Message> messageQueue = messageHistoryMap.computeIfAbsent(
                 msgUid, k -> new LinkedList<>()
         );
+
         Message message = buildUserMessage(content);
         WenXinUtils.offerMessage(messageQueue, message);
 
@@ -193,7 +189,7 @@ public abstract class DefaultClient implements DefaultBot<ChatBaseRequest> {
         Message message = buildUserMessage(chatBaseRequest.getContent());
         WenXinUtils.offerMessage(messagesHistory, message);
 
-        BaseRequest baseRequest = ConvertUtils.convertToBaseRequest(chatBaseRequest)
+        BaseRequest baseRequest = ConvertUtils.toBaseRequest(chatBaseRequest)
                 .messages(messagesHistory)
                 .build();
 
@@ -217,7 +213,7 @@ public abstract class DefaultClient implements DefaultBot<ChatBaseRequest> {
         Message message = buildUserMessage(chatBaseRequest.getContent());
         WenXinUtils.offerMessage(messagesHistory, message);
 
-        BaseRequest baseRequest = ConvertUtils.convertToBaseRequest(chatBaseRequest)
+        BaseRequest baseRequest = ConvertUtils.toBaseRequest(chatBaseRequest)
                 .messages(messagesHistory)
                 .stream(true)
                 .build();

@@ -70,7 +70,7 @@ public abstract class PromptBotClient implements PromptBot, BaseBot {
         ) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
-        PromptRequest promptRequest = ConvertUtils.chatPromptReqToPromptReq(chatPromptRequest);
+        PromptRequest promptRequest = ConvertUtils.toPromptRequest(chatPromptRequest);
         String id = promptRequest.getId();
         Map<String, String> paramMap = promptRequest.getParamMap();
         paramMap.put("id", id);

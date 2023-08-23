@@ -15,7 +15,7 @@ import java.util.Objects;
  */
 public class ConvertUtils {
 
-    public static ErnieRequest.ErnieRequestBuilder toErnieReq(ChatErnieRequest chatRequest) {
+    public static ErnieRequest.ErnieRequestBuilder toErnieRequest(ChatErnieRequest chatRequest) {
 
         Objects.requireNonNull(chatRequest, "ChatErnieRequest is null");
 
@@ -27,7 +27,7 @@ public class ConvertUtils {
                 .penaltyScore(chatRequest.getPenaltyScore());
     }
 
-    public static BaseRequest.BaseRequestBuilder convertToBaseRequest(ChatBaseRequest chatRequest) {
+    public static BaseRequest.BaseRequestBuilder toBaseRequest(ChatBaseRequest chatRequest) {
 
         Objects.requireNonNull(chatRequest, "ChatBaseRequest is null");
 
@@ -36,7 +36,7 @@ public class ConvertUtils {
                 .messages(WenXinUtils.buildUserMessageQueue(chatRequest.getContent()));
     }
 
-    public static PromptRequest chatPromptReqToPromptReq(ChatPromptRequest chatRequest) {
+    public static PromptRequest toPromptRequest(ChatPromptRequest chatRequest) {
 
         Objects.requireNonNull(chatRequest, "ChatPromptRequest is null");
 

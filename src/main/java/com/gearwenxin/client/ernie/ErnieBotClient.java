@@ -110,7 +110,7 @@ public abstract class ErnieBotClient implements DefaultBot<ChatErnieRequest>, Ba
     public Mono<ChatResponse> chatSingle(ChatErnieRequest chatErnieRequest) {
         this.validChatErnieRequest(chatErnieRequest);
 
-        ErnieRequest ernieRequest = ConvertUtils.toErnieReq(chatErnieRequest).build();
+        ErnieRequest ernieRequest = ConvertUtils.toErnieRequest(chatErnieRequest).build();
 
         log.info("{}singleRequest => {}", getTag(), ernieRequest.toString());
 
@@ -123,7 +123,7 @@ public abstract class ErnieBotClient implements DefaultBot<ChatErnieRequest>, Ba
     public Flux<ChatResponse> chatSingleOfStream(ChatErnieRequest chatErnieRequest) {
         this.validChatErnieRequest(chatErnieRequest);
 
-        ErnieRequest ernieRequest = ConvertUtils.toErnieReq(chatErnieRequest)
+        ErnieRequest ernieRequest = ConvertUtils.toErnieRequest(chatErnieRequest)
                 .stream(true)
                 .build();
 
@@ -214,7 +214,7 @@ public abstract class ErnieBotClient implements DefaultBot<ChatErnieRequest>, Ba
         Message message = buildUserMessage(chatErnieRequest.getContent());
         WenXinUtils.offerMessage(messagesHistory, message);
 
-        ErnieRequest ernieRequest = ConvertUtils.toErnieReq(chatErnieRequest)
+        ErnieRequest ernieRequest = ConvertUtils.toErnieRequest(chatErnieRequest)
                 .messages(messagesHistory)
                 .build();
 
@@ -239,7 +239,7 @@ public abstract class ErnieBotClient implements DefaultBot<ChatErnieRequest>, Ba
         Message message = buildUserMessage(chatErnieRequest.getContent());
         WenXinUtils.offerMessage(messageQueue, message);
 
-        ErnieRequest ernieRequest = ConvertUtils.toErnieReq(chatErnieRequest)
+        ErnieRequest ernieRequest = ConvertUtils.toErnieRequest(chatErnieRequest)
                 .messages(messageQueue)
                 .stream(true)
                 .build();
