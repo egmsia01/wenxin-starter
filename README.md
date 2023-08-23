@@ -59,20 +59,21 @@
 ```
 
 ### 1、添加依赖
+
 Repository Path: [/io/github/gemingjia/gear-wenxinworkshop-starter)
+
 - Maven
 ```xml
-<!-- 若中央仓库未更新可手动添加 -->
 <dependency>
   <groupId>io.github.gemingjia</groupId>
   <artifactId>gear-wenxinworkshop-starter</artifactId>
-  <version>0.0.7.1</version>
+  <version>0.0.7.2</version>
 </dependency>
 ```
 - Gradle
 ```gradle
 dependencies {
-  implementation 'io.github.gemingjia:gear-wenxinworkshop-starter:0.0.7.1' 
+  implementation 'io.github.gemingjia:gear-wenxinworkshop-starter:0.0.7.2' 
 }
 ```
 
@@ -139,6 +140,10 @@ public class ChatController {
 
 }
 ```
+
+## Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=gemingjia/gear-wenxinworkshop-starter&type=Date)](https://star-history.com/#gemingjia/gear-wenxinworkshop-starter)
 
 ## 更新日志
 v0.0.7
