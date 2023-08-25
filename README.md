@@ -146,7 +146,7 @@ public class ChatController {
 [![Star History Chart](https://api.star-history.com/svg?repos=gemingjia/gear-wenxinworkshop-starter&type=Date)](https://star-history.com/#gemingjia/gear-wenxinworkshop-starter)
 
 ## 更新日志
-v0.0.7
+v0.0.7.2
 
 全面转向webflux响应式风格，请注意适配返回值
 
