@@ -5,8 +5,6 @@ import com.gearwenxin.exception.BusinessException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.http.codec.json.Jackson2JsonDecoder;
-import org.springframework.http.codec.json.Jackson2JsonEncoder;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.*;
 import reactor.core.publisher.Flux;
@@ -16,6 +14,7 @@ import java.net.URI;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 /**
@@ -24,6 +23,10 @@ import java.util.stream.Collectors;
  */
 @Slf4j
 public class ChatUtils {
+
+    private static final WebClient STATIC_WEB_CLIENT = WebClient.builder()
+            .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+            .build();
 
     private static final String ACCESS_TOKEN_PRE = "?access_token=";
 
@@ -35,34 +38,17 @@ public class ChatUtils {
      * @param request     请求类
      * @return Mono<T>
      */
-    public static <T> Mono<T> monoChatPost(
-            String url,
-            String accessToken,
-            Object request,
-            Class<T> type) {
-
-        if (url == null || accessToken == null || request == null || type == null) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR);
-        }
-
+    public static <T> Mono<T> monoChatPost(String url, String accessToken, Object request, Class<T> type) {
+        validateParams(url, accessToken, request, type);
         log.info("monoURL => {}", url);
 
         String completeUrl = url + ACCESS_TOKEN_PRE + accessToken;
 
-        WebClient client = WebClient.builder()
-                .baseUrl(completeUrl)
-                .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-                .build();
-
-        return client.post()
+        return buildWebClient(completeUrl).post()
                 .body(BodyInserters.fromValue(request))
                 .retrieve()
                 .bodyToMono(type)
-                .doOnError(WebClientResponseException.class, err -> {
-                    log.error("请求错误 => {}", err.getStatusCode() + " "
-                            + err.getResponseBodyAsString());
-                    throw new BusinessException(ErrorCode.SYSTEM_NET_ERROR);
-                });
+                .doOnError(WebClientResponseException.class, handleWebClientError());
     }
 
     /**
@@ -73,40 +59,18 @@ public class ChatUtils {
      * @param request     请求类
      * @return Flux<T>
      */
-    public static <T> Flux<T> fluxChatPost(
-            String url,
-            String accessToken,
-            Object request,
-            Class<T> type) {
-
-        if (url == null || accessToken == null || request == null || type == null) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR);
-        }
+    public static <T> Flux<T> fluxChatPost(String url, String accessToken, Object request, Class<T> type) {
+        validateParams(url, accessToken, request, type);
         log.info("fluxURL => {}", url);
+
         String completeUrl = url + ACCESS_TOKEN_PRE + accessToken;
 
-        WebClient client = WebClient.builder()
-                .baseUrl(completeUrl)
-                .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-                .exchangeStrategies(ExchangeStrategies.builder()
-                        .codecs(configurer -> {
-                            configurer.defaultCodecs().maxInMemorySize(-1);
-                            configurer.defaultCodecs().jackson2JsonDecoder(new Jackson2JsonDecoder());
-                            configurer.defaultCodecs().jackson2JsonEncoder(new Jackson2JsonEncoder());
-                        })
-                        .build())
-                .build();
-
-        return client.post()
+        return buildWebClient(completeUrl).post()
                 .body(BodyInserters.fromValue(request))
                 .accept(MediaType.TEXT_EVENT_STREAM)
                 .retrieve()
                 .bodyToFlux(type)
-                .doOnError(WebClientResponseException.class, err -> {
-                    log.error("请求错误 => {}", err.getStatusCode() + " "
-                            + err.getResponseBodyAsString());
-                    throw new BusinessException(ErrorCode.SYSTEM_NET_ERROR);
-                });
+                .doOnError(WebClientResponseException.class, handleWebClientError());
     }
 
     /**
@@ -117,25 +81,14 @@ public class ChatUtils {
      * @param paramsMap   请求参数Map
      * @return Mono<T>
      */
-    public static <T> Mono<T> monoChatGet(
-            String url,
-            String accessToken,
-            Map<String, String> paramsMap,
-            Class<T> type) {
+    public static <T> Mono<T> monoChatGet(String url, String accessToken, Map<String, String> paramsMap, Class<T> type) {
 
-        if (url == null || accessToken == null || paramsMap == null || paramsMap.isEmpty()) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR);
-        }
+        validateParams(url, accessToken, paramsMap, type);
         log.info("monoURL => {}", url);
-        WebClient.Builder clientBuilder = WebClient.builder()
-                .baseUrl(url)
-                .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
 
-        WebClient client;
+        WebClient client = buildWebClient(url);
 
-        // 屎山 待优化
         paramsMap.put("access_token", accessToken);
-        client = clientBuilder.build();
         String queryParams = paramsMap.entrySet().stream()
                 .map(entry -> entry.getKey() + "=" + encodeURL(entry.getValue()))
                 .collect(Collectors.joining("&"));
@@ -155,31 +108,20 @@ public class ChatUtils {
                 .uri("")
                 .retrieve()
                 .bodyToMono(type)
-                .doOnError(WebClientResponseException.class, err -> {
-                    log.error("请求错误 => {} {}", err.getStatusCode(), err.getResponseBodyAsString());
-                    throw new BusinessException(ErrorCode.SYSTEM_NET_ERROR);
-                });
+                .doOnError(WebClientResponseException.class, handleWebClientError());
     }
 
     public static Mono<TokenResponse> getAccessTokenByAKSK(String apiKey, String secretKey) {
-
         if (apiKey.isBlank() || secretKey.isBlank()) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
+
         String url = "https://aip.baidubce.com/oauth/2.0/token?grant_type=client_credentials&client_id=" + apiKey + "&client_secret=" + secretKey;
 
-        WebClient webClient = WebClient.builder()
-                .baseUrl(url)
-                .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-                .build();
-
-        return webClient.get()
+        return buildWebClient(url).get()
                 .retrieve()
                 .bodyToMono(TokenResponse.class)
-                .doOnError(WebClientResponseException.class, err -> {
-                    log.error("请求错误 => {} {}", err.getStatusCode(), err.getResponseBodyAsString());
-                    throw new BusinessException(ErrorCode.SYSTEM_NET_ERROR);
-                });
+                .doOnError(WebClientResponseException.class, handleWebClientError());
     }
 
     public static String encodeURL(String component) {
@@ -189,12 +131,25 @@ public class ChatUtils {
         return URLEncoder.encode(component, StandardCharsets.UTF_8);
     }
 
-    private static ExchangeFilterFunction logRequest() {
-        return ExchangeFilterFunction.ofRequestProcessor(clientRequest -> {
-            log.info("Request => {}", clientRequest.method() + " " + clientRequest.url());
-            clientRequest.headers().forEach((name, values) -> values.forEach(value -> log.info(name + ": " + value)));
-            return Mono.just(clientRequest);
-        });
+    private static WebClient buildWebClient(String baseUrl) {
+        return STATIC_WEB_CLIENT.mutate()
+                .baseUrl(baseUrl)
+                .build();
+    }
+
+    private static <T> void validateParams(String url, String accessToken, Object request, Class<T> type) {
+        if (url.isBlank() || accessToken.isBlank() || request == null || type == null) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+    }
+
+    private static Consumer<Throwable> handleWebClientError() {
+        return err -> {
+            log.error("请求错误 => {} {}", err instanceof WebClientResponseException
+                    ? ((WebClientResponseException) err).getStatusCode()
+                    : "Unknown", err.getMessage());
+            throw new BusinessException(ErrorCode.SYSTEM_NET_ERROR);
+        };
     }
 
 }
