@@ -32,16 +32,12 @@ import com.gearwenxin.client.stable.StableDiffusionV1_5Client;
 import com.gearwenxin.client.stable.StableLMAlpha7BClient;
 import com.gearwenxin.common.ChatUtils;
 import com.gearwenxin.entity.response.TokenResponse;
-import jakarta.annotation.PostConstruct;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import reactor.core.publisher.Mono;
 
 /**
  * @author Ge Mingjia

@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public class ChatUtils {
 
-    private static final WebClient STATIC_WEB_CLIENT = WebClient.builder()
+    private static final WebClient WEB_CLIENT = WebClient.builder()
             .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
             .build();
 
@@ -132,7 +132,7 @@ public class ChatUtils {
     }
 
     private static WebClient buildWebClient(String baseUrl) {
-        return STATIC_WEB_CLIENT.mutate()
+        return WEB_CLIENT.mutate()
                 .baseUrl(baseUrl)
                 .build();
     }

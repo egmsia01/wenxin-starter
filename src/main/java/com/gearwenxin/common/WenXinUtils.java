@@ -47,7 +47,9 @@ public class WenXinUtils {
         if (messagesHistory == null || message == null || message.getContent().isBlank()) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
+
         messagesHistory.offer(message);
+
         if (message.getRole() == RoleEnum.assistant) {
             return;
         }
@@ -58,6 +60,7 @@ public class WenXinUtils {
                 totalLength += msg.getContent().length();
             }
         }
+
         while (totalLength > MAX_TOTAL_LENGTH) {
             Message firstMessage = messagesHistory.poll();
             Message secondMessage = messagesHistory.poll();
@@ -65,6 +68,7 @@ public class WenXinUtils {
                 totalLength -= (firstMessage.getContent().length() + secondMessage.getContent().length());
             }
         }
+
     }
 
 }
