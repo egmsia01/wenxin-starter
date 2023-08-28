@@ -179,25 +179,6 @@ public abstract class ErnieBotClient implements DefaultBot<ChatErnieRequest>, Ba
         return this.historyFlux(ernieRequest, messagesHistory);
     }
 
-//    @Override
-//    public Flux<ChatResponse> chatContOfStream(String content, String msgUid) {
-//        return Mono.just(msgUid)
-//                .filter(id -> !id.isBlank())
-//                .flatMapMany(id -> {
-//                    Queue<Message> messagesHistory = getMessageHistoryMap().getOrDefault(id, new LinkedList<>());
-//
-//                    Message message = buildUserMessage(content);
-//                    WenXinUtils.offerMessage(messagesHistory, message);
-//
-//                    ErnieRequest request = (ErnieRequest) BaseRequest.builder()
-//                            .messages(messagesHistory)
-//                            .stream(true)
-//                            .build();
-//
-//                    return historyFlux(request, messagesHistory);
-//                });
-//    }
-
     @Override
     public Mono<ChatResponse> chatCont(ChatErnieRequest chatErnieRequest, String msgUid) {
         if (msgUid.isBlank()) {
@@ -249,6 +230,34 @@ public abstract class ErnieBotClient implements DefaultBot<ChatErnieRequest>, Ba
         return this.historyFlux(ernieRequest, messageQueue);
     }
 
+    public <T> Flux<ChatResponse> historyFlux(T request, Queue<Message> messagesHistory) {
+        return Flux.create(emitter -> {
+            CommonSubscriber subscriber = new CommonSubscriber(emitter, messagesHistory);
+            Flux<ChatResponse> chatResponse = ChatUtils.fluxChatPost(
+                    getURL(), getCustomAccessToken(), request, ChatResponse.class
+            );
+            chatResponse.subscribe(subscriber);
+            emitter.onDispose(subscriber);
+        });
+    }
+
+    public <T> Mono<ChatResponse> historyMono(T request, Queue<Message> messagesHistory) {
+        Mono<ChatResponse> response = ChatUtils.monoChatPost(
+                getURL(), getCustomAccessToken(), request, ChatResponse.class
+        ).subscribeOn(Schedulers.boundedElastic());
+
+        return response.flatMap(chatResponse -> {
+            if (chatResponse == null) {
+                return Mono.error(new BusinessException(ErrorCode.SYSTEM_NET_ERROR));
+            }
+            // 构建聊天响应消息
+            Message messageResult = buildAssistantMessage(chatResponse.getResult());
+            WenXinUtils.offerMessage(messagesHistory, messageResult);
+
+            return Mono.just(chatResponse);
+        });
+    }
+
     public void validChatErnieRequest(ChatErnieRequest request) {
 
         // 检查content不为空
@@ -276,33 +285,5 @@ public abstract class ErnieBotClient implements DefaultBot<ChatErnieRequest>, Ba
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "penaltyScore should be in [1, 2]");
         }
 
-    }
-
-    public <T> Flux<ChatResponse> historyFlux(T request, Queue<Message> messagesHistory) {
-        return Flux.create(emitter -> {
-            CommonSubscriber subscriber = new CommonSubscriber(emitter, messagesHistory);
-            Flux<ChatResponse> chatResponse = ChatUtils.fluxChatPost(
-                    getURL(), getCustomAccessToken(), request, ChatResponse.class
-            );
-            chatResponse.subscribe(subscriber);
-            emitter.onDispose(subscriber);
-        });
-    }
-
-    public <T> Mono<ChatResponse> historyMono(T request, Queue<Message> messagesHistory) {
-        Mono<ChatResponse> response = ChatUtils.monoChatPost(
-                getURL(), getCustomAccessToken(), request, ChatResponse.class
-        ).subscribeOn(Schedulers.boundedElastic());
-
-        return response.flatMap(chatResponse -> {
-            if (chatResponse == null) {
-                return Mono.error(new BusinessException(ErrorCode.SYSTEM_NET_ERROR));
-            }
-            // 构建聊天响应消息
-            Message messageResult = buildAssistantMessage(chatResponse.getResult());
-            WenXinUtils.offerMessage(messagesHistory, messageResult);
-
-            return Mono.just(chatResponse);
-        });
     }
 }
