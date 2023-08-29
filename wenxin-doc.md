@@ -209,7 +209,7 @@ public class ChatController {
     // 单次对话
     @PostMapping("/chat")
     public BaseResponse<String> chatSingle(String msg) {
-        ChatResponse response = ernieBotClient.chatSingle(msg);
+        ChatResponse response = ernieBotClient.chatSingle(msg).block();
         return BaseResponse.success(response.getResult());
     }
  
@@ -229,7 +229,7 @@ public class ChatController {
     // 流式返回，单次对话
     @PostMapping(value = "/stream/chat", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public BaseResponse<Flux<ChatResponse>> chatSingleStream(String msg) {
-        Flux<ChatResponse> chatResponseFlux = ernieBotClient.chatSingleOfStream(msg);
+        Flux<ChatResponse> chatResponseFlux = ernieBotClient.chatSingleOfStream(msg).block();
         return BaseResponse.success(chatResponseFlux);
     }
  
@@ -256,7 +256,7 @@ public class ChatController {
     @PostMapping("/chats")
     public BaseResponse<String> chatCont(String msg) {
         String chatUID = "test-user-1001";
-        ChatResponse response = ernieBotClient.chatCont(msg, chatUID);
+        ChatResponse response = ernieBotClient.chatCont(msg, chatUID).block();
         return BaseResponse.success(response.getResult());
     }
  
@@ -275,9 +275,9 @@ public class ChatController {
  
     // 流式返回，连续对话
     @PostMapping(value = "/stream/chats", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public BaseResponse<Flux<ChatResponse>> chatContStream(String msg, String msgUid) {
+    public Flux<ChatResponse> chatContStream(String msg, String msgUid) {
         Flux<ChatResponse> chatResponseFlux = ernieBotClient.chatContOfStream(msg, msgUid);
-        return BaseResponse.success(chatResponseFlux);
+        return chatResponseFlux;
     }
  
 }
@@ -304,7 +304,7 @@ public class ChatController {
         PromptRequest promptRequest = new PromptRequest();
         promptRequest.setId(1234);
         promptRequest.setParamMap(map);
-        PromptResponse promptResponse = promptClient.chatPrompt(promptRequest);
+        PromptResponse promptResponse = promptClient.chatPrompt(promptRequest).block();
 
         return BaseResponse.success(promptResponse);
     }
