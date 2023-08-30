@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.Serializable;
 
@@ -34,7 +35,7 @@ public class ChatBaseRequest implements Serializable {
     public void validSelf() {
 
         // 检查content不为空
-        if (content.isBlank()) {
+        if (StringUtils.isBlank(content)) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "content cannot be empty");
         }
         // 检查单个content长度

@@ -2,6 +2,7 @@ package com.gearwenxin.common;
 
 import com.gearwenxin.exception.BusinessException;
 import com.gearwenxin.entity.Message;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.LinkedList;
 import java.util.Queue;
@@ -44,7 +45,7 @@ public class WenXinUtils {
      */
     public static void offerMessage(Queue<Message> messagesHistory, Message message) {
 
-        if (messagesHistory == null || message == null || message.getContent().isBlank()) {
+        if (messagesHistory == null || message == null || StringUtils.isBlank(message.getContent())) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
 

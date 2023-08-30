@@ -14,6 +14,7 @@ import com.gearwenxin.model.BaseBot;
 import com.gearwenxin.model.PromptBot;
 import lombok.extern.slf4j.Slf4j;
 
+import org.springframework.util.CollectionUtils;
 import reactor.core.publisher.Mono;
 
 import java.util.Map;
@@ -66,7 +67,7 @@ public abstract class PromptBotClient implements PromptBot, BaseBot {
     public Mono<PromptResponse> chatPrompt(ChatPromptRequest chatPromptRequest) {
         if (chatPromptRequest == null ||
                 chatPromptRequest.getId() <= 0 ||
-                chatPromptRequest.getParamMap().isEmpty()
+                CollectionUtils.isEmpty(chatPromptRequest.getParamMap())
         ) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }

@@ -3,6 +3,7 @@ package com.gearwenxin.common;
 import com.gearwenxin.entity.response.TokenResponse;
 import com.gearwenxin.exception.BusinessException;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.web.reactive.function.BodyInserters;
@@ -112,7 +113,7 @@ public class ChatUtils {
     }
 
     public static Mono<TokenResponse> getAccessTokenByAKSK(String apiKey, String secretKey) {
-        if (apiKey.isBlank() || secretKey.isBlank()) {
+        if (StringUtils.isBlank(apiKey) || StringUtils.isBlank(secretKey)) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
 
@@ -138,7 +139,7 @@ public class ChatUtils {
     }
 
     private static <T> void validateParams(String url, String accessToken, Object request, Class<T> type) {
-        if (url.isBlank() || accessToken.isBlank() || request == null || type == null) {
+        if (StringUtils.isBlank(url) || StringUtils.isBlank(accessToken) || request == null || type == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
     }

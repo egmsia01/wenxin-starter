@@ -5,6 +5,7 @@ import com.gearwenxin.exception.BusinessException;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 
 import static com.gearwenxin.common.Constant.MAX_CONTENT_LENGTH;
 
@@ -35,7 +36,7 @@ public class ImageBaseRequest {
     public void validSelf() {
 
         // 检查content不为空
-        if (content.isBlank()) {
+        if (StringUtils.isBlank(content)) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "content cannot be empty");
         }
         // 检查单个content长度

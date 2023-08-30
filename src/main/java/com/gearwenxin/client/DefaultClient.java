@@ -8,7 +8,9 @@ import com.gearwenxin.entity.response.ChatResponse;
 import com.gearwenxin.exception.BusinessException;
 import com.gearwenxin.model.DefaultBot;
 import com.gearwenxin.subscriber.CommonSubscriber;
+import io.netty.util.internal.StringUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
@@ -59,7 +61,7 @@ public abstract class DefaultClient implements DefaultBot<ChatBaseRequest> {
 
     @Override
     public Mono<ChatResponse> chatSingle(String content) {
-        if (content.isBlank()) {
+        if (StringUtils.isBlank(content)) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
         Queue<Message> messageQueue = buildUserMessageQueue(content);
@@ -77,7 +79,7 @@ public abstract class DefaultClient implements DefaultBot<ChatBaseRequest> {
 
     @Override
     public Flux<ChatResponse> chatSingleOfStream(String content) {
-        if (content.isBlank()) {
+        if (StringUtils.isBlank(content)) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
         Queue<Message> messageQueue = buildUserMessageQueue(content);
@@ -129,7 +131,7 @@ public abstract class DefaultClient implements DefaultBot<ChatBaseRequest> {
 
     @Override
     public Mono<ChatResponse> chatCont(String content, String msgUid) {
-        if (content.isBlank() || msgUid.isBlank()) {
+        if (StringUtils.isBlank(content) || StringUtils.isBlank(msgUid)) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
 
@@ -153,7 +155,7 @@ public abstract class DefaultClient implements DefaultBot<ChatBaseRequest> {
 
     @Override
     public Flux<ChatResponse> chatContOfStream(String content, String msgUid) {
-        if (content.isBlank() || msgUid.isBlank()) {
+        if (StringUtils.isBlank(content) || StringUtils.isBlank(msgUid)) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
         Map<String, Queue<Message>> messageHistoryMap = getMessageHistoryMap();
@@ -175,7 +177,7 @@ public abstract class DefaultClient implements DefaultBot<ChatBaseRequest> {
 
     @Override
     public Mono<ChatResponse> chatCont(ChatBaseRequest chatBaseRequest, String msgUid) {
-        if (msgUid.isBlank() || chatBaseRequest == null) {
+        if (StringUtils.isBlank(msgUid) || chatBaseRequest == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
         chatBaseRequest.validSelf();
@@ -200,7 +202,7 @@ public abstract class DefaultClient implements DefaultBot<ChatBaseRequest> {
 
     @Override
     public Flux<ChatResponse> chatContOfStream(ChatBaseRequest chatBaseRequest, String msgUid) {
-        if (msgUid.isBlank() || chatBaseRequest == null) {
+        if (StringUtils.isBlank(msgUid) || chatBaseRequest == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
         chatBaseRequest.validSelf();
