@@ -100,6 +100,12 @@ public class ChatController {
   @Resource
   private ErnieBotClient ernieBotClient;
 
+  // 单次对话（阻塞）
+  @PostMapping("/chat")
+  public BaseRsponse<ChatResponse> chatSingle(String msg) {
+    return ernieBotClient.chatSingle(msg).block();
+  }
+
   // 单次对话
   @PostMapping("/chat")
   public Mono<ChatResponse> chatSingle(String msg) {
