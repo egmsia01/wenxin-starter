@@ -18,7 +18,7 @@
 </div>
 # Gear-WenXinWorkShop-Starter
 
-## 在线体验：[文心千帆](http://mopen.cloud/)
+## 在线体验：[文心千帆](http://mopen.cloud/)  (被打了，暂时关闭，过几天恢复)
 
 ## 获取access-token方法
 ![image](https://github.com/gemingjia/gear-wenxinworkshop-starter/assets/80268501/7225fb98-761a-4ead-b626-d59fc0931161)
