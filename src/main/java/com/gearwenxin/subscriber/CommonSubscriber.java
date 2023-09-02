@@ -11,6 +11,7 @@ import reactor.core.Disposable;
 import reactor.core.publisher.FluxSink;
 
 import java.util.Queue;
+import java.util.StringJoiner;
 
 import static com.gearwenxin.common.WenXinUtils.buildAssistantMessage;
 
@@ -25,7 +26,7 @@ public class CommonSubscriber implements Subscriber<ChatResponse>, Disposable {
     private Subscription subscription;
     private final Queue<Message> messagesHistory;
 
-    private final StringBuffer stringBuffer = new StringBuffer();
+    private final StringJoiner joiner = new StringJoiner("");
 
     public CommonSubscriber(FluxSink<ChatResponse> emitter, Queue<Message> messagesHistory) {
         this.emitter = emitter;
@@ -35,45 +36,49 @@ public class CommonSubscriber implements Subscriber<ChatResponse>, Disposable {
     @Override
     public void onSubscribe(Subscription subscription) {
         this.subscription = subscription;
-        subscription.request(1);
-        log.info("onSubscribe ==========>");
+        subscription.request(50);
+        log.info("onSubscribe");
     }
 
     @Override
     public void onNext(ChatResponse response) {
-        log.info("onNext ==========>");
-        String partResult = response.getResult();
-        // 消费一条任务
-        subscription.request(1);
-        if (!StringUtils.isBlank(partResult)) {
-            // 拼接每一部分的消息
-            stringBuffer.append(partResult);
+        if (isDisposed()) {
+            return;
         }
+
+        log.info("onNext");
+        joiner.add(response.getResult());
+
+        subscription.request(50);
         emitter.next(response);
     }
 
     @Override
     public void onError(Throwable throwable) {
-        log.info("onError ==========>");
-        // 如果出现错误，中断后立即保存当前已有部分
-        String errPartResult = stringBuffer.toString();
-        Message message = buildAssistantMessage(errPartResult);
-        WenXinUtils.offerMessage(messagesHistory, message);
+        if (isDisposed()) {
+            return;
+        }
+
+        log.info("onError");
         emitter.error(throwable);
     }
 
     @Override
     public void onComplete() {
-        log.info("onComplete ==========>");
-        String allResult = stringBuffer.toString();
-        Message message = buildAssistantMessage(allResult);
+        if (isDisposed()) {
+            return;
+        }
+
+        log.info("onComplete");
+        String result = joiner.toString();
+        Message message = buildAssistantMessage(result);
         WenXinUtils.offerMessage(messagesHistory, message);
         emitter.complete();
     }
 
     @Override
     public void dispose() {
-        log.info("dispose ==========>");
+        log.info("dispose");
         subscription.cancel();
     }
 

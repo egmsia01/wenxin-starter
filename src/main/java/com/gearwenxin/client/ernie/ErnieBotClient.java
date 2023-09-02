@@ -99,6 +99,7 @@ public abstract class ErnieBotClient implements DefaultBot<ChatErnieRequest>, Ba
 
         ErnieRequest ernieRequest = ErnieRequest.builder()
                 .messages(messageQueue)
+                .stream(true)
                 .build();
 
         log.info("{}content_singleRequest_stream => {}", getTag(), ernieRequest.toString());
@@ -170,7 +171,7 @@ public abstract class ErnieBotClient implements DefaultBot<ChatErnieRequest>, Ba
         Message message = buildUserMessage(content);
         WenXinUtils.offerMessage(messagesHistory, message);
 
-        ErnieRequest ernieRequest = (ErnieRequest) BaseRequest.builder()
+        ErnieRequest ernieRequest = ErnieRequest.builder()
                 .messages(messagesHistory)
                 .stream(true)
                 .build();

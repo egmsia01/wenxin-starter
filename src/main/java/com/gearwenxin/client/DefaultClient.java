@@ -8,7 +8,6 @@ import com.gearwenxin.entity.response.ChatResponse;
 import com.gearwenxin.exception.BusinessException;
 import com.gearwenxin.model.DefaultBot;
 import com.gearwenxin.subscriber.CommonSubscriber;
-import io.netty.util.internal.StringUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import reactor.core.publisher.Flux;
