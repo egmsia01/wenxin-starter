@@ -50,12 +50,8 @@
 [使用demo](https://github.com/gemingjia/springboot-wenxin-demo)
 
 ```text
-此版本近乎重构整个项目，客户端与参数类的路径有变化，与之前版本的存在一定的不兼容情况，方法未改变，重新导包即可。
-
-"Bloomz7BClient" -> "BloomZ7BClient"
-
 除"ErnieBot"与"Prompt"外，其余的对话型模型接收参数类统一为 ChatBaseRequest，响应类为 ChatResponse
-图片生成型模型接收参数类统一为 ChatImageRequest，响应类为 ImageBaseRequest，内容为base64编码的图片。
+图片生成型模型接收参数类统一为 ChatImageRequest，响应类为 ImageResponse，内容为base64编码的图片。
 ```
 
 ### 1、添加依赖
