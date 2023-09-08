@@ -10,7 +10,7 @@
     </parent>
     <groupId>io.github.gemingjia</groupId>
     <artifactId>gear-wenxinworkshop-starter</artifactId>
-    <version>0.0.8</version>
+    <version>0.0.9</version>
     <name>gear-wenxinworkshop-starter</name>
     <description>A springboot start of Baidu "WENXINWORKSHOP"</description>
     <url>https://github.com/gemingjia/gear-wenxinworkshop-starter</url>
@@ -83,6 +83,11 @@
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
             <version>3.13.0</version>
+        </dependency>
+        <dependency>
+            <groupId>io.projectreactor</groupId>
+            <artifactId>reactor-core</artifactId>
+            <version>3.5.9</version>
         </dependency>
     </dependencies>
 

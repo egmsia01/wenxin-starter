@@ -13,6 +13,7 @@ import org.apache.commons.lang3.StringUtils;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
+import reactor.util.function.Tuples;
 
 import java.util.LinkedList;
 import java.util.Map;
@@ -60,169 +61,160 @@ public abstract class DefaultClient implements DefaultBot<ChatBaseRequest> {
 
     @Override
     public Mono<ChatResponse> chatSingle(String content) {
-        if (StringUtils.isBlank(content)) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR);
-        }
-        Queue<Message> messageQueue = buildUserMessageQueue(content);
-
-        BaseRequest request = BaseRequest.builder()
-                .messages(messageQueue)
-                .build();
-
-        log.info(getTag() + "content_singleRequest => {}", request.toString());
-
-        return ChatUtils.monoChatPost(
-                getURL(), getCustomAccessToken(), request, ChatResponse.class
-        );
+        return Mono.just(content)
+                .filter(StringUtils::isNotBlank)
+                .switchIfEmpty(Mono.error(new BusinessException(ErrorCode.PARAMS_ERROR)))
+                .map(WenXinUtils::buildUserMessageQueue)
+                .map(messageQueue -> BaseRequest.builder().messages(messageQueue).build())
+                .doOnNext(request -> log.info(getTag() + "content_singleRequest => {}", request.toString()))
+                .flatMap(request ->
+                        ChatUtils.monoChatPost(getURL(), getCustomAccessToken(), request, ChatResponse.class)
+                );
     }
+
 
     @Override
     public Flux<ChatResponse> chatSingleOfStream(String content) {
-        if (StringUtils.isBlank(content)) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR);
-        }
-        Queue<Message> messageQueue = buildUserMessageQueue(content);
-
-        BaseRequest baseRequest = BaseRequest.builder()
-                .messages(messageQueue)
-                .stream(true)
-                .build();
-
-        log.info("{}content_singleRequest_stream => {}", getTag(), baseRequest.toString());
-
-        return ChatUtils.fluxChatPost(
-                getURL(), getCustomAccessToken(), baseRequest, ChatResponse.class
-        );
+        return Mono.just(content)
+                .filter(StringUtils::isNotBlank)
+                .switchIfEmpty(Mono.error(new BusinessException(ErrorCode.PARAMS_ERROR)))
+                .map(WenXinUtils::buildUserMessageQueue)
+                .map(messageQueue -> BaseRequest.builder().messages(messageQueue).stream(true).build())
+                .doOnNext(request -> log.info("{}content_singleRequest_stream => {}", getTag(), request.toString()))
+                .flatMapMany(request ->
+                        ChatUtils.fluxChatPost(getURL(), getCustomAccessToken(), request, ChatResponse.class)
+                );
     }
 
     @Override
     public Mono<ChatResponse> chatSingle(ChatBaseRequest chatBaseRequest) {
-        if (chatBaseRequest == null) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR);
-        }
-        chatBaseRequest.validSelf();
-        BaseRequest baseRequest = ConvertUtils.toBaseRequest(chatBaseRequest).build();
-
-        log.info("{}singleRequest => {}", getTag(), baseRequest.toString());
-
-        return ChatUtils.monoChatPost(
-                getURL(), getCustomAccessToken(), baseRequest, ChatResponse.class
-        );
+        return Mono.just(chatBaseRequest)
+                .switchIfEmpty(Mono.error(new BusinessException(ErrorCode.PARAMS_ERROR)))
+                .doOnNext(ChatBaseRequest::validSelf)
+                .map(ConvertUtils::toBaseRequest)
+                .map(BaseRequest.BaseRequestBuilder::build)
+                .doOnNext(baseRequest -> log.info("{}singleRequest => {}", getTag(), baseRequest.toString()))
+                .flatMap(baseRequest ->
+                        ChatUtils.monoChatPost(getURL(), getCustomAccessToken(), baseRequest, ChatResponse.class)
+                );
     }
 
     @Override
     public Flux<ChatResponse> chatSingleOfStream(ChatBaseRequest chatBaseRequest) {
-        if (chatBaseRequest == null) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR);
-        }
-        chatBaseRequest.validSelf();
-
-        BaseRequest baseRequest = ConvertUtils.toBaseRequest(chatBaseRequest)
-                .stream(true)
-                .build();
-
-        log.info("{}singleRequest_stream => {}", getTag(), baseRequest.toString());
-
-        return ChatUtils.fluxChatPost(
-                getURL(), getCustomAccessToken(), baseRequest, ChatResponse.class
-        );
+        return Mono.just(chatBaseRequest)
+                .switchIfEmpty(Mono.error(new BusinessException(ErrorCode.PARAMS_ERROR)))
+                .doOnNext(ChatBaseRequest::validSelf)
+                .map(ConvertUtils::toBaseRequest)
+                .map(builder -> builder.stream(true).build())
+                .doOnNext(baseRequest -> log.info("{}singleRequest_stream => {}", getTag(), baseRequest.toString()))
+                .flatMapMany(baseRequest ->
+                        ChatUtils.fluxChatPost(getURL(), getCustomAccessToken(), baseRequest, ChatResponse.class)
+                );
     }
+
 
     @Override
     public Mono<ChatResponse> chatCont(String content, String msgUid) {
-        if (StringUtils.isBlank(content) || StringUtils.isBlank(msgUid)) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR);
-        }
+        return Mono.just(Tuples.of(content, msgUid))
+                .filter(tuple -> StringUtils.isNotBlank(tuple.getT1()) && StringUtils.isNotBlank(tuple.getT2()))
+                .switchIfEmpty(Mono.error(new BusinessException(ErrorCode.PARAMS_ERROR)))
+                .flatMap(tuple -> {
+                    Map<String, Queue<Message>> messageHistoryMap = getMessageHistoryMap();
+                    Queue<Message> messageQueue = messageHistoryMap.computeIfAbsent(
+                            tuple.getT2(), k -> new LinkedList<>()
+                    );
 
-        Map<String, Queue<Message>> messageHistoryMap = getMessageHistoryMap();
-        Queue<Message> messageQueue = messageHistoryMap.computeIfAbsent(
-                msgUid, k -> new LinkedList<>()
-        );
+                    Message message = buildUserMessage(tuple.getT1());
+                    WenXinUtils.offerMessage(messageQueue, message);
 
-        Message message = buildUserMessage(content);
-        WenXinUtils.offerMessage(messageQueue, message);
+                    BaseRequest baseRequest = BaseRequest.builder()
+                            .messages(messageQueue)
+                            .build();
 
-        BaseRequest baseRequest = BaseRequest.builder()
-                .messages(messageQueue)
-                .build();
+                    log.info("{}content_contRequest => {}", getTag(), baseRequest.toString());
 
-        log.info("{}content_contRequest => {}", getTag(), baseRequest.toString());
-
-        return this.historyMono(baseRequest, messageQueue);
-
+                    return historyMono(baseRequest, messageQueue);
+                });
     }
 
     @Override
     public Flux<ChatResponse> chatContOfStream(String content, String msgUid) {
-        if (StringUtils.isBlank(content) || StringUtils.isBlank(msgUid)) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR);
-        }
-        Map<String, Queue<Message>> messageHistoryMap = getMessageHistoryMap();
-        Queue<Message> messageQueue = messageHistoryMap.computeIfAbsent(
-                msgUid, k -> new LinkedList<>()
-        );
-        Message message = buildUserMessage(content);
-        WenXinUtils.offerMessage(messageQueue, message);
+        return Mono.just(Tuples.of(content, msgUid))
+                .filter(tuple -> StringUtils.isNotBlank(tuple.getT1()) && StringUtils.isNotBlank(tuple.getT2()))
+                .switchIfEmpty(Mono.error(new BusinessException(ErrorCode.PARAMS_ERROR)))
+                .flatMapMany(tuple -> {
+                    Map<String, Queue<Message>> messageHistoryMap = getMessageHistoryMap();
+                    Queue<Message> messageQueue = messageHistoryMap.computeIfAbsent(
+                            tuple.getT2(), k -> new LinkedList<>()
+                    );
 
-        BaseRequest request = BaseRequest.builder()
-                .messages(messageQueue)
-                .stream(true)
-                .build();
+                    Message message = buildUserMessage(tuple.getT1());
+                    WenXinUtils.offerMessage(messageQueue, message);
 
-        log.info("{}content_contRequest_stream => {}", getTag(), request.toString());
+                    BaseRequest request = BaseRequest.builder()
+                            .messages(messageQueue)
+                            .stream(true)
+                            .build();
 
-        return this.historyFlux(request, messageQueue);
+                    log.info("{}content_contRequest_stream => {}", getTag(), request.toString());
+
+                    return this.historyFlux(request, messageQueue);
+                });
     }
+
 
     @Override
     public Mono<ChatResponse> chatCont(ChatBaseRequest chatBaseRequest, String msgUid) {
-        if (StringUtils.isBlank(msgUid) || chatBaseRequest == null) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR);
-        }
-        chatBaseRequest.validSelf();
+        return Mono.justOrEmpty(chatBaseRequest)
+                .filter(request -> StringUtils.isNotBlank(msgUid))
+                .switchIfEmpty(Mono.error(new BusinessException(ErrorCode.PARAMS_ERROR)))
+                .doOnNext(ChatBaseRequest::validSelf)
+                .flatMap(request -> {
+                    Map<String, Queue<Message>> messageHistoryMap = getMessageHistoryMap();
+                    Queue<Message> messagesHistory = messageHistoryMap.computeIfAbsent(
+                            msgUid, key -> new LinkedList<>()
+                    );
 
-        Map<String, Queue<Message>> messageHistoryMap = getMessageHistoryMap();
-        Queue<Message> messagesHistory = messageHistoryMap.computeIfAbsent(
-                msgUid, key -> new LinkedList<>()
-        );
+                    Message message = buildUserMessage(request.getContent());
+                    WenXinUtils.offerMessage(messagesHistory, message);
 
-        // 添加到历史
-        Message message = buildUserMessage(chatBaseRequest.getContent());
-        WenXinUtils.offerMessage(messagesHistory, message);
+                    BaseRequest baseRequest = ConvertUtils.toBaseRequest(request)
+                            .messages(messagesHistory)
+                            .build();
 
-        BaseRequest baseRequest = ConvertUtils.toBaseRequest(chatBaseRequest)
-                .messages(messagesHistory)
-                .build();
+                    log.info("{}contRequest => {}", getTag(), baseRequest.toString());
 
-        log.info("{}contRequest => {}", getTag(), baseRequest.toString());
-
-        return this.historyMono(baseRequest, messagesHistory);
+                    return historyMono(baseRequest, messagesHistory);
+                });
     }
+
 
     @Override
     public Flux<ChatResponse> chatContOfStream(ChatBaseRequest chatBaseRequest, String msgUid) {
-        if (StringUtils.isBlank(msgUid) || chatBaseRequest == null) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR);
-        }
-        chatBaseRequest.validSelf();
+        return Mono.justOrEmpty(chatBaseRequest)
+                .filter(request -> StringUtils.isNotBlank(msgUid))
+                .switchIfEmpty(Mono.error(new BusinessException(ErrorCode.PARAMS_ERROR)))
+                .doOnNext(ChatBaseRequest::validSelf)
+                .flatMapMany(request -> {
+                    Map<String, Queue<Message>> messageHistoryMap = getMessageHistoryMap();
+                    Queue<Message> messagesHistory = messageHistoryMap.computeIfAbsent(
+                            msgUid, key -> new LinkedList<>()
+                    );
 
-        Map<String, Queue<Message>> messageHistoryMap = getMessageHistoryMap();
-        Queue<Message> messagesHistory = messageHistoryMap.computeIfAbsent(
-                msgUid, key -> new LinkedList<>()
-        );
-        // 添加到历史
-        Message message = buildUserMessage(chatBaseRequest.getContent());
-        WenXinUtils.offerMessage(messagesHistory, message);
+                    Message message = buildUserMessage(request.getContent());
+                    WenXinUtils.offerMessage(messagesHistory, message);
 
-        BaseRequest baseRequest = ConvertUtils.toBaseRequest(chatBaseRequest)
-                .messages(messagesHistory)
-                .stream(true)
-                .build();
+                    BaseRequest baseRequest = ConvertUtils.toBaseRequest(request)
+                            .messages(messagesHistory)
+                            .stream(true)
+                            .build();
 
-        log.info("{}contRequest_stream => {}", getTag(), baseRequest.toString());
+                    log.info("{}contRequest_stream => {}", getTag(), baseRequest.toString());
 
-        return this.historyFlux(baseRequest, messagesHistory);
+                    return this.historyFlux(baseRequest, messagesHistory);
+                });
     }
+
 
     public <T> Flux<ChatResponse> historyFlux(T request, Queue<Message> messagesHistory) {
         return Flux.create(emitter -> {
