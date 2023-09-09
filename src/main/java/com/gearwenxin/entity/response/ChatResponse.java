@@ -77,6 +77,12 @@ public class ChatResponse implements Serializable {
     private Usage usage;
 
     /**
+     * 当need_clear_history为true时，此字段会告知第几轮对话有敏感信息，如果是当前问题，ban_round=-1
+     */
+    @JsonProperty("ban_round")
+    private Usage banRound;
+
+    /**
      * 错误代码，正常为 null
      */
     @JsonProperty("error_code")
