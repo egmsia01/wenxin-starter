@@ -11,12 +11,10 @@ import com.gearwenxin.common.ChatUtils;
 import com.gearwenxin.model.BaseBot;
 import com.gearwenxin.model.ContBot;
 import com.gearwenxin.model.SingleBot;
-import com.gearwenxin.subscriber.CommonSubscriber;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-import reactor.core.scheduler.Schedulers;
 import reactor.util.function.Tuples;
 
 import java.util.*;
@@ -38,7 +36,6 @@ public abstract class ErnieBotClient implements SingleBot<ChatErnieRequest>, Con
     private String accessToken = null;
     private static final String TAG = "ErnieBotClient_";
 
-    // 每个模型的历史消息Map
     private static Map<String, Queue<Message>> ERNIE_MESSAGES_HISTORY_MAP = new ConcurrentHashMap<>();
 
     private static final String URL = Constant.ERNIE_BOT_URL;
@@ -131,19 +128,19 @@ public abstract class ErnieBotClient implements SingleBot<ChatErnieRequest>, Con
                 .switchIfEmpty(Mono.error(new BusinessException(ErrorCode.PARAMS_ERROR)))
                 .flatMap(tuple -> {
                     Map<String, Queue<Message>> messageHistoryMap = getMessageHistoryMap();
-                    Queue<Message> messageQueue = messageHistoryMap.computeIfAbsent(
+                    Queue<Message> messagesHistory = messageHistoryMap.computeIfAbsent(
                             tuple.getT2(), k -> new LinkedList<>()
                     );
                     Message message = buildUserMessage(tuple.getT1());
-                    WenXinUtils.offerMessage(messageQueue, message);
+                    WenXinUtils.offerMessage(messagesHistory, message);
 
                     ErnieRequest ernieRequest = ErnieRequest.builder()
-                            .messages(messageQueue)
+                            .messages(messagesHistory)
                             .build();
 
                     log.info("{}content_contRequest => {}", getTag(), ernieRequest.toString());
 
-                    return this.historyMono(ernieRequest, messageQueue);
+                    return ChatUtils.historyMono(getURL(), getAccessToken(), ernieRequest, messagesHistory);
                 });
     }
 
@@ -167,7 +164,7 @@ public abstract class ErnieBotClient implements SingleBot<ChatErnieRequest>, Con
 
                     log.info("{}content_contRequest_stream => {}", getTag(), ernieRequest.toString());
 
-                    return this.historyFlux(ernieRequest, messagesHistory);
+                    return ChatUtils.historyFlux(getURL(), getAccessToken(), ernieRequest, messagesHistory);
                 });
     }
 
@@ -191,7 +188,7 @@ public abstract class ErnieBotClient implements SingleBot<ChatErnieRequest>, Con
 
                     log.info("{}contRequest => {}", getTag(), ernieRequest.toString());
 
-                    return this.historyMono(ernieRequest, messagesHistory);
+                    return ChatUtils.historyMono(getURL(), getAccessToken(), ernieRequest, messagesHistory);
                 });
     }
 
@@ -202,51 +199,22 @@ public abstract class ErnieBotClient implements SingleBot<ChatErnieRequest>, Con
                 .doOnNext(tuple -> this.validChatErnieRequest(tuple.getT1()))
                 .flatMapMany(tuple -> {
                     Map<String, Queue<Message>> messageHistoryMap = getMessageHistoryMap();
-                    Queue<Message> messageQueue = messageHistoryMap.computeIfAbsent(
+                    Queue<Message> messagesHistory = messageHistoryMap.computeIfAbsent(
                             tuple.getT2(), key -> new LinkedList<>()
                     );
 
                     Message message = buildUserMessage(tuple.getT1().getContent());
-                    WenXinUtils.offerMessage(messageQueue, message);
+                    WenXinUtils.offerMessage(messagesHistory, message);
 
                     ErnieRequest ernieRequest = ConvertUtils.toErnieRequest(tuple.getT1())
-                            .messages(messageQueue)
+                            .messages(messagesHistory)
                             .stream(true)
                             .build();
 
                     log.info("{}contRequest_stream => {}", getTag(), ernieRequest.toString());
 
-                    return this.historyFlux(ernieRequest, messageQueue);
+                    return ChatUtils.historyFlux(getURL(), getAccessToken(), ernieRequest, messagesHistory);
                 });
-    }
-
-
-    public <T> Flux<ChatResponse> historyFlux(T request, Queue<Message> messagesHistory) {
-        return Flux.create(emitter -> {
-            CommonSubscriber subscriber = new CommonSubscriber(emitter, messagesHistory);
-            Flux<ChatResponse> chatResponse = ChatUtils.fluxChatPost(
-                    getURL(), getCustomAccessToken(), request, ChatResponse.class
-            );
-            chatResponse.subscribe(subscriber);
-            emitter.onDispose(subscriber);
-        });
-    }
-
-    public <T> Mono<ChatResponse> historyMono(T request, Queue<Message> messagesHistory) {
-        Mono<ChatResponse> response = ChatUtils.monoChatPost(
-                getURL(), getCustomAccessToken(), request, ChatResponse.class
-        ).subscribeOn(Schedulers.boundedElastic());
-
-        return response.flatMap(chatResponse -> {
-            if (chatResponse == null) {
-                return Mono.error(new BusinessException(ErrorCode.SYSTEM_NET_ERROR));
-            }
-            // 构建聊天响应消息
-            Message messageResult = buildAssistantMessage(chatResponse.getResult());
-            WenXinUtils.offerMessage(messagesHistory, messageResult);
-
-            return Mono.just(chatResponse);
-        });
     }
 
     public void validChatErnieRequest(ChatErnieRequest request) {

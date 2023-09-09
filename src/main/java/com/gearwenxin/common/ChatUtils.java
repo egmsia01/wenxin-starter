@@ -1,7 +1,10 @@
 package com.gearwenxin.common;
 
+import com.gearwenxin.entity.Message;
+import com.gearwenxin.entity.response.ChatResponse;
 import com.gearwenxin.entity.response.TokenResponse;
 import com.gearwenxin.exception.BusinessException;
+import com.gearwenxin.subscriber.CommonSubscriber;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpHeaders;
@@ -10,11 +13,13 @@ import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
 
 import java.net.URI;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
+import java.util.Queue;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -110,6 +115,33 @@ public class ChatUtils {
                 .retrieve()
                 .bodyToMono(type)
                 .doOnError(WebClientResponseException.class, handleWebClientError());
+    }
+
+    public static <T> Flux<ChatResponse> historyFlux(String url, String token, T request, Queue<Message> messagesHistory) {
+        return Flux.create(emitter -> {
+            CommonSubscriber subscriber = new CommonSubscriber(emitter, messagesHistory);
+            Flux<ChatResponse> chatResponse = ChatUtils.fluxChatPost(
+                    url, token, request, ChatResponse.class
+            );
+            chatResponse.subscribe(subscriber);
+            emitter.onDispose(subscriber);
+        });
+    }
+
+    public static <T> Mono<ChatResponse> historyMono(String url, String token, T request, Queue<Message> messagesHistory) {
+        Mono<ChatResponse> response = ChatUtils.monoChatPost(
+                url, token, request, ChatResponse.class
+        ).subscribeOn(Schedulers.boundedElastic());
+
+        return response.flatMap(chatResponse -> {
+            if (chatResponse == null || chatResponse.getResult() == null) {
+                return Mono.error(new BusinessException(ErrorCode.SYSTEM_ERROR));
+            }
+            Message messageResult = WenXinUtils.buildAssistantMessage(chatResponse.getResult());
+            WenXinUtils.offerMessage(messagesHistory, messageResult);
+
+            return Mono.just(chatResponse);
+        });
     }
 
     public static Mono<TokenResponse> getAccessTokenByAKSK(String apiKey, String secretKey) {
