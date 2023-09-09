@@ -9,7 +9,8 @@ import com.gearwenxin.entity.Message;
 import com.gearwenxin.entity.request.ErnieRequest;
 import com.gearwenxin.common.ChatUtils;
 import com.gearwenxin.model.BaseBot;
-import com.gearwenxin.model.DefaultBot;
+import com.gearwenxin.model.ContBot;
+import com.gearwenxin.model.SingleBot;
 import com.gearwenxin.subscriber.CommonSubscriber;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -29,7 +30,7 @@ import static com.gearwenxin.common.WenXinUtils.*;
  * @date 2023/7/20
  */
 @Slf4j
-public abstract class ErnieBotClient implements DefaultBot<ChatErnieRequest>, BaseBot {
+public abstract class ErnieBotClient implements SingleBot<ChatErnieRequest>, ContBot<ChatErnieRequest>, BaseBot {
 
     protected ErnieBotClient() {
     }

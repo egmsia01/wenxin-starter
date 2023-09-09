@@ -12,7 +12,7 @@ import java.util.Queue;
  * @author Ge Mingjia
  * @date 2023/7/20
  * <p>
- * DefaultBot 模型
+ * ContBot 模型
  */
 @Data
 @NoArgsConstructor

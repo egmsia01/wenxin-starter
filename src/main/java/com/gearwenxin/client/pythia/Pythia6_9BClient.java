@@ -1,6 +1,6 @@
 package com.gearwenxin.client.pythia;
 
-import com.gearwenxin.client.DefaultClient;
+import com.gearwenxin.client.base.FullClient;
 import com.gearwenxin.entity.Message;
 
 import java.util.Map;
@@ -11,7 +11,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author Ge Mingjia
  * @date 2023/8/5
  */
-public abstract class Pythia6_9BClient extends DefaultClient {
+public abstract class Pythia6_9BClient extends FullClient {
 
     protected Pythia6_9BClient() {
     }

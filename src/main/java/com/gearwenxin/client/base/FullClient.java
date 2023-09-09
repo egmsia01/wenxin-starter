@@ -1,4 +1,4 @@
-package com.gearwenxin.client;
+package com.gearwenxin.client.base;
 
 import com.gearwenxin.common.*;
 import com.gearwenxin.entity.BaseRequest;
@@ -6,7 +6,7 @@ import com.gearwenxin.entity.Message;
 import com.gearwenxin.entity.chatmodel.ChatBaseRequest;
 import com.gearwenxin.entity.response.ChatResponse;
 import com.gearwenxin.exception.BusinessException;
-import com.gearwenxin.model.DefaultBot;
+import com.gearwenxin.model.ContBot;
 import com.gearwenxin.subscriber.CommonSubscriber;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -19,25 +19,12 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Queue;
 
-import static com.gearwenxin.common.WenXinUtils.*;
-import static com.gearwenxin.common.WenXinUtils.buildUserMessage;
-
 /**
  * @author Ge Mingjia
  * @date 2023/8/4
  */
 @Slf4j
-public abstract class DefaultClient implements DefaultBot<ChatBaseRequest> {
-
-    /**
-     * 获取自定义access-token
-     */
-    public abstract String getCustomAccessToken();
-
-    /**
-     * 单独设置access-token
-     */
-    public abstract void setCustomAccessToken(String accessToken);
+public abstract class FullClient extends SingleClient implements ContBot<ChatBaseRequest> {
 
     /**
      * 获取此模型的历史消息
@@ -48,70 +35,6 @@ public abstract class DefaultClient implements DefaultBot<ChatBaseRequest> {
      * 初始化此模型的历史消息
      */
     public abstract void initMessageHistoryMap(Map<String, Queue<Message>> map);
-
-    /**
-     * 获取模型URL
-     */
-    public abstract String getURL();
-
-    /**
-     * 获取模型 TAG
-     */
-    public abstract String getTag();
-
-    @Override
-    public Mono<ChatResponse> chatSingle(String content) {
-        return Mono.just(content)
-                .filter(StringUtils::isNotBlank)
-                .switchIfEmpty(Mono.error(new BusinessException(ErrorCode.PARAMS_ERROR)))
-                .map(WenXinUtils::buildUserMessageQueue)
-                .map(messageQueue -> BaseRequest.builder().messages(messageQueue).build())
-                .doOnNext(request -> log.info(getTag() + "content_singleRequest => {}", request.toString()))
-                .flatMap(request ->
-                        ChatUtils.monoChatPost(getURL(), getCustomAccessToken(), request, ChatResponse.class)
-                );
-    }
-
-
-    @Override
-    public Flux<ChatResponse> chatSingleOfStream(String content) {
-        return Mono.just(content)
-                .filter(StringUtils::isNotBlank)
-                .switchIfEmpty(Mono.error(new BusinessException(ErrorCode.PARAMS_ERROR)))
-                .map(WenXinUtils::buildUserMessageQueue)
-                .map(messageQueue -> BaseRequest.builder().messages(messageQueue).stream(true).build())
-                .doOnNext(request -> log.info("{}content_singleRequest_stream => {}", getTag(), request.toString()))
-                .flatMapMany(request ->
-                        ChatUtils.fluxChatPost(getURL(), getCustomAccessToken(), request, ChatResponse.class)
-                );
-    }
-
-    @Override
-    public Mono<ChatResponse> chatSingle(ChatBaseRequest chatBaseRequest) {
-        return Mono.just(chatBaseRequest)
-                .switchIfEmpty(Mono.error(new BusinessException(ErrorCode.PARAMS_ERROR)))
-                .doOnNext(ChatBaseRequest::validSelf)
-                .map(ConvertUtils::toBaseRequest)
-                .map(BaseRequest.BaseRequestBuilder::build)
-                .doOnNext(baseRequest -> log.info("{}singleRequest => {}", getTag(), baseRequest.toString()))
-                .flatMap(baseRequest ->
-                        ChatUtils.monoChatPost(getURL(), getCustomAccessToken(), baseRequest, ChatResponse.class)
-                );
-    }
-
-    @Override
-    public Flux<ChatResponse> chatSingleOfStream(ChatBaseRequest chatBaseRequest) {
-        return Mono.just(chatBaseRequest)
-                .switchIfEmpty(Mono.error(new BusinessException(ErrorCode.PARAMS_ERROR)))
-                .doOnNext(ChatBaseRequest::validSelf)
-                .map(ConvertUtils::toBaseRequest)
-                .map(builder -> builder.stream(true).build())
-                .doOnNext(baseRequest -> log.info("{}singleRequest_stream => {}", getTag(), baseRequest.toString()))
-                .flatMapMany(baseRequest ->
-                        ChatUtils.fluxChatPost(getURL(), getCustomAccessToken(), baseRequest, ChatResponse.class)
-                );
-    }
-
 
     @Override
     public Mono<ChatResponse> chatCont(String content, String msgUid) {
@@ -124,7 +47,7 @@ public abstract class DefaultClient implements DefaultBot<ChatBaseRequest> {
                             tuple.getT2(), k -> new LinkedList<>()
                     );
 
-                    Message message = buildUserMessage(tuple.getT1());
+                    Message message = WenXinUtils.buildUserMessage(tuple.getT1());
                     WenXinUtils.offerMessage(messageQueue, message);
 
                     BaseRequest baseRequest = BaseRequest.builder()
@@ -148,7 +71,7 @@ public abstract class DefaultClient implements DefaultBot<ChatBaseRequest> {
                             tuple.getT2(), k -> new LinkedList<>()
                     );
 
-                    Message message = buildUserMessage(tuple.getT1());
+                    Message message = WenXinUtils.buildUserMessage(tuple.getT1());
                     WenXinUtils.offerMessage(messageQueue, message);
 
                     BaseRequest request = BaseRequest.builder()
@@ -175,7 +98,7 @@ public abstract class DefaultClient implements DefaultBot<ChatBaseRequest> {
                             msgUid, key -> new LinkedList<>()
                     );
 
-                    Message message = buildUserMessage(request.getContent());
+                    Message message = WenXinUtils.buildUserMessage(request.getContent());
                     WenXinUtils.offerMessage(messagesHistory, message);
 
                     BaseRequest baseRequest = ConvertUtils.toBaseRequest(request)
@@ -187,7 +110,6 @@ public abstract class DefaultClient implements DefaultBot<ChatBaseRequest> {
                     return historyMono(baseRequest, messagesHistory);
                 });
     }
-
 
     @Override
     public Flux<ChatResponse> chatContOfStream(ChatBaseRequest chatBaseRequest, String msgUid) {
@@ -201,7 +123,7 @@ public abstract class DefaultClient implements DefaultBot<ChatBaseRequest> {
                             msgUid, key -> new LinkedList<>()
                     );
 
-                    Message message = buildUserMessage(request.getContent());
+                    Message message = WenXinUtils.buildUserMessage(request.getContent());
                     WenXinUtils.offerMessage(messagesHistory, message);
 
                     BaseRequest baseRequest = ConvertUtils.toBaseRequest(request)
@@ -236,8 +158,7 @@ public abstract class DefaultClient implements DefaultBot<ChatBaseRequest> {
             if (chatResponse == null || chatResponse.getResult() == null) {
                 return Mono.error(new BusinessException(ErrorCode.SYSTEM_ERROR));
             }
-            // 构建聊天响应消息
-            Message messageResult = buildAssistantMessage(chatResponse.getResult());
+            Message messageResult = WenXinUtils.buildAssistantMessage(chatResponse.getResult());
             WenXinUtils.offerMessage(messagesHistory, messageResult);
 
             return Mono.just(chatResponse);

@@ -1,5 +1,6 @@
 package com.gearwenxin.client;
 
+import com.gearwenxin.client.base.FullClient;
 import com.gearwenxin.entity.Message;
 
 import java.util.Map;
@@ -10,7 +11,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author Ge Mingjia
  * @date 2023/7/24
  */
-public abstract class Dolly12BClient extends DefaultClient {
+public abstract class Dolly12BClient extends FullClient {
 
     protected Dolly12BClient() {
     }

@@ -1,5 +1,6 @@
 package com.gearwenxin.client;
 
+import com.gearwenxin.client.base.FullClient;
 import com.gearwenxin.common.Constant;
 import com.gearwenxin.entity.Message;
 
@@ -11,7 +12,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author Ge Mingjia
  * @date 2023/7/24
  */
-public abstract class BloomZ7BClient extends DefaultClient {
+public abstract class BloomZ7BClient extends FullClient {
 
     protected BloomZ7BClient() {
     }

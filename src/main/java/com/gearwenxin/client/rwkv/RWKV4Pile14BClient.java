@@ -1,6 +1,6 @@
 package com.gearwenxin.client.rwkv;
 
-import com.gearwenxin.client.DefaultClient;
+import com.gearwenxin.client.base.FullClient;
 import com.gearwenxin.entity.Message;
 
 import java.util.Map;
@@ -11,7 +11,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author Ge Mingjia
  * @date 2023/7/24
  */
-public abstract class RWKV4Pile14BClient extends DefaultClient {
+public abstract class RWKV4Pile14BClient extends FullClient {
 
     protected RWKV4Pile14BClient() {
     }
