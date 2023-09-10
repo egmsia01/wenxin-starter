@@ -5,7 +5,6 @@ import com.gearwenxin.common.ConvertUtils;
 import com.gearwenxin.common.ErrorCode;
 import com.gearwenxin.common.WenXinUtils;
 import com.gearwenxin.entity.BaseRequest;
-import com.gearwenxin.entity.Message;
 import com.gearwenxin.entity.chatmodel.ChatBaseRequest;
 import com.gearwenxin.entity.response.ChatResponse;
 import com.gearwenxin.exception.BusinessException;
@@ -15,9 +14,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-
-import java.util.Map;
-import java.util.Queue;
 
 /**
  * @author Ge Mingjia
