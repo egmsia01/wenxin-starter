@@ -1,6 +1,7 @@
 package com.gearwenxin.client.llama2;
 
 import com.gearwenxin.client.base.FullClient;
+import com.gearwenxin.common.Constant;
 import com.gearwenxin.entity.Message;
 
 import java.util.Map;
@@ -42,7 +43,7 @@ public abstract class Llama27BClient extends FullClient {
 
     @Override
     public String getURL() {
-        return getCustomURL();
+        return getCustomURL() != null ? getCustomURL() : Constant.LLAMA2_7B_URL;
     }
 
     @Override

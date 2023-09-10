@@ -1,6 +1,7 @@
 package com.gearwenxin.client.llama2;
 
 import com.gearwenxin.client.base.FullClient;
+import com.gearwenxin.common.Constant;
 import com.gearwenxin.entity.Message;
 
 import java.util.Map;
@@ -22,7 +23,6 @@ public abstract class Llama270BClient extends FullClient {
 
     protected abstract String getAccessToken();
 
-    // 获取不固定的模型URL
     protected abstract String getCustomURL();
 
     @Override
@@ -42,7 +42,7 @@ public abstract class Llama270BClient extends FullClient {
 
     @Override
     public String getURL() {
-        return getCustomURL();
+        return getCustomURL() != null ? getCustomURL() : Constant.LLAMA2_70B_URL;
     }
 
     @Override
