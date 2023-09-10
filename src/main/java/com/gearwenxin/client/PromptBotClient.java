@@ -48,19 +48,13 @@ public abstract class PromptBotClient implements PromptBot, BaseBot {
     }
 
     @Override
-    public Map<String, Queue<Message>> getMessageHistoryMap() {
-        log.warn(TAG + "PromptBotClient not have MessageHistoryMap");
-        return null;
-    }
-
-    @Override
-    public void initMessageHistoryMap(Map<String, Queue<Message>> map) {
-        log.warn(TAG + "PromptBotClient not need init");
-    }
-
-    @Override
     public String getURL() {
         return URL;
+    }
+
+    @Override
+    public String getTag() {
+        return TAG;
     }
 
     @Override

@@ -40,17 +40,6 @@ public abstract class VisualGLM6BClient extends ImageClient {
     }
 
     @Override
-    public Map<String, Queue<Message>> getMessageHistoryMap() {
-        log.error(TAG + "VisualGLM6BClient not have MessageHistoryMap");
-        return Collections.emptyMap();
-    }
-
-    @Override
-    public void initMessageHistoryMap(Map<String, Queue<Message>> map) {
-        log.error(TAG + "VisualGLM6BClient not need init");
-    }
-
-    @Override
     public String getURL() {
         return getCustomURL();
     }

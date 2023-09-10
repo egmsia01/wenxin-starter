@@ -42,7 +42,8 @@ public abstract class ErnieBotClient implements SingleBot<ChatErnieRequest>, Con
 
     protected abstract String getAccessToken();
 
-    private String getTag() {
+    @Override
+    public String getTag() {
         return TAG;
     }
 
@@ -61,12 +62,10 @@ public abstract class ErnieBotClient implements SingleBot<ChatErnieRequest>, Con
         return accessToken != null ? accessToken : getAccessToken();
     }
 
-    @Override
     public Map<String, Queue<Message>> getMessageHistoryMap() {
         return ERNIE_MESSAGES_HISTORY_MAP;
     }
 
-    @Override
     public void initMessageHistoryMap(Map<String, Queue<Message>> map) {
         ERNIE_MESSAGES_HISTORY_MAP = map;
     }

@@ -39,17 +39,6 @@ public abstract class ErnieBotVilGClient extends ImageClient {
     }
 
     @Override
-    public Map<String, Queue<Message>> getMessageHistoryMap() {
-        log.warn(TAG + "ErnieBotVilGClient not have MessageHistoryMap");
-        return Collections.emptyMap();
-    }
-
-    @Override
-    public void initMessageHistoryMap(Map<String, Queue<Message>> map) {
-        log.warn(TAG + "ErnieBotVilGClient not need init");
-    }
-
-    @Override
     public String getURL() {
         return getCustomURL();
     }

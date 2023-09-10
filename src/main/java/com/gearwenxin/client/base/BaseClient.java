@@ -5,41 +5,26 @@ import com.gearwenxin.common.ConvertUtils;
 import com.gearwenxin.common.ErrorCode;
 import com.gearwenxin.common.WenXinUtils;
 import com.gearwenxin.entity.BaseRequest;
+import com.gearwenxin.entity.Message;
 import com.gearwenxin.entity.chatmodel.ChatBaseRequest;
 import com.gearwenxin.entity.response.ChatResponse;
 import com.gearwenxin.exception.BusinessException;
+import com.gearwenxin.model.BaseBot;
 import com.gearwenxin.model.SingleBot;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.Map;
+import java.util.Queue;
+
 /**
  * @author Ge Mingjia
  * @date 2023/8/4
  */
 @Slf4j
-public abstract class SingleClient implements SingleBot<ChatBaseRequest> {
-
-    /**
-     * 获取自定义access-token
-     */
-    public abstract String getCustomAccessToken();
-
-    /**
-     * 单独设置access-token
-     */
-    public abstract void setCustomAccessToken(String accessToken);
-
-    /**
-     * 获取模型URL
-     */
-    public abstract String getURL();
-
-    /**
-     * 获取模型 TAG
-     */
-    public abstract String getTag();
+public abstract class BaseClient implements SingleBot<ChatBaseRequest>, BaseBot {
 
     @Override
     public Mono<ChatResponse> chatSingle(String content) {
@@ -93,5 +78,6 @@ public abstract class SingleClient implements SingleBot<ChatBaseRequest> {
                         ChatUtils.fluxChatPost(getURL(), getCustomAccessToken(), baseRequest, ChatResponse.class)
                 );
     }
+
 
 }

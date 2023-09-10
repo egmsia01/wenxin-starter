@@ -22,10 +22,8 @@ public abstract class StableDiffusionV1_5Client extends ImageClient {
 
     private static final String TAG = "Stable-Diffusion-V1_5-Client_";
 
-    // 获取access-token
     protected abstract String getAccessToken();
 
-    // 获取不固定的模型URL
     protected abstract String getCustomURL();
 
     @Override
@@ -36,17 +34,6 @@ public abstract class StableDiffusionV1_5Client extends ImageClient {
     @Override
     public void setCustomAccessToken(String accessToken) {
         this.accessToken = accessToken;
-    }
-
-    @Override
-    public Map<String, Queue<Message>> getMessageHistoryMap() {
-        log.error(TAG + "StableDiffusionV1_5Client not have MessageHistoryMap");
-        return Collections.emptyMap();
-    }
-
-    @Override
-    public void initMessageHistoryMap(Map<String, Queue<Message>> map) {
-        log.error(TAG + "StableDiffusionV1_5Client not need init");
     }
 
     @Override

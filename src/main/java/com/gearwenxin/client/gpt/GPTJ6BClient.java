@@ -1,18 +1,12 @@
 package com.gearwenxin.client.gpt;
 
-import com.gearwenxin.client.base.FullClient;
-import com.gearwenxin.client.base.SingleClient;
-import com.gearwenxin.entity.Message;
-
-import java.util.Map;
-import java.util.Queue;
-import java.util.concurrent.ConcurrentHashMap;
+import com.gearwenxin.client.base.BaseClient;
 
 /**
  * @author Ge Mingjia
  * @date 2023/8/5
  */
-public abstract class GPTJ6BClient extends SingleClient {
+public abstract class GPTJ6BClient extends BaseClient {
 
     protected GPTJ6BClient() {
     }

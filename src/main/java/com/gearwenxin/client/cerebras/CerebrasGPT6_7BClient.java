@@ -1,12 +1,12 @@
 package com.gearwenxin.client.cerebras;
 
-import com.gearwenxin.client.base.SingleClient;
+import com.gearwenxin.client.base.BaseClient;
 
 /**
  * @author Ge Mingjia
  * @date 2023/7/24
  */
-public abstract class CerebrasGPT6_7BClient extends SingleClient {
+public abstract class CerebrasGPT6_7BClient extends BaseClient {
 
     protected CerebrasGPT6_7BClient() {
     }
