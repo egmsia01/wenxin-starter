@@ -22,7 +22,6 @@ public abstract class Dolly12BClient extends FullClient {
 
     protected abstract String getAccessToken();
 
-    // 获取不固定的模型URL
     protected abstract String getCustomURL();
 
     @Override

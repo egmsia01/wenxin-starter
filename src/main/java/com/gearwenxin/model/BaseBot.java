@@ -1,10 +1,5 @@
 package com.gearwenxin.model;
 
-import com.gearwenxin.entity.Message;
-
-import java.util.Map;
-import java.util.Queue;
-
 /**
  * @author Ge Mingjia
  * @date 2023/7/20

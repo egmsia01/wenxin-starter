@@ -62,6 +62,18 @@ public abstract class BaseClient implements SingleBot<ChatBaseRequest>, BaseBot 
                 );
     }
 
+    public <T extends ChatBaseRequest> Mono<ChatResponse> chatSingleT(T chatBaseRequest) {
+        return Mono.just(chatBaseRequest)
+                .switchIfEmpty(Mono.error(new BusinessException(ErrorCode.PARAMS_ERROR)))
+                .doOnNext(ChatBaseRequest::validSelf)
+                .map(ConvertUtils::toBaseRequest)
+                .map(BaseRequest.BaseRequestBuilder::build)
+                .doOnNext(baseRequest -> log.info("{}singleRequest => {}", getTag(), baseRequest.toString()))
+                .flatMap(baseRequest ->
+                        ChatUtils.monoChatPost(getURL(), getCustomAccessToken(), baseRequest, ChatResponse.class)
+                );
+    }
+
     @Override
     public Flux<ChatResponse> chatSingleOfStream(ChatBaseRequest chatBaseRequest) {
         return Mono.just(chatBaseRequest)
