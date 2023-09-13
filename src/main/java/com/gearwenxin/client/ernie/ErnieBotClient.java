@@ -34,7 +34,7 @@ public abstract class ErnieBotClient implements SingleBot<ChatErnieRequest>, Con
     }
 
     private String accessToken = null;
-    private static final String TAG = "ErnieBotClient_";
+    private static final String TAG = "ErnieBotClient";
 
     private static Map<String, Queue<Message>> ERNIE_MESSAGES_HISTORY_MAP = new ConcurrentHashMap<>();
 
@@ -77,7 +77,7 @@ public abstract class ErnieBotClient implements SingleBot<ChatErnieRequest>, Con
                 .switchIfEmpty(Mono.error(new BusinessException(ErrorCode.PARAMS_ERROR)))
                 .map(WenXinUtils::buildUserMessageQueue)
                 .map(messageQueue -> ErnieRequest.builder().messages(messageQueue).build())
-                .doOnNext(request -> log.info("{}content_singleRequest => {}", getTag(), request.toString()))
+                .doOnNext(request -> log.info("{}-content_singleRequest => {}", getTag(), request.toString()))
                 .flatMap(request ->
                         ChatUtils.monoChatPost(getURL(), getCustomAccessToken(), request, ChatResponse.class)
                 );
@@ -90,7 +90,7 @@ public abstract class ErnieBotClient implements SingleBot<ChatErnieRequest>, Con
                 .switchIfEmpty(Mono.error(new BusinessException(ErrorCode.PARAMS_ERROR)))
                 .map(WenXinUtils::buildUserMessageQueue)
                 .map(messageQueue -> ErnieRequest.builder().messages(messageQueue).stream(true).build())
-                .doOnNext(request -> log.info("{}content_singleRequest_stream => {}", getTag(), request.toString()))
+                .doOnNext(request -> log.info("{}-content_singleRequest_stream => {}", getTag(), request.toString()))
                 .flatMapMany(request ->
                         ChatUtils.fluxChatPost(getURL(), getCustomAccessToken(), request, ChatResponse.class)
                 );
@@ -102,7 +102,7 @@ public abstract class ErnieBotClient implements SingleBot<ChatErnieRequest>, Con
                 .doOnNext(this::validChatErnieRequest)
                 .map(ConvertUtils::toErnieRequest)
                 .map(BaseRequest.BaseRequestBuilder::build)
-                .doOnNext(request -> log.info("{}singleRequest => {}", getTag(), request.toString()))
+                .doOnNext(request -> log.info("{}-singleRequest => {}", getTag(), request.toString()))
                 .flatMap(request ->
                         ChatUtils.monoChatPost(getURL(), getCustomAccessToken(), request, ChatResponse.class)
                 );
@@ -114,7 +114,7 @@ public abstract class ErnieBotClient implements SingleBot<ChatErnieRequest>, Con
                 .doOnNext(this::validChatErnieRequest)
                 .map(ConvertUtils::toErnieRequest)
                 .map(builder -> builder.stream(true).build())
-                .doOnNext(request -> log.info("{}singleRequest_stream => {}", getTag(), request.toString()))
+                .doOnNext(request -> log.info("{}-singleRequest_stream => {}", getTag(), request.toString()))
                 .flatMapMany(request ->
                         ChatUtils.fluxChatPost(getURL(), getCustomAccessToken(), request, ChatResponse.class)
                 );
@@ -137,7 +137,7 @@ public abstract class ErnieBotClient implements SingleBot<ChatErnieRequest>, Con
                             .messages(messagesHistory)
                             .build();
 
-                    log.info("{}content_contRequest => {}", getTag(), ernieRequest.toString());
+                    log.info("{}-content_contRequest => {}", getTag(), ernieRequest.toString());
 
                     return ChatUtils.historyMono(getURL(), getAccessToken(), ernieRequest, messagesHistory);
                 });
@@ -161,7 +161,7 @@ public abstract class ErnieBotClient implements SingleBot<ChatErnieRequest>, Con
                             .stream(true)
                             .build();
 
-                    log.info("{}content_contRequest_stream => {}", getTag(), ernieRequest.toString());
+                    log.info("{}-content_contRequest_stream => {}", getTag(), ernieRequest.toString());
 
                     return ChatUtils.historyFlux(getURL(), getAccessToken(), ernieRequest, messagesHistory);
                 });
@@ -185,7 +185,7 @@ public abstract class ErnieBotClient implements SingleBot<ChatErnieRequest>, Con
                             .messages(messagesHistory)
                             .build();
 
-                    log.info("{}contRequest => {}", getTag(), ernieRequest.toString());
+                    log.info("{}-contRequest => {}", getTag(), ernieRequest.toString());
 
                     return ChatUtils.historyMono(getURL(), getAccessToken(), ernieRequest, messagesHistory);
                 });
@@ -210,7 +210,7 @@ public abstract class ErnieBotClient implements SingleBot<ChatErnieRequest>, Con
                             .stream(true)
                             .build();
 
-                    log.info("{}contRequest_stream => {}", getTag(), ernieRequest.toString());
+                    log.info("{}-contRequest_stream => {}", getTag(), ernieRequest.toString());
 
                     return ChatUtils.historyFlux(getURL(), getAccessToken(), ernieRequest, messagesHistory);
                 });

@@ -22,7 +22,7 @@ public abstract class ErnieBotTurboClient extends FullClient {
     }
 
     private String accessToken = null;
-    private static final String TAG = "Ernie-Bot-Turbo-Client_";
+    private static final String TAG = "Ernie-Bot-Turbo-Client";
     private static final String URL = Constant.ERNIE_BOT_TURBO_URL;
 
     private static Map<String, Queue<Message>> TURBO_MESSAGES_HISTORY_MAP = new ConcurrentHashMap<>();

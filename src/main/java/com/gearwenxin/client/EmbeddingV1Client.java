@@ -15,7 +15,7 @@ public abstract class EmbeddingV1Client implements BaseBot {
     }
 
     private String accessToken = null;
-    private static final String TAG = "PromptBotClient_";
+    private static final String TAG = "PromptBotClient";
 
     private static final String URL = Constant.PROMPT_URL;
 

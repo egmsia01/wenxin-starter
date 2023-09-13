@@ -12,7 +12,7 @@ public abstract class StableLMAlpha7BClient extends BaseClient {
     }
 
     private String accessToken = null;
-    private static final String TAG = "StableLM-Alpha-7B-Client_";
+    private static final String TAG = "StableLM-Alpha-7B-Client";
 
     protected abstract String getAccessToken();
 

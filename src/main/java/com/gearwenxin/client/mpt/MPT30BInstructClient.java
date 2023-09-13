@@ -17,7 +17,7 @@ public abstract class MPT30BInstructClient extends FullClient {
     }
 
     private String accessToken = null;
-    private static final String TAG = "MPT-30B-Instruct-Client_";
+    private static final String TAG = "MPT-30B-Instruct-Client";
     private static Map<String, Queue<Message>> MPT_30B_MESSAGES_HISTORY_MAP = new ConcurrentHashMap<>();
 
     protected abstract String getAccessToken();

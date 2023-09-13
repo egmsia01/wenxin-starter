@@ -12,7 +12,7 @@ public abstract class Pythia12BClient extends BaseClient {
     }
 
     private String accessToken = null;
-    private static final String TAG = "Pythia-12B-Client_";
+    private static final String TAG = "Pythia-12B-Client";
 
     protected abstract String getAccessToken();
 

@@ -17,7 +17,7 @@ public abstract class RWKV4Pile14BClient extends FullClient {
     }
 
     private String accessToken = null;
-    private static final String TAG = "RWKV-4-Pile-14B-Client_";
+    private static final String TAG = "RWKV-4-Pile-14B-Client";
     private static Map<String, Queue<Message>> RWKV_4_PILE_14B_MESSAGES_HISTORY_MAP = new ConcurrentHashMap<>();
 
     protected abstract String getAccessToken();

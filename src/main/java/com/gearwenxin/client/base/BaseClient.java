@@ -35,6 +35,24 @@ public abstract class BaseClient implements SingleBot<ChatBaseRequest>, BaseBot 
                 );
     }
 
+    public <T extends ChatBaseRequest> Mono<ChatResponse> chatSingleT(String content) {
+        switch (getTag()) {
+            case "ErnieBotClient" -> log.debug("this is ErnieBotClient");
+            default -> {
+                return Mono.just(content)
+                        .filter(StringUtils::isNotBlank)
+                        .switchIfEmpty(Mono.error(new BusinessException(ErrorCode.PARAMS_ERROR)))
+                        .map(WenXinUtils::buildUserMessageQueue)
+                        .map(messageQueue -> BaseRequest.builder().messages(messageQueue).build())
+                        .doOnNext(request -> log.info(getTag() + "content_singleRequest => {}", request.toString()))
+                        .flatMap(request ->
+                                ChatUtils.monoChatPost(getURL(), getCustomAccessToken(), request, ChatResponse.class)
+                        );
+            }
+        }
+        return null;
+    }
+
 
     @Override
     public Flux<ChatResponse> chatSingleOfStream(String content) {
@@ -43,7 +61,7 @@ public abstract class BaseClient implements SingleBot<ChatBaseRequest>, BaseBot 
                 .switchIfEmpty(Mono.error(new BusinessException(ErrorCode.PARAMS_ERROR)))
                 .map(WenXinUtils::buildUserMessageQueue)
                 .map(messageQueue -> BaseRequest.builder().messages(messageQueue).stream(true).build())
-                .doOnNext(request -> log.info("{}content_singleRequest_stream => {}", getTag(), request.toString()))
+                .doOnNext(request -> log.info("{}-content_singleRequest_stream => {}", getTag(), request.toString()))
                 .flatMapMany(request ->
                         ChatUtils.fluxChatPost(getURL(), getCustomAccessToken(), request, ChatResponse.class)
                 );
@@ -56,7 +74,7 @@ public abstract class BaseClient implements SingleBot<ChatBaseRequest>, BaseBot 
                 .doOnNext(ChatBaseRequest::validSelf)
                 .map(ConvertUtils::toBaseRequest)
                 .map(BaseRequest.BaseRequestBuilder::build)
-                .doOnNext(baseRequest -> log.info("{}singleRequest => {}", getTag(), baseRequest.toString()))
+                .doOnNext(baseRequest -> log.info("{}-singleRequest => {}", getTag(), baseRequest.toString()))
                 .flatMap(baseRequest ->
                         ChatUtils.monoChatPost(getURL(), getCustomAccessToken(), baseRequest, ChatResponse.class)
                 );
@@ -68,7 +86,7 @@ public abstract class BaseClient implements SingleBot<ChatBaseRequest>, BaseBot 
                 .doOnNext(ChatBaseRequest::validSelf)
                 .map(ConvertUtils::toBaseRequest)
                 .map(BaseRequest.BaseRequestBuilder::build)
-                .doOnNext(baseRequest -> log.info("{}singleRequest => {}", getTag(), baseRequest.toString()))
+                .doOnNext(baseRequest -> log.info("{}-singleRequest => {}", getTag(), baseRequest.toString()))
                 .flatMap(baseRequest ->
                         ChatUtils.monoChatPost(getURL(), getCustomAccessToken(), baseRequest, ChatResponse.class)
                 );
@@ -81,7 +99,7 @@ public abstract class BaseClient implements SingleBot<ChatBaseRequest>, BaseBot 
                 .doOnNext(ChatBaseRequest::validSelf)
                 .map(ConvertUtils::toBaseRequest)
                 .map(builder -> builder.stream(true).build())
-                .doOnNext(baseRequest -> log.info("{}singleRequest_stream => {}", getTag(), baseRequest.toString()))
+                .doOnNext(baseRequest -> log.info("{}-singleRequest_stream => {}", getTag(), baseRequest.toString()))
                 .flatMapMany(baseRequest ->
                         ChatUtils.fluxChatPost(getURL(), getCustomAccessToken(), baseRequest, ChatResponse.class)
                 );

@@ -12,7 +12,7 @@ public abstract class CerebrasGPT6_7BClient extends BaseClient {
     }
 
     private String accessToken = null;
-    private static final String TAG = "Cerebras-GPT-6.7B-Client_";
+    private static final String TAG = "Cerebras-GPT-6.7B-Client";
 
     protected abstract String getAccessToken();
 

@@ -17,7 +17,7 @@ public abstract class ChatGLM26BClient extends FullClient {
     }
 
     private String accessToken = null;
-    private static final String TAG = "ChatGLM2-6B-Client_";
+    private static final String TAG = "ChatGLM2-6B-Client";
     private static Map<String, Queue<Message>> CHAT_GLM2_6B_MESSAGES_HISTORY_MAP = new ConcurrentHashMap<>();
 
     protected abstract String getAccessToken();

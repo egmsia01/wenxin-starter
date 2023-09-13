@@ -17,7 +17,7 @@ public abstract class CommonModelClient extends FullClient {
     }
 
     private String accessToken = null;
-    private static final String TAG = "Common-Model-Client_";
+    private static final String TAG = "Common-Model-Client";
     private static Map<String, Queue<Message>> COMMON_MODEL_MESSAGES_HISTORY_MAP = new ConcurrentHashMap<>();
 
     protected abstract String getAccessToken();

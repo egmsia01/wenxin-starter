@@ -31,7 +31,7 @@ public abstract class PromptBotClient implements PromptBot, BaseBot {
     }
 
     private String accessToken = null;
-    private static final String TAG = "Prompt-Bot-Client_";
+    private static final String TAG = "Prompt-Bot-Client";
 
     private static final String URL = Constant.PROMPT_URL;
 

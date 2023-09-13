@@ -20,7 +20,7 @@ public abstract class StableDiffusionV1_5Client extends ImageClient {
 
     private String accessToken = null;
 
-    private static final String TAG = "Stable-Diffusion-V1_5-Client_";
+    private static final String TAG = "Stable-Diffusion-V1_5-Client";
 
     protected abstract String getAccessToken();
 

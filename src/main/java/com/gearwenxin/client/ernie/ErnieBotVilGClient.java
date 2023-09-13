@@ -20,7 +20,7 @@ public abstract class ErnieBotVilGClient extends ImageClient {
     }
 
     private String accessToken = null;
-    private static final String TAG = "ErnieBotVilGClient_";
+    private static final String TAG = "ErnieBotVilGClient";
 
     // 获取access-token
     protected abstract String getAccessToken();

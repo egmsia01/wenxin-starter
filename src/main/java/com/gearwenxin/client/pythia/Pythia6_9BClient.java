@@ -17,7 +17,7 @@ public abstract class Pythia6_9BClient extends FullClient {
     }
 
     private String accessToken = null;
-    private static final String TAG = "Pythia-6.9B-Client_";
+    private static final String TAG = "Pythia-6.9B-Client";
     private static Map<String, Queue<Message>> PYTHIA_6_9B_MESSAGES_HISTORY_MAP = new ConcurrentHashMap<>();
 
     protected abstract String getAccessToken();

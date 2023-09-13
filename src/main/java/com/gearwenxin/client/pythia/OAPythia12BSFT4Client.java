@@ -17,7 +17,7 @@ public abstract class OAPythia12BSFT4Client extends FullClient {
     }
 
     private String accessToken = null;
-    private static final String TAG = "OA-Pythia-12B-SFT-4-Client_";
+    private static final String TAG = "OA-Pythia-12B-SFT-4-Client";
     private static Map<String, Queue<Message>> OA_PYTHIA_12B_SFT_4_MESSAGES_HISTORY_MAP = new ConcurrentHashMap<>();
 
     protected abstract String getAccessToken();

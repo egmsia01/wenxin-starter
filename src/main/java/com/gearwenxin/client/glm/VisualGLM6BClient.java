@@ -21,7 +21,7 @@ public abstract class VisualGLM6BClient extends ImageClient {
 
     private String accessToken = null;
 
-    private static final String TAG = "VisualGLM-6B-Client_";
+    private static final String TAG = "VisualGLM-6B-Client";
 
     // 获取access-token
     protected abstract String getAccessToken();

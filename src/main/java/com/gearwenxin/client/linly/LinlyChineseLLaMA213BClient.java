@@ -17,7 +17,7 @@ public abstract class LinlyChineseLLaMA213BClient extends FullClient {
     }
 
     private String accessToken = null;
-    private static final String TAG = "Linly-Chinese-LLaMA2-13B-Client_";
+    private static final String TAG = "Linly-Chinese-LLaMA2-13B-Client";
     private static Map<String, Queue<Message>> LINLY_LLAMA2_13B_MESSAGES_HISTORY_MAP = new ConcurrentHashMap<>();
 
     protected abstract String getAccessToken();

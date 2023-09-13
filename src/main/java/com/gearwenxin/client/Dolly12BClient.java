@@ -17,7 +17,7 @@ public abstract class Dolly12BClient extends FullClient {
     }
 
     private String accessToken = null;
-    private static final String TAG = "Dolly-12B-Client_";
+    private static final String TAG = "Dolly-12B-Client";
     private static Map<String, Queue<Message>> DOLLY_12B_MESSAGES_HISTORY_MAP = new ConcurrentHashMap<>();
 
     protected abstract String getAccessToken();

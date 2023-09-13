@@ -52,7 +52,7 @@ public abstract class FullClient extends BaseClient implements ContBot<ChatBaseR
                             .messages(messagesHistory)
                             .build();
 
-                    log.info("{}content_contRequest => {}", getTag(), baseRequest.toString());
+                    log.info("{}-content_contRequest => {}", getTag(), baseRequest.toString());
 
                     return ChatUtils.historyMono(getURL(), getCustomAccessToken(), baseRequest, messagesHistory);
                 });
@@ -77,7 +77,7 @@ public abstract class FullClient extends BaseClient implements ContBot<ChatBaseR
                             .stream(true)
                             .build();
 
-                    log.info("{}content_contRequest_stream => {}", getTag(), baseRequest.toString());
+                    log.info("{}-content_contRequest_stream => {}", getTag(), baseRequest.toString());
 
                     return ChatUtils.historyFlux(getURL(), getCustomAccessToken(), baseRequest, messagesHistory);
                 });
@@ -103,7 +103,7 @@ public abstract class FullClient extends BaseClient implements ContBot<ChatBaseR
                             .messages(messagesHistory)
                             .build();
 
-                    log.info("{}contRequest => {}", getTag(), baseRequest.toString());
+                    log.info("{}-contRequest => {}", getTag(), baseRequest.toString());
 
                     return ChatUtils.historyMono(getURL(), getCustomAccessToken(), baseRequest, messagesHistory);
                 });
@@ -129,7 +129,7 @@ public abstract class FullClient extends BaseClient implements ContBot<ChatBaseR
                             .stream(true)
                             .build();
 
-                    log.info("{}contRequest_stream => {}", getTag(), baseRequest.toString());
+                    log.info("{}-contRequest_stream => {}", getTag(), baseRequest.toString());
 
                     return ChatUtils.historyFlux(getURL(), getCustomAccessToken(), baseRequest, messagesHistory);
                 });

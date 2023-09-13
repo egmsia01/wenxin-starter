@@ -17,7 +17,7 @@ public abstract class CerebrasGPT13BClient extends FullClient {
     }
 
     private String accessToken = null;
-    private static final String TAG = "Cerebras-GPT-13B-Client_";
+    private static final String TAG = "Cerebras-GPT-13B-Client";
     private static Map<String, Queue<Message>> CEREBRAS_GPT_13B_MESSAGES_HISTORY_MAP = new ConcurrentHashMap<>();
 
     protected abstract String getAccessToken();

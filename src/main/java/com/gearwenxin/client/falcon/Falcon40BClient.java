@@ -17,7 +17,7 @@ public abstract class Falcon40BClient extends FullClient {
     }
 
     private String accessToken = null;
-    private static final String TAG = "Falcon-40B-Client_";
+    private static final String TAG = "Falcon-40B-Client";
     private static Map<String, Queue<Message>> FALCON_40B_MESSAGES_HISTORY_MAP = new ConcurrentHashMap<>();
 
     protected abstract String getAccessToken();

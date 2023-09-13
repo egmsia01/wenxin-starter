@@ -17,7 +17,7 @@ public abstract class RWKV4WorldClient extends FullClient {
     }
 
     private String accessToken = null;
-    private static final String TAG = "RWKV-4-World-Client_";
+    private static final String TAG = "RWKV-4-World-Client";
     private static Map<String, Queue<Message>> RWKV_4_WORLD_MESSAGES_HISTORY_MAP = new ConcurrentHashMap<>();
 
     protected abstract String getAccessToken();

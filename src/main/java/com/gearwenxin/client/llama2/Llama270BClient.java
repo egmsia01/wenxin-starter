@@ -18,7 +18,7 @@ public abstract class Llama270BClient extends FullClient {
     }
 
     private String accessToken = null;
-    private static final String TAG = "Llama2-70B-Client_";
+    private static final String TAG = "Llama2-70B-Client";
     private static Map<String, Queue<Message>> LLAMA2_70B_MESSAGES_HISTORY_MAP = new ConcurrentHashMap<>();
 
     protected abstract String getAccessToken();

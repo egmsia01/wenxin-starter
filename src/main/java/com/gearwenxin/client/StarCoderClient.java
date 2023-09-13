@@ -12,7 +12,7 @@ public abstract class StarCoderClient extends BaseClient {
     }
 
     private String accessToken = null;
-    private static final String TAG = "StarCoder-Client_";
+    private static final String TAG = "StarCoder-Client";
 
     protected abstract String getAccessToken();
 

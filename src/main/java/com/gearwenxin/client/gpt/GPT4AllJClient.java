@@ -12,7 +12,7 @@ public abstract class GPT4AllJClient extends BaseClient {
     }
 
     private String accessToken = null;
-    private static final String TAG = "GPT4All-J-Client_";
+    private static final String TAG = "GPT4All-J-Client";
 
     protected abstract String getAccessToken();
 

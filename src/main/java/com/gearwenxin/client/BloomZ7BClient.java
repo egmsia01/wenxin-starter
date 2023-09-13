@@ -18,7 +18,7 @@ public abstract class BloomZ7BClient extends FullClient {
     }
 
     private String accessToken = null;
-    private static final String TAG = "BloomZ-7B-Client_";
+    private static final String TAG = "BloomZ-7B-Client";
     private static Map<String, Queue<Message>> BLOOMZ_MESSAGES_HISTORY_MAP = new ConcurrentHashMap<>();
     private static final String URL = Constant.BLOOMZ_7B_URL;
 

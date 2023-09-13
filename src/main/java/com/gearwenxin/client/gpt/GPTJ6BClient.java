@@ -12,7 +12,7 @@ public abstract class GPTJ6BClient extends BaseClient {
     }
 
     private String accessToken = null;
-    private static final String TAG = "GPT-J-6B-Client_";
+    private static final String TAG = "GPT-J-6B-Client";
 
     protected abstract String getAccessToken();
 

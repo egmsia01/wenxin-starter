@@ -12,7 +12,7 @@ public abstract class GPTNeoX20BClient extends BaseClient {
     }
 
     private String accessToken = null;
-    private static final String TAG = "GPT-NeoX-20B-Client_";
+    private static final String TAG = "GPT-NeoX-20B-Client";
 
     protected abstract String getAccessToken();
 

@@ -17,7 +17,7 @@ public abstract class FlanUL2Client extends FullClient {
     }
 
     private String accessToken = null;
-    private static final String TAG = "Flan-UL2-Client_";
+    private static final String TAG = "Flan-UL2-Client";
     private static Map<String, Queue<Message>> FLAN_UL2_MESSAGES_HISTORY_MAP = new ConcurrentHashMap<>();
 
     protected abstract String getAccessToken();
