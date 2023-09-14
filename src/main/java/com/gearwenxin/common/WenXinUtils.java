@@ -16,6 +16,9 @@ import static com.gearwenxin.common.Constant.MAX_TOTAL_LENGTH;
 public class WenXinUtils {
 
     public static Queue<Message> buildUserMessageQueue(String content) {
+        if (content == null) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "content is null");
+        }
         Queue<Message> messageQueue = new LinkedList<>();
         Message message = buildUserMessage(content);
         messageQueue.offer(message);
@@ -30,10 +33,16 @@ public class WenXinUtils {
     }
 
     public static Message buildUserMessage(String content) {
+        if (content == null) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "content is null");
+        }
         return new Message(RoleEnum.user, content);
     }
 
     public static Message buildAssistantMessage(String content) {
+        if (content == null) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "content is null");
+        }
         return new Message(RoleEnum.assistant, content);
     }
 
