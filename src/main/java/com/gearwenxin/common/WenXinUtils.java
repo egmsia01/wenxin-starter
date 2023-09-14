@@ -45,8 +45,11 @@ public class WenXinUtils {
      */
     public static void offerMessage(Queue<Message> messagesHistory, Message message) {
 
-        if (messagesHistory == null || message == null || StringUtils.isBlank(message.getContent())) {
+        if (messagesHistory == null || message == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        if (StringUtils.isBlank(message.getContent())) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "message is null!");
         }
 
         messagesHistory.offer(message);

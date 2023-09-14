@@ -6,6 +6,7 @@ import com.gearwenxin.common.ErrorCode;
 import com.gearwenxin.common.WenXinUtils;
 import com.gearwenxin.entity.BaseRequest;
 import com.gearwenxin.entity.chatmodel.ChatBaseRequest;
+import com.gearwenxin.entity.request.ErnieRequest;
 import com.gearwenxin.entity.response.ChatResponse;
 import com.gearwenxin.exception.BusinessException;
 import com.gearwenxin.model.BaseBot;
@@ -24,20 +25,18 @@ public abstract class BaseClient implements SingleBot<ChatBaseRequest>, BaseBot 
 
     @Override
     public Mono<ChatResponse> chatSingle(String content) {
-        return Mono.just(content)
-                .filter(StringUtils::isNotBlank)
-                .switchIfEmpty(Mono.error(new BusinessException(ErrorCode.PARAMS_ERROR)))
-                .map(WenXinUtils::buildUserMessageQueue)
-                .map(messageQueue -> BaseRequest.builder().messages(messageQueue).build())
-                .doOnNext(request -> log.info(getTag() + "content_singleRequest => {}", request.toString()))
-                .flatMap(request ->
-                        ChatUtils.monoChatPost(getURL(), getCustomAccessToken(), request, ChatResponse.class)
-                );
-    }
-
-    public <T extends ChatBaseRequest> Mono<ChatResponse> chatSingleT(String content) {
         switch (getTag()) {
-            case "ErnieBotClient" -> log.debug("this is ErnieBotClient");
+            case "ErnieBotClient" -> {
+                return Mono.justOrEmpty(content)
+                        .filter(StringUtils::isNotBlank)
+                        .switchIfEmpty(Mono.error(new BusinessException(ErrorCode.PARAMS_ERROR)))
+                        .map(WenXinUtils::buildUserMessageQueue)
+                        .map(messageQueue -> ErnieRequest.builder().messages(messageQueue).build())
+                        .doOnNext(request -> log.info("{}-content_singleRequest => {}", getTag(), request.toString()))
+                        .flatMap(request ->
+                                ChatUtils.monoChatPost(getURL(), getCustomAccessToken(), request, ChatResponse.class)
+                        );
+            }
             default -> {
                 return Mono.just(content)
                         .filter(StringUtils::isNotBlank)
@@ -50,7 +49,6 @@ public abstract class BaseClient implements SingleBot<ChatBaseRequest>, BaseBot 
                         );
             }
         }
-        return null;
     }
 
 
@@ -69,18 +67,6 @@ public abstract class BaseClient implements SingleBot<ChatBaseRequest>, BaseBot 
 
     @Override
     public Mono<ChatResponse> chatSingle(ChatBaseRequest chatBaseRequest) {
-        return Mono.just(chatBaseRequest)
-                .switchIfEmpty(Mono.error(new BusinessException(ErrorCode.PARAMS_ERROR)))
-                .doOnNext(ChatBaseRequest::validSelf)
-                .map(ConvertUtils::toBaseRequest)
-                .map(BaseRequest.BaseRequestBuilder::build)
-                .doOnNext(baseRequest -> log.info("{}-singleRequest => {}", getTag(), baseRequest.toString()))
-                .flatMap(baseRequest ->
-                        ChatUtils.monoChatPost(getURL(), getCustomAccessToken(), baseRequest, ChatResponse.class)
-                );
-    }
-
-    public <T extends ChatBaseRequest> Mono<ChatResponse> chatSingleT(T chatBaseRequest) {
         return Mono.just(chatBaseRequest)
                 .switchIfEmpty(Mono.error(new BusinessException(ErrorCode.PARAMS_ERROR)))
                 .doOnNext(ChatBaseRequest::validSelf)
