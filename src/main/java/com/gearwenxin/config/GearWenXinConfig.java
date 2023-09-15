@@ -31,7 +31,9 @@ import com.gearwenxin.client.rwkv.RWKVRaven14BClient;
 import com.gearwenxin.client.stable.StableDiffusionV1_5Client;
 import com.gearwenxin.client.stable.StableLMAlpha7BClient;
 import com.gearwenxin.common.ChatUtils;
+import com.gearwenxin.common.ErrorCode;
 import com.gearwenxin.entity.response.TokenResponse;
+import com.gearwenxin.exception.BusinessException;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
@@ -90,6 +92,9 @@ public class GearWenXinConfig implements CommandLineRunner {
         }
         TokenResponse tokenResponse = ChatUtils.getAccessTokenByAKSK(api_key, secret_key).block();
         if (tokenResponse != null) {
+            if (tokenResponse.getAccessToken() == null) {
+                throw new BusinessException(ErrorCode.SYSTEM_ERROR, "api_key or secret_key error！");
+            }
             this.access_token = tokenResponse.getAccessToken();
         }
     }
