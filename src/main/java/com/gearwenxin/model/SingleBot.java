@@ -1,5 +1,6 @@
 package com.gearwenxin.model;
 
+import com.gearwenxin.entity.chatmodel.ChatBaseRequest;
 import com.gearwenxin.entity.response.ChatResponse;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -8,7 +9,7 @@ import reactor.core.publisher.Mono;
  * @author Ge Mingjia
  * @date 2023/7/20
  */
-public interface SingleBot<T> {
+public interface SingleBot {
 
     /**
      * 单轮对话，无上下文记忆，默认参数
@@ -35,7 +36,7 @@ public interface SingleBot<T> {
      * @param chatRequest 请求实体类
      * @return ChatResponse 响应实体类
      */
-    Mono<ChatResponse> chatSingle(T chatRequest);
+    <T extends ChatBaseRequest> Mono<ChatResponse> chatSingle(T chatRequest);
 
     /**
      * 单轮对话，无上下文记忆，默认参数
@@ -44,6 +45,6 @@ public interface SingleBot<T> {
      * @param chatRequest 请求实体类
      * @return ChatResponse Flux<ChatResponse>
      */
-    Flux<ChatResponse> chatSingleOfStream(T chatRequest);
+    <T extends ChatBaseRequest> Flux<ChatResponse> chatSingleOfStream(T chatRequest);
 
 }

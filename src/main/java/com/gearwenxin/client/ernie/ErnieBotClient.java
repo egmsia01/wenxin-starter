@@ -1,7 +1,7 @@
 package com.gearwenxin.client.ernie;
 
+import com.gearwenxin.client.base.BaseClient;
 import com.gearwenxin.common.*;
-import com.gearwenxin.entity.BaseRequest;
 import com.gearwenxin.exception.BusinessException;
 import com.gearwenxin.entity.chatmodel.ChatErnieRequest;
 import com.gearwenxin.entity.response.ChatResponse;
@@ -10,7 +10,6 @@ import com.gearwenxin.entity.request.ErnieRequest;
 import com.gearwenxin.common.ChatUtils;
 import com.gearwenxin.model.BaseBot;
 import com.gearwenxin.model.ContBot;
-import com.gearwenxin.model.SingleBot;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import reactor.core.publisher.Flux;
@@ -28,7 +27,7 @@ import static com.gearwenxin.common.WenXinUtils.*;
  * @date 2023/7/20
  */
 @Slf4j
-public abstract class ErnieBotClient implements SingleBot<ChatErnieRequest>, ContBot<ChatErnieRequest>, BaseBot {
+public abstract class ErnieBotClient extends BaseClient implements ContBot<ChatErnieRequest>, BaseBot {
 
     protected ErnieBotClient() {
     }
@@ -68,56 +67,6 @@ public abstract class ErnieBotClient implements SingleBot<ChatErnieRequest>, Con
 
     public void initMessageHistoryMap(Map<String, Queue<Message>> map) {
         ERNIE_MESSAGES_HISTORY_MAP = map;
-    }
-
-    @Override
-    public Mono<ChatResponse> chatSingle(String content) {
-        return Mono.justOrEmpty(content)
-                .filter(StringUtils::isNotBlank)
-                .switchIfEmpty(Mono.error(new BusinessException(ErrorCode.PARAMS_ERROR)))
-                .map(WenXinUtils::buildUserMessageQueue)
-                .map(messageQueue -> ErnieRequest.builder().messages(messageQueue).build())
-                .doOnNext(request -> log.info("{}-content_singleRequest => {}", getTag(), request.toString()))
-                .flatMap(request ->
-                        ChatUtils.monoChatPost(getURL(), getCustomAccessToken(), request, ChatResponse.class)
-                );
-    }
-
-    @Override
-    public Flux<ChatResponse> chatSingleOfStream(String content) {
-        return Mono.justOrEmpty(content)
-                .filter(StringUtils::isNotBlank)
-                .switchIfEmpty(Mono.error(new BusinessException(ErrorCode.PARAMS_ERROR)))
-                .map(WenXinUtils::buildUserMessageQueue)
-                .map(messageQueue -> ErnieRequest.builder().messages(messageQueue).stream(true).build())
-                .doOnNext(request -> log.info("{}-content_singleRequest_stream => {}", getTag(), request.toString()))
-                .flatMapMany(request ->
-                        ChatUtils.fluxChatPost(getURL(), getCustomAccessToken(), request, ChatResponse.class)
-                );
-    }
-
-    @Override
-    public Mono<ChatResponse> chatSingle(ChatErnieRequest chatErnieRequest) {
-        return Mono.justOrEmpty(chatErnieRequest)
-                .doOnNext(this::validChatErnieRequest)
-                .map(ConvertUtils::toErnieRequest)
-                .map(BaseRequest.BaseRequestBuilder::build)
-                .doOnNext(request -> log.info("{}-singleRequest => {}", getTag(), request.toString()))
-                .flatMap(request ->
-                        ChatUtils.monoChatPost(getURL(), getCustomAccessToken(), request, ChatResponse.class)
-                );
-    }
-
-    @Override
-    public Flux<ChatResponse> chatSingleOfStream(ChatErnieRequest chatErnieRequest) {
-        return Mono.justOrEmpty(chatErnieRequest)
-                .doOnNext(this::validChatErnieRequest)
-                .map(ConvertUtils::toErnieRequest)
-                .map(builder -> builder.stream(true).build())
-                .doOnNext(request -> log.info("{}-singleRequest_stream => {}", getTag(), request.toString()))
-                .flatMapMany(request ->
-                        ChatUtils.fluxChatPost(getURL(), getCustomAccessToken(), request, ChatResponse.class)
-                );
     }
 
     @Override
@@ -216,7 +165,7 @@ public abstract class ErnieBotClient implements SingleBot<ChatErnieRequest>, Con
                 });
     }
 
-    public void validChatErnieRequest(ChatErnieRequest request) {
+    public static void validChatErnieRequest(ChatErnieRequest request) {
 
         // 检查content不为空
         if (StringUtils.isBlank(request.getContent())) {
