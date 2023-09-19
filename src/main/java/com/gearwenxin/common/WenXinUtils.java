@@ -5,7 +5,7 @@ import com.gearwenxin.entity.Message;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.LinkedList;
-import java.util.Queue;
+import java.util.Deque;
 
 import static com.gearwenxin.common.Constant.MAX_TOTAL_LENGTH;
 
@@ -15,27 +15,28 @@ import static com.gearwenxin.common.Constant.MAX_TOTAL_LENGTH;
  */
 public class WenXinUtils {
 
-    public static Queue<Message> buildUserMessageQueue(String content) {
+    public static Deque<Message> buildUserMessageDeque(String content) {
         if (content == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "content is null");
         }
-        Queue<Message> messageQueue = new LinkedList<>();
+        Deque<Message> messageDeque = new LinkedList<>();
         Message message = buildUserMessage(content);
-        messageQueue.offer(message);
-        return messageQueue;
+        messageDeque.offer(message);
+        return messageDeque;
     }
 
-    public static Queue<Message> buildMessageQueue(Message userMessage, Message assistantMessage) {
-        Queue<Message> messageQueue = new LinkedList<>();
-        offerMessage(messageQueue, userMessage);
-        offerMessage(messageQueue, assistantMessage);
-        return messageQueue;
+    public static Deque<Message> buildMessageDeque(Message userMessage, Message assistantMessage) {
+        Deque<Message> messageDeque = new LinkedList<>();
+        offerMessage(messageDeque, userMessage);
+        offerMessage(messageDeque, assistantMessage);
+        return messageDeque;
     }
 
     public static Message buildUserMessage(String content) {
         if (content == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "content is null");
         }
+
         return new Message(RoleEnum.user, content);
     }
 
@@ -52,7 +53,7 @@ public class WenXinUtils {
      * @param messagesHistory 历史消息队列
      * @param message         需添加的Message
      */
-    public static void offerMessage(Queue<Message> messagesHistory, Message message) {
+    public static void offerMessage(Deque<Message> messagesHistory, Message message) {
 
         if (messagesHistory == null || message == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
@@ -61,6 +62,13 @@ public class WenXinUtils {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "message is null!");
         }
 
+        Message lastMessage = messagesHistory.peekLast();
+        if (lastMessage != null && lastMessage.getRole() == RoleEnum.user &&
+                message.getRole() == RoleEnum.user) {
+            // 移除上一条未回复的问题
+            // TODO: 临时解决方案
+            messagesHistory.pollLast();
+        }
         messagesHistory.offer(message);
 
         if (message.getRole() == RoleEnum.assistant) {

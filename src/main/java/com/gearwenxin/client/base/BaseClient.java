@@ -32,8 +32,8 @@ public abstract class BaseClient implements SingleBot, BaseBot {
                 return Mono.justOrEmpty(content)
                         .filter(StringUtils::isNotBlank)
                         .switchIfEmpty(Mono.error(new BusinessException(ErrorCode.PARAMS_ERROR)))
-                        .map(WenXinUtils::buildUserMessageQueue)
-                        .map(messageQueue -> ErnieRequest.builder().messages(messageQueue).build())
+                        .map(WenXinUtils::buildUserMessageDeque)
+                        .map(messageDeque -> ErnieRequest.builder().messages(messageDeque).build())
                         .doOnNext(request -> log.info("{}-content_singleRequest => {}", getTag(), request.toString()))
                         .flatMap(request ->
                                 ChatUtils.monoChatPost(getURL(), getCustomAccessToken(), request, ChatResponse.class)
@@ -43,8 +43,8 @@ public abstract class BaseClient implements SingleBot, BaseBot {
                 return Mono.just(content)
                         .filter(StringUtils::isNotBlank)
                         .switchIfEmpty(Mono.error(new BusinessException(ErrorCode.PARAMS_ERROR)))
-                        .map(WenXinUtils::buildUserMessageQueue)
-                        .map(messageQueue -> BaseRequest.builder().messages(messageQueue).build())
+                        .map(WenXinUtils::buildUserMessageDeque)
+                        .map(messageDeque -> BaseRequest.builder().messages(messageDeque).build())
                         .doOnNext(request -> log.info(getTag() + "content_singleRequest => {}", request.toString()))
                         .flatMap(request ->
                                 ChatUtils.monoChatPost(getURL(), getCustomAccessToken(), request, ChatResponse.class)
@@ -61,8 +61,8 @@ public abstract class BaseClient implements SingleBot, BaseBot {
                 return Mono.justOrEmpty(content)
                         .filter(StringUtils::isNotBlank)
                         .switchIfEmpty(Mono.error(new BusinessException(ErrorCode.PARAMS_ERROR)))
-                        .map(WenXinUtils::buildUserMessageQueue)
-                        .map(messageQueue -> ErnieRequest.builder().messages(messageQueue).stream(true).build())
+                        .map(WenXinUtils::buildUserMessageDeque)
+                        .map(messageDeque -> ErnieRequest.builder().messages(messageDeque).stream(true).build())
                         .doOnNext(request -> log.info("{}-content_singleRequest_stream => {}", getTag(), request.toString()))
                         .flatMapMany(request ->
                                 ChatUtils.fluxChatPost(getURL(), getCustomAccessToken(), request, ChatResponse.class)
@@ -72,8 +72,8 @@ public abstract class BaseClient implements SingleBot, BaseBot {
                 return Mono.just(content)
                         .filter(StringUtils::isNotBlank)
                         .switchIfEmpty(Mono.error(new BusinessException(ErrorCode.PARAMS_ERROR)))
-                        .map(WenXinUtils::buildUserMessageQueue)
-                        .map(messageQueue -> BaseRequest.builder().messages(messageQueue).stream(true).build())
+                        .map(WenXinUtils::buildUserMessageDeque)
+                        .map(messageDeque -> BaseRequest.builder().messages(messageDeque).stream(true).build())
                         .doOnNext(request -> log.info("{}-content_singleRequest_stream => {}", getTag(), request.toString()))
                         .flatMapMany(request ->
                                 ChatUtils.fluxChatPost(getURL(), getCustomAccessToken(), request, ChatResponse.class)

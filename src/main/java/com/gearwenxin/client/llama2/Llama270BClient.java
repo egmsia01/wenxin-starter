@@ -5,7 +5,7 @@ import com.gearwenxin.common.Constant;
 import com.gearwenxin.entity.Message;
 
 import java.util.Map;
-import java.util.Queue;
+import java.util.Deque;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -19,7 +19,7 @@ public abstract class Llama270BClient extends FullClient {
 
     private String accessToken = null;
     private static final String TAG = "Llama2-70B-Client";
-    private static Map<String, Queue<Message>> LLAMA2_70B_MESSAGES_HISTORY_MAP = new ConcurrentHashMap<>();
+    private static Map<String, Deque<Message>> LLAMA2_70B_MESSAGES_HISTORY_MAP = new ConcurrentHashMap<>();
 
     protected abstract String getAccessToken();
 
@@ -31,12 +31,12 @@ public abstract class Llama270BClient extends FullClient {
     }
 
     @Override
-    public Map<String, Queue<Message>> getMessageHistoryMap() {
+    public Map<String, Deque<Message>> getMessageHistoryMap() {
         return LLAMA2_70B_MESSAGES_HISTORY_MAP;
     }
 
     @Override
-    public void initMessageHistoryMap(Map<String, Queue<Message>> map) {
+    public void initMessageHistoryMap(Map<String, Deque<Message>> map) {
         LLAMA2_70B_MESSAGES_HISTORY_MAP = map;
     }
 

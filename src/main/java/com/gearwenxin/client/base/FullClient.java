@@ -15,7 +15,7 @@ import reactor.util.function.Tuples;
 
 import java.util.LinkedList;
 import java.util.Map;
-import java.util.Queue;
+import java.util.Deque;
 
 /**
  * @author Ge Mingjia
@@ -27,12 +27,12 @@ public abstract class FullClient extends BaseClient implements ContBot<ChatBaseR
     /**
      * 获取此模型的历史消息
      */
-    public abstract Map<String, Queue<Message>> getMessageHistoryMap();
+    public abstract Map<String, Deque<Message>> getMessageHistoryMap();
 
     /**
      * 初始化此模型的历史消息
      */
-    public abstract void initMessageHistoryMap(Map<String, Queue<Message>> map);
+    public abstract void initMessageHistoryMap(Map<String, Deque<Message>> map);
 
     @Override
     public Mono<ChatResponse> chatCont(String content, String msgUid) {
@@ -40,8 +40,8 @@ public abstract class FullClient extends BaseClient implements ContBot<ChatBaseR
                 .filter(tuple -> StringUtils.isNotBlank(tuple.getT1()) && StringUtils.isNotBlank(tuple.getT2()))
                 .switchIfEmpty(Mono.error(new BusinessException(ErrorCode.PARAMS_ERROR)))
                 .flatMap(tuple -> {
-                    Map<String, Queue<Message>> messageHistoryMap = getMessageHistoryMap();
-                    Queue<Message> messagesHistory = messageHistoryMap.computeIfAbsent(
+                    Map<String, Deque<Message>> messageHistoryMap = getMessageHistoryMap();
+                    Deque<Message> messagesHistory = messageHistoryMap.computeIfAbsent(
                             tuple.getT2(), k -> new LinkedList<>()
                     );
 
@@ -64,8 +64,8 @@ public abstract class FullClient extends BaseClient implements ContBot<ChatBaseR
                 .filter(tuple -> StringUtils.isNotBlank(tuple.getT1()) && StringUtils.isNotBlank(tuple.getT2()))
                 .switchIfEmpty(Mono.error(new BusinessException(ErrorCode.PARAMS_ERROR)))
                 .flatMapMany(tuple -> {
-                    Map<String, Queue<Message>> messageHistoryMap = getMessageHistoryMap();
-                    Queue<Message> messagesHistory = messageHistoryMap.computeIfAbsent(
+                    Map<String, Deque<Message>> messageHistoryMap = getMessageHistoryMap();
+                    Deque<Message> messagesHistory = messageHistoryMap.computeIfAbsent(
                             tuple.getT2(), k -> new LinkedList<>()
                     );
 
@@ -91,8 +91,8 @@ public abstract class FullClient extends BaseClient implements ContBot<ChatBaseR
                 .switchIfEmpty(Mono.error(new BusinessException(ErrorCode.PARAMS_ERROR)))
                 .doOnNext(ChatBaseRequest::validSelf)
                 .flatMap(request -> {
-                    Map<String, Queue<Message>> messageHistoryMap = getMessageHistoryMap();
-                    Queue<Message> messagesHistory = messageHistoryMap.computeIfAbsent(
+                    Map<String, Deque<Message>> messageHistoryMap = getMessageHistoryMap();
+                    Deque<Message> messagesHistory = messageHistoryMap.computeIfAbsent(
                             msgUid, key -> new LinkedList<>()
                     );
 
@@ -116,8 +116,8 @@ public abstract class FullClient extends BaseClient implements ContBot<ChatBaseR
                 .switchIfEmpty(Mono.error(new BusinessException(ErrorCode.PARAMS_ERROR)))
                 .doOnNext(ChatBaseRequest::validSelf)
                 .flatMapMany(request -> {
-                    Map<String, Queue<Message>> messageHistoryMap = getMessageHistoryMap();
-                    Queue<Message> messagesHistory = messageHistoryMap.computeIfAbsent(
+                    Map<String, Deque<Message>> messageHistoryMap = getMessageHistoryMap();
+                    Deque<Message> messagesHistory = messageHistoryMap.computeIfAbsent(
                             msgUid, key -> new LinkedList<>()
                     );
 

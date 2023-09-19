@@ -12,7 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Mono;
 
 import java.util.Map;
-import java.util.Queue;
+import java.util.Deque;
 
 /**
  * @author Ge Mingjia

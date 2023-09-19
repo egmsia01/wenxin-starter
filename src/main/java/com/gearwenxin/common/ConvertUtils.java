@@ -24,7 +24,7 @@ public class ConvertUtils {
         }
         return ErnieRequest.builder()
                 .userId(chatRequest.getUserId())
-                .messages(WenXinUtils.buildUserMessageQueue(chatRequest.getContent()))
+                .messages(WenXinUtils.buildUserMessageDeque(chatRequest.getContent()))
                 .temperature(chatRequest.getTemperature())
                 .topP(chatRequest.getTopP())
                 .penaltyScore(chatRequest.getPenaltyScore());
@@ -38,7 +38,7 @@ public class ConvertUtils {
         }
         return BaseRequest.builder()
                 .userId(chatRequest.getUserId())
-                .messages(WenXinUtils.buildUserMessageQueue(chatRequest.getContent()));
+                .messages(WenXinUtils.buildUserMessageDeque(chatRequest.getContent()));
     }
 
     public static PromptRequest toPromptRequest(ChatPromptRequest chatRequest) {

@@ -5,7 +5,7 @@ import com.gearwenxin.common.Constant;
 import com.gearwenxin.entity.Message;
 
 import java.util.Map;
-import java.util.Queue;
+import java.util.Deque;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -19,7 +19,7 @@ public abstract class BloomZ7BClient extends FullClient {
 
     private String accessToken = null;
     private static final String TAG = "BloomZ-7B-Client";
-    private static Map<String, Queue<Message>> BLOOMZ_MESSAGES_HISTORY_MAP = new ConcurrentHashMap<>();
+    private static Map<String, Deque<Message>> BLOOMZ_MESSAGES_HISTORY_MAP = new ConcurrentHashMap<>();
     private static final String URL = Constant.BLOOMZ_7B_URL;
 
     protected abstract String getAccessToken();
@@ -30,12 +30,12 @@ public abstract class BloomZ7BClient extends FullClient {
     }
 
     @Override
-    public Map<String, Queue<Message>> getMessageHistoryMap() {
+    public Map<String, Deque<Message>> getMessageHistoryMap() {
         return BLOOMZ_MESSAGES_HISTORY_MAP;
     }
 
     @Override
-    public void initMessageHistoryMap(Map<String, Queue<Message>> map) {
+    public void initMessageHistoryMap(Map<String, Deque<Message>> map) {
         BLOOMZ_MESSAGES_HISTORY_MAP = map;
     }
 

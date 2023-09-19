@@ -5,7 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Queue;
+import java.util.Deque;
 
 /**
  * @author Ge Mingjia
@@ -31,7 +31,7 @@ public class BaseRequest {
      * 如果messages中content总长度大于2000字符，系统会依次遗忘最早的历史会话，直到content的总长度不超过2000个字符
      */
     @JsonProperty("messages")
-    private Queue<Message> messages;
+    private Deque<Message> messages;
 
     /**
      * 是否以流式接口的形式返回数据，默认false
@@ -41,7 +41,7 @@ public class BaseRequest {
 
     public static class BaseRequestBuilder {
         private String userId;
-        private Queue<Message> messages;
+        private Deque<Message> messages;
         private Boolean stream;
 
         public BaseRequestBuilder userId(String userId) {
@@ -49,7 +49,7 @@ public class BaseRequest {
             return this;
         }
 
-        public BaseRequestBuilder messages(Queue<Message> messages) {
+        public BaseRequestBuilder messages(Deque<Message> messages) {
             this.messages = messages;
             return this;
         }

@@ -7,7 +7,7 @@ import com.gearwenxin.entity.Message;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Map;
-import java.util.Queue;
+import java.util.Deque;
 import java.util.concurrent.ConcurrentHashMap;
 
 
@@ -25,7 +25,7 @@ public abstract class ErnieBotTurboClient extends FullClient {
     private static final String TAG = "Ernie-Bot-Turbo-Client";
     private static final String URL = Constant.ERNIE_BOT_TURBO_URL;
 
-    private static Map<String, Queue<Message>> TURBO_MESSAGES_HISTORY_MAP = new ConcurrentHashMap<>();
+    private static Map<String, Deque<Message>> TURBO_MESSAGES_HISTORY_MAP = new ConcurrentHashMap<>();
 
     protected abstract String getAccessToken();
 
@@ -40,12 +40,12 @@ public abstract class ErnieBotTurboClient extends FullClient {
     }
 
     @Override
-    public Map<String, Queue<Message>> getMessageHistoryMap() {
+    public Map<String, Deque<Message>> getMessageHistoryMap() {
         return TURBO_MESSAGES_HISTORY_MAP;
     }
 
     @Override
-    public void initMessageHistoryMap(Map<String, Queue<Message>> map) {
+    public void initMessageHistoryMap(Map<String, Deque<Message>> map) {
         TURBO_MESSAGES_HISTORY_MAP = map;
     }
 

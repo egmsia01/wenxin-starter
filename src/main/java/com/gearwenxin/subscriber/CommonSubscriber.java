@@ -11,7 +11,7 @@ import org.reactivestreams.Subscription;
 import reactor.core.Disposable;
 import reactor.core.publisher.FluxSink;
 
-import java.util.Queue;
+import java.util.Deque;
 import java.util.StringJoiner;
 
 import static com.gearwenxin.common.WenXinUtils.buildAssistantMessage;
@@ -25,11 +25,11 @@ public class CommonSubscriber implements Subscriber<ChatResponse>, Disposable {
 
     private final FluxSink<ChatResponse> emitter;
     private Subscription subscription;
-    private final Queue<Message> messagesHistory;
+    private final Deque<Message> messagesHistory;
 
     private final StringJoiner joiner = new StringJoiner("");
 
-    public CommonSubscriber(FluxSink<ChatResponse> emitter, Queue<Message> messagesHistory) {
+    public CommonSubscriber(FluxSink<ChatResponse> emitter, Deque<Message> messagesHistory) {
         this.emitter = emitter;
         this.messagesHistory = messagesHistory;
     }

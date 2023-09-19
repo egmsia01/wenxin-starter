@@ -35,7 +35,7 @@ public abstract class ErnieBotClient extends BaseClient implements ContBot<ChatE
     private String accessToken = null;
     private static final String TAG = "ErnieBotClient";
 
-    private static Map<String, Queue<Message>> ERNIE_MESSAGES_HISTORY_MAP = new ConcurrentHashMap<>();
+    private static Map<String, Deque<Message>> ERNIE_MESSAGES_HISTORY_MAP = new ConcurrentHashMap<>();
 
     private static final String URL = Constant.ERNIE_BOT_URL;
 
@@ -61,11 +61,11 @@ public abstract class ErnieBotClient extends BaseClient implements ContBot<ChatE
         return accessToken != null ? accessToken : getAccessToken();
     }
 
-    public Map<String, Queue<Message>> getMessageHistoryMap() {
+    public Map<String, Deque<Message>> getMessageHistoryMap() {
         return ERNIE_MESSAGES_HISTORY_MAP;
     }
 
-    public void initMessageHistoryMap(Map<String, Queue<Message>> map) {
+    public void initMessageHistoryMap(Map<String, Deque<Message>> map) {
         ERNIE_MESSAGES_HISTORY_MAP = map;
     }
 
@@ -75,8 +75,8 @@ public abstract class ErnieBotClient extends BaseClient implements ContBot<ChatE
                 .filter(tuple -> StringUtils.isNotBlank(tuple.getT1()) && StringUtils.isNotBlank(tuple.getT2()))
                 .switchIfEmpty(Mono.error(new BusinessException(ErrorCode.PARAMS_ERROR)))
                 .flatMap(tuple -> {
-                    Map<String, Queue<Message>> messageHistoryMap = getMessageHistoryMap();
-                    Queue<Message> messagesHistory = messageHistoryMap.computeIfAbsent(
+                    Map<String, Deque<Message>> messageHistoryMap = getMessageHistoryMap();
+                    Deque<Message> messagesHistory = messageHistoryMap.computeIfAbsent(
                             tuple.getT2(), k -> new LinkedList<>()
                     );
                     Message message = buildUserMessage(tuple.getT1());
@@ -98,8 +98,8 @@ public abstract class ErnieBotClient extends BaseClient implements ContBot<ChatE
                 .filter(tuple -> StringUtils.isNotBlank(tuple.getT1()) && StringUtils.isNotBlank(tuple.getT2()))
                 .switchIfEmpty(Mono.error(new BusinessException(ErrorCode.PARAMS_ERROR)))
                 .flatMapMany(tuple -> {
-                    Map<String, Queue<Message>> messageHistoryMap = getMessageHistoryMap();
-                    Queue<Message> messagesHistory = messageHistoryMap.computeIfAbsent(
+                    Map<String, Deque<Message>> messageHistoryMap = getMessageHistoryMap();
+                    Deque<Message> messagesHistory = messageHistoryMap.computeIfAbsent(
                             tuple.getT2(), k -> new LinkedList<>()
                     );
                     Message message = buildUserMessage(tuple.getT1());
@@ -122,8 +122,8 @@ public abstract class ErnieBotClient extends BaseClient implements ContBot<ChatE
                 .filter(tuple -> StringUtils.isNotBlank(tuple.getT2()))
                 .doOnNext(tuple -> this.validChatErnieRequest(tuple.getT1()))
                 .flatMap(tuple -> {
-                    Map<String, Queue<Message>> messageHistoryMap = getMessageHistoryMap();
-                    Queue<Message> messagesHistory = messageHistoryMap.computeIfAbsent(
+                    Map<String, Deque<Message>> messageHistoryMap = getMessageHistoryMap();
+                    Deque<Message> messagesHistory = messageHistoryMap.computeIfAbsent(
                             tuple.getT2(), key -> new LinkedList<>()
                     );
 
@@ -146,8 +146,8 @@ public abstract class ErnieBotClient extends BaseClient implements ContBot<ChatE
                 .filter(tuple -> StringUtils.isNotBlank(tuple.getT2()))
                 .doOnNext(tuple -> this.validChatErnieRequest(tuple.getT1()))
                 .flatMapMany(tuple -> {
-                    Map<String, Queue<Message>> messageHistoryMap = getMessageHistoryMap();
-                    Queue<Message> messagesHistory = messageHistoryMap.computeIfAbsent(
+                    Map<String, Deque<Message>> messageHistoryMap = getMessageHistoryMap();
+                    Deque<Message> messagesHistory = messageHistoryMap.computeIfAbsent(
                             tuple.getT2(), key -> new LinkedList<>()
                     );
 

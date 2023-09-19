@@ -19,7 +19,7 @@ import java.net.URI;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
-import java.util.Queue;
+import java.util.Deque;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -117,7 +117,7 @@ public class ChatUtils {
                 .doOnError(WebClientResponseException.class, handleWebClientError());
     }
 
-    public static <T> Flux<ChatResponse> historyFlux(String url, String token, T request, Queue<Message> messagesHistory) {
+    public static <T> Flux<ChatResponse> historyFlux(String url, String token, T request, Deque<Message> messagesHistory) {
         return Flux.create(emitter -> {
             CommonSubscriber subscriber = new CommonSubscriber(emitter, messagesHistory);
             Flux<ChatResponse> chatResponse = ChatUtils.fluxChatPost(
@@ -128,7 +128,7 @@ public class ChatUtils {
         });
     }
 
-    public static <T> Mono<ChatResponse> historyMono(String url, String token, T request, Queue<Message> messagesHistory) {
+    public static <T> Mono<ChatResponse> historyMono(String url, String token, T request, Deque<Message> messagesHistory) {
         Mono<ChatResponse> response = ChatUtils.monoChatPost(
                 url, token, request, ChatResponse.class
         ).subscribeOn(Schedulers.boundedElastic());

@@ -143,7 +143,7 @@ ErnieRequest：文心一言模型（ErnieBot）请求类。
 | 变量名       | 类型           | 说明                                                         |
 | ------------ | -------------- | ------------------------------------------------------------ |
 | userId       | String         | 表示最终用户的唯一标识符，可以监视和检测滥用行为，防止接口恶意调用 |
-| messages     | Queue<Message> | 聊天上下文信息。<br>(1) `messages` 成员不能为空，1个成员表示单轮对话，多个成员表示多轮对话<br>(2) 最后一个 `message` 为当前请求的信息，前面的 `message` 为历史对话信息<br>(3) 必须为奇数个成员，成员中 `message` 的 `role` 必须依次为 `user` 、`assistant`<br>(4) 最后一个 `message` 的 `content` 长度(即此轮对话的问题)不能超过2000个字符;如果 `messages` 中 `content` 总长度大于2000字符，系统会依次遗忘最早的历史会话，直到`content`的总长度不超过2000个字符 |
+| messages     | Deque<Message> | 聊天上下文信息。<br>(1) `messages` 成员不能为空，1个成员表示单轮对话，多个成员表示多轮对话<br>(2) 最后一个 `message` 为当前请求的信息，前面的 `message` 为历史对话信息<br>(3) 必须为奇数个成员，成员中 `message` 的 `role` 必须依次为 `user` 、`assistant`<br>(4) 最后一个 `message` 的 `content` 长度(即此轮对话的问题)不能超过2000个字符;如果 `messages` 中 `content` 总长度大于2000字符，系统会依次遗忘最早的历史会话，直到`content`的总长度不超过2000个字符 |
 | temperature  | Float          | (1) 较高的数值会使输出更加随机，而较低的数值会使其更加集中和确定<br>(2) 默认 `0.95`，范围 `(0,1.0]`，不能为0<br>(3) 建议该参数和 `top_p` 只设置1个<br>(4) 建议 `top_p` 和 `temperature` 不要同时更改 |
 | topP         | Float          | (1) 影响输出文本的多样性，取值越大，生成文本的多样性越强<br>(2) 默认`0.8`，取值范围 `[0,1.0]`<br>(3) 建议该参数和 `temperature` 只设置1个<br>(4) 建议 `top_p` 和 `temperature` 不要同时更改 |
 | penaltyScore | Float          | 通过对已生成的 `token` 增加惩罚，减少重复生成的现象。说明:<br>(1) 值越大表示惩罚越大<br>(2) 默认 `1.0`，取值范围 `[1.0,2.0]` |
@@ -328,7 +328,7 @@ public class ChatService {
     private ErnieBotClient ernieBotClient;
  
     public void exportMsg() {
-        Map<String, Queue<Message>> messageHistoryMap = ernieBotTurboClient.getMessageHistoryMap();
+        Map<String, Deque<Message>> messageHistoryMap = ernieBotTurboClient.getMessageHistoryMap();
     }
  
 }
@@ -344,11 +344,11 @@ public class ChatService {
     private ErnieBotClient ernieBotClient;
  
     public void importMsg() {
-        Map<String, Queue<Message>> messageHistoryMap = new HashMap<>();
+        Map<String, Deque<Message>> messageHistoryMap = new HashMap<>();
         Message userMessage = WenXinUtils.buildUserMessage("你好");
         Message assistantMessage = WenXinUtils.buildAssistantMessage("我是文心一言");
-        Queue<Message> messagesQueue = WenXinUtils.buildMessageQueue(userMessage, assistantMessage);
-        messageHistoryMap1.put("test-user1-1001", messagesQueue);
+        Deque<Message> messagesDeque = WenXinUtils.buildMessageDeque(userMessage, assistantMessage);
+        messageHistoryMap1.put("test-user1-1001", messagesDeque);
         ernieBotClient.initMessageHistoryMap(messageHistoryMap1);
     }
  

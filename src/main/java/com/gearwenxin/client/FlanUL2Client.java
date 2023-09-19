@@ -4,7 +4,7 @@ import com.gearwenxin.client.base.FullClient;
 import com.gearwenxin.entity.Message;
 
 import java.util.Map;
-import java.util.Queue;
+import java.util.Deque;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -18,7 +18,7 @@ public abstract class FlanUL2Client extends FullClient {
 
     private String accessToken = null;
     private static final String TAG = "Flan-UL2-Client";
-    private static Map<String, Queue<Message>> FLAN_UL2_MESSAGES_HISTORY_MAP = new ConcurrentHashMap<>();
+    private static Map<String, Deque<Message>> FLAN_UL2_MESSAGES_HISTORY_MAP = new ConcurrentHashMap<>();
 
     protected abstract String getAccessToken();
 
@@ -30,12 +30,12 @@ public abstract class FlanUL2Client extends FullClient {
     }
 
     @Override
-    public Map<String, Queue<Message>> getMessageHistoryMap() {
+    public Map<String, Deque<Message>> getMessageHistoryMap() {
         return FLAN_UL2_MESSAGES_HISTORY_MAP;
     }
 
     @Override
-    public void initMessageHistoryMap(Map<String, Queue<Message>> map) {
+    public void initMessageHistoryMap(Map<String, Deque<Message>> map) {
         FLAN_UL2_MESSAGES_HISTORY_MAP = map;
     }
 

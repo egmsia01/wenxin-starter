@@ -141,7 +141,7 @@ ErnieRequest: Request class for the ErnieBot model.
 | Variable Name | Type           | Description                                                  |
 | ------------- | -------------- | ------------------------------------------------------------ |
 | userId        | String         | Represents the unique identifier of the end-user, which can be used to monitor and detect abusive behavior, preventing malicious API calls. |
-| messages      | Queue<Message> | Chat context information.<br>(1) `messages` member cannot be empty. One member represents a single-turn conversation, and multiple members represent multi-turn conversations.<br>(2) The last `message` represents the current request information, and the previous `message` represents historical conversation information.<br>(3) The number of members must be odd, and the `role` of the `message` in the members must be `user`, `assistant` alternately.<br>(4) The length of `content` of the last `message` (i.e., the question of this round of conversation) cannot exceed 2000 characters. If the total length of `content` in `messages` exceeds 2000 characters, the system will gradually forget the earliest historical sessions until the total length of `content` is no more than 2000 characters. |
+| messages      | Deque<Message> | Chat context information.<br>(1) `messages` member cannot be empty. One member represents a single-turn conversation, and multiple members represent multi-turn conversations.<br>(2) The last `message` represents the current request information, and the previous `message` represents historical conversation information.<br>(3) The number of members must be odd, and the `role` of the `message` in the members must be `user`, `assistant` alternately.<br>(4) The length of `content` of the last `message` (i.e., the question of this round of conversation) cannot exceed 2000 characters. If the total length of `content` in `messages` exceeds 2000 characters, the system will gradually forget the earliest historical sessions until the total length of `content` is no more than 2000 characters. |
 | temperature   | Float          | (1) A higher value will make the output more random, while a lower value will make it more focused and deterministic.<br>(2) Default: `0.95`, Range: `(0, 1.0]`, cannot be 0.<br>(3) It is recommended to set either this parameter or `top_p`, not both.<br>(4) It is recommended not to change both `top_p` and `temperature` simultaneously. |
 | topP          | Float          | (1) Affects the diversity of the output text. The larger the value, the stronger the diversity of the generated text.<br>(2) Default: `0.8`, Range: `[0, 1.0]`<br>(3) It is recommended to set either this parameter or `temperature`, not both.<br>(4) It is recommended not to change both `top_p` and `temperature` simultaneously. |
 | penaltyScore  | Float          | Increases the penalty for already generated `tokens` to reduce the repetition of generated text. Explanation:<br>(1) The larger the value, the greater the penalty.<br>(2) Default: `1.0`, Range: `[1.0, 2.0]`. |
@@ -326,7 +326,7 @@ public class ChatService {
     private ErnieBotClient ernieBotClient;
  
     public void exportMsg() {
-        Map<String, Queue<Message>> messageHistoryMap = ernieBotTurboClient.getMessageHistoryMap();
+        Map<String, Deque<Message>> messageHistoryMap = ernieBotTurboClient.getMessageHistoryMap();
     }
  
 }
@@ -342,11 +342,11 @@ public class ChatService {
     private ErnieBotClient ernieBotClient;
  
     public void importMsg() {
-        Map<String, Queue<Message>> messageHistoryMap = new HashMap<>();
+        Map<String, Deque<Message>> messageHistoryMap = new HashMap<>();
         Message userMessage = WenXinUtils.buildUserMessage("Hello");
         Message assistantMessage = WenXinUtils.buildAssistantMessage("I am ParamsBot");
-        Queue<Message> messagesQueue = WenXinUtils.buildMessageQueue(userMessage, assistantMessage);
-        messageHistoryMap1.put("test-user1-1001", messagesQueue);
+        Deque<Message> messagesDeque = WenXinUtils.buildMessageDeque(userMessage, assistantMessage);
+        messageHistoryMap1.put("test-user1-1001", messagesDeque);
         ernieBotClient.initMessageHistoryMap(messageHistoryMap1);
     }
  

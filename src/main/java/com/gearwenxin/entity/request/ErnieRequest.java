@@ -6,7 +6,7 @@ import com.gearwenxin.entity.BaseRequest;
 import com.gearwenxin.entity.Message;
 import lombok.*;
 
-import java.util.Queue;
+import java.util.Deque;
 
 /**
  * @author Ge Mingjia
@@ -53,7 +53,7 @@ public class ErnieRequest extends BaseRequest {
         private Float topP;
         private Float penaltyScore;
         private String userId;
-        private Queue<Message> messages;
+        private Deque<Message> messages;
         private Boolean stream;
 
         public ErnieRequestBuilder temperature(Float temperature) {
@@ -78,7 +78,7 @@ public class ErnieRequest extends BaseRequest {
         }
 
         @Override
-        public ErnieRequestBuilder messages(Queue<Message> messages) {
+        public ErnieRequestBuilder messages(Deque<Message> messages) {
             this.messages = messages;
             return this;
         }

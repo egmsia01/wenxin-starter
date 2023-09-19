@@ -4,7 +4,7 @@ import com.gearwenxin.client.base.FullClient;
 import com.gearwenxin.entity.Message;
 
 import java.util.Map;
-import java.util.Queue;
+import java.util.Deque;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -18,7 +18,7 @@ public abstract class CerebrasGPT13BClient extends FullClient {
 
     private String accessToken = null;
     private static final String TAG = "Cerebras-GPT-13B-Client";
-    private static Map<String, Queue<Message>> CEREBRAS_GPT_13B_MESSAGES_HISTORY_MAP = new ConcurrentHashMap<>();
+    private static Map<String, Deque<Message>> CEREBRAS_GPT_13B_MESSAGES_HISTORY_MAP = new ConcurrentHashMap<>();
 
     protected abstract String getAccessToken();
 
@@ -31,12 +31,12 @@ public abstract class CerebrasGPT13BClient extends FullClient {
     }
 
     @Override
-    public Map<String, Queue<Message>> getMessageHistoryMap() {
+    public Map<String, Deque<Message>> getMessageHistoryMap() {
         return CEREBRAS_GPT_13B_MESSAGES_HISTORY_MAP;
     }
 
     @Override
-    public void initMessageHistoryMap(Map<String, Queue<Message>> map) {
+    public void initMessageHistoryMap(Map<String, Deque<Message>> map) {
         CEREBRAS_GPT_13B_MESSAGES_HISTORY_MAP = map;
     }
 
