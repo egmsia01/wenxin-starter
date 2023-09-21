@@ -28,13 +28,9 @@
 
 ---
 
-1. 前往 [文心一言资格申请](https://cloud.baidu.com/product/wenxinworkshop) 
-
-2. [填写问卷](https://cloud.baidu.com/survey/qianfan.html)，等待审核通过（我用了一天半）
-
-3. 审核通过后进入 [控制台](https://console.bce.baidu.com/ai/?_=#/ai/wenxinworkshop/overview/index)，点击[创建应用](https://console.bce.baidu.com/ai/?_=#/ai/wenxinworkshop/app/create)
-4. 进入左侧 [应用列表](https://console.bce.baidu.com/ai/?_=#/ai/wenxinworkshop/app/list)，复制 `API Key` 与 `Secret Key`
-5. 将你的 `API Key` 与 `Secret Key` 替换链接的[Key]，访问以下地址
+1. 进入 [控制台](https://console.bce.baidu.com/ai/?_=#/ai/wenxinworkshop/overview/index)，点击[创建应用](https://console.bce.baidu.com/ai/?_=#/ai/wenxinworkshop/app/create)
+2. 进入左侧 [应用列表](https://console.bce.baidu.com/ai/?_=#/ai/wenxinworkshop/app/list)，复制 `API Key` 与 `Secret Key`
+3. 将你的 `API Key` 与 `Secret Key` 替换链接的[Key]，访问以下地址
  > https://aip.baidubce.com/oauth/2.0/token?grant_type=client_credentials&client_id=[API-Key]&client_secret=[Secret-Key]
 
 ## 项目简介
@@ -50,6 +46,9 @@
 [使用demo](https://github.com/gemingjia/springboot-wenxin-demo)
 
 ```text
+0.0.9.1版本更改了历史消息的数据结构，由Queue更换为Deque，如有使用消息导入导出功能请注意修改，Deque兼容Queue的方法，您只需全局替换“Queue”为“Deque”即可，其余无需做任何修改，很抱歉给您带来不便。
+
+
 除"ErnieBot"与"Prompt"外，其余的对话型模型接收参数类统一为 ChatBaseRequest，响应类为 ChatResponse
 图片生成型模型接收参数类统一为 ChatImageRequest，响应类为 ImageResponse，内容为base64编码的图片。
 ```
