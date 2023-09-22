@@ -18,12 +18,18 @@ import org.apache.commons.lang3.StringUtils;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.Function;
+
 /**
  * @author Ge Mingjia
  * @date 2023/8/4
  */
 @Slf4j
 public abstract class BaseClient implements SingleBot, BaseBot {
+
+    private static Map<String, Function<String,String>> clientMap = new HashMap<>();
 
     @Override
     public Mono<ChatResponse> chatSingle(String content) {
