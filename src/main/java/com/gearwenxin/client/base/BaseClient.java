@@ -29,7 +29,15 @@ import java.util.function.Function;
 @Slf4j
 public abstract class BaseClient implements SingleBot, BaseBot {
 
-    private static Map<String, Function<String,String>> clientMap = new HashMap<>();
+    private static Map<String, Function<String,Flux<ChatResponse>>> clientMap = new HashMap<>();
+
+    public Flux<ChatResponse> process(String tag, String content) {
+        Function<String, Flux<ChatResponse>> processor = clientMap.get(tag);
+        if (processor != null) {
+            return processor.apply(content);
+        }
+        return Flux.error(new BusinessException(ErrorCode.PARAMS_ERROR));
+    }
 
     @Override
     public Mono<ChatResponse> chatSingle(String content) {
