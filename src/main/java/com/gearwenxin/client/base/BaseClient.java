@@ -29,7 +29,7 @@ import java.util.function.Function;
 @Slf4j
 public abstract class BaseClient implements SingleBot, BaseBot {
 
-    private static Map<String, Function<String,Flux<ChatResponse>>> clientMap = new HashMap<>();
+    private static final Map<String, Function<String,Flux<ChatResponse>>> clientMap = new HashMap<>();
 
     public Flux<ChatResponse> process(String tag, String content) {
         Function<String, Flux<ChatResponse>> processor = clientMap.get(tag);
