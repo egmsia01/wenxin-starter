@@ -62,13 +62,13 @@ Repository Path: [/io/github/gemingjia/gear-wenxinworkshop-starter)
 <dependency>
   <groupId>io.github.gemingjia</groupId>
   <artifactId>gear-wenxinworkshop-starter</artifactId>
-  <version>0.0.9</version>
+  <version>0.0.9.2</version>
 </dependency>
 ```
 - Gradle
 ```gradle
 dependencies {
-  implementation 'io.github.gemingjia:gear-wenxinworkshop-starter:0.0.9' 
+  implementation 'io.github.gemingjia:gear-wenxinworkshop-starter:0.0.9.2' 
 }
 ```
 
