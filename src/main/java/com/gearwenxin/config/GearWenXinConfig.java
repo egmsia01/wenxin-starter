@@ -114,7 +114,7 @@ public class GearWenXinConfig implements CommandLineRunner {
         };
     }
 
-    @Bean
+    @Bean(initMethod = "initClient")
     public ErnieBotClient ernieBotClient() {
         return new ErnieBotClient() {
             @Override
@@ -124,7 +124,7 @@ public class GearWenXinConfig implements CommandLineRunner {
         };
     }
 
-    @Bean
+    @Bean(initMethod = "initClient")
     public ErnieBotTurboClient ernieBotTurboClient() {
         return new ErnieBotTurboClient() {
             @Override

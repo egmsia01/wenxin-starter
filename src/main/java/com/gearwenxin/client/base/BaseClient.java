@@ -13,6 +13,9 @@ import com.gearwenxin.entity.response.ChatResponse;
 import com.gearwenxin.exception.BusinessException;
 import com.gearwenxin.model.BaseBot;
 import com.gearwenxin.model.SingleBot;
+import com.gearwenxin.service.DefaultService;
+import com.gearwenxin.service.ErnieService;
+import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import reactor.core.publisher.Flux;
@@ -29,42 +32,20 @@ import java.util.function.Function;
 @Slf4j
 public abstract class BaseClient implements SingleBot, BaseBot {
 
-    private static final Map<String, Function<String,Flux<ChatResponse>>> clientMap = new HashMap<>();
+    private static final Map<String, Function<String, Mono<ChatResponse>>> clientMap = new HashMap<>();
 
-    public Flux<ChatResponse> process(String tag, String content) {
-        Function<String, Flux<ChatResponse>> processor = clientMap.get(tag);
-        if (processor != null) {
-            return processor.apply(content);
-        }
-        return Flux.error(new BusinessException(ErrorCode.PARAMS_ERROR));
+    public void initClient() {
+        clientMap.put("ErnieBotClientSC", this::chatSingleErnie);
+        clientMap.put("OtherClientSC", this::chatSingleDefult);
     }
 
     @Override
     public Mono<ChatResponse> chatSingle(String content) {
-        switch (getTag()) {
-            case "ErnieBotClient" -> {
-                return Mono.justOrEmpty(content)
-                        .filter(StringUtils::isNotBlank)
-                        .switchIfEmpty(Mono.error(new BusinessException(ErrorCode.PARAMS_ERROR)))
-                        .map(WenXinUtils::buildUserMessageDeque)
-                        .map(messageDeque -> ErnieRequest.builder().messages(messageDeque).build())
-                        .doOnNext(request -> log.info("{}-content_singleRequest => {}", getTag(), request.toString()))
-                        .flatMap(request ->
-                                ChatUtils.monoChatPost(getURL(), getCustomAccessToken(), request, ChatResponse.class)
-                        );
-            }
-            default -> {
-                return Mono.just(content)
-                        .filter(StringUtils::isNotBlank)
-                        .switchIfEmpty(Mono.error(new BusinessException(ErrorCode.PARAMS_ERROR)))
-                        .map(WenXinUtils::buildUserMessageDeque)
-                        .map(messageDeque -> BaseRequest.builder().messages(messageDeque).build())
-                        .doOnNext(request -> log.info(getTag() + "content_singleRequest => {}", request.toString()))
-                        .flatMap(request ->
-                                ChatUtils.monoChatPost(getURL(), getCustomAccessToken(), request, ChatResponse.class)
-                        );
-            }
+        Function<String, Mono<ChatResponse>> fluxFunction = clientMap.get(getTag() + "SC");
+        if (fluxFunction != null) {
+            return fluxFunction.apply(content);
         }
+        return Mono.error(new BusinessException(ErrorCode.PARAMS_ERROR));
     }
 
 
@@ -150,6 +131,33 @@ public abstract class BaseClient implements SingleBot, BaseBot {
                         );
             }
         }
+
+    }
+
+    public Mono<ChatResponse> chatSingleErnie(String content) {
+
+        return Mono.justOrEmpty(content)
+                .filter(StringUtils::isNotBlank)
+                .switchIfEmpty(Mono.error(new BusinessException(ErrorCode.PARAMS_ERROR)))
+                .map(WenXinUtils::buildUserMessageDeque)
+                .map(messageDeque -> ErnieRequest.builder().messages(messageDeque).build())
+                .doOnNext(request -> log.info("{}-content_singleRequest => {}", getTag(), request.toString()))
+                .flatMap(request ->
+                        ChatUtils.monoChatPost(getURL(), getCustomAccessToken(), request, ChatResponse.class)
+                );
+    }
+
+    public Mono<ChatResponse> chatSingleDefult(String content) {
+
+        return Mono.just(content)
+                .filter(StringUtils::isNotBlank)
+                .switchIfEmpty(Mono.error(new BusinessException(ErrorCode.PARAMS_ERROR)))
+                .map(WenXinUtils::buildUserMessageDeque)
+                .map(messageDeque -> BaseRequest.builder().messages(messageDeque).build())
+                .doOnNext(request -> log.info(getTag() + "content_singleRequest => {}", request.toString()))
+                .flatMap(request ->
+                        ChatUtils.monoChatPost(getURL(), getCustomAccessToken(), request, ChatResponse.class)
+                );
 
     }
 
