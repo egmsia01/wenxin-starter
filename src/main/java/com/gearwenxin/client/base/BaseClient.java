@@ -36,7 +36,7 @@ public abstract class BaseClient implements SingleBot, BaseBot {
         clientMapMono.put("ErnieBotClientCS", this::chatSingleErnie);
         clientMapMono.put("OtherClientCS", this::chatSingleDefult);
         clientMapFlux.put("ErnieBotClientCSS", this::chatSingleOfStreamErnie);
-        clientMapFlux.put("OtherClientCSS", this::chatSingleOfStreamDefalt);
+        clientMapFlux.put("OtherClientCSS", this::chatSingleOfStreamDefault);
     }
 
     @Override
@@ -57,7 +57,16 @@ public abstract class BaseClient implements SingleBot, BaseBot {
         return Flux.error(new BusinessException(ErrorCode.PARAMS_ERROR));
     }
 
-    public Flux<ChatResponse> chatSingleOfStreamDefalt(String content) {
+    @Override
+    public <T extends ChatBaseRequest> Mono<ChatResponse> chatSingle(T chatBaseRequest) {
+        Function<String, Mono<ChatResponse>> fluxFunction = clientMapMono.get(getTag() + "CS");
+        if (fluxFunction != null) {
+//            return fluxFunction.apply(chatBaseRequest);
+        }
+        return Mono.error(new BusinessException(ErrorCode.PARAMS_ERROR));
+    }
+
+    public Flux<ChatResponse> chatSingleOfStreamDefault(String content) {
         return Mono.just(content)
                 .filter(StringUtils::isNotBlank)
                 .switchIfEmpty(Mono.error(new BusinessException(ErrorCode.PARAMS_ERROR)))
@@ -84,31 +93,28 @@ public abstract class BaseClient implements SingleBot, BaseBot {
 
     }
 
-    @Override
-    public <T extends ChatBaseRequest> Mono<ChatResponse> chatSingle(T chatBaseRequest) {
-        switch (getTag()) {
-            case "ErnieBotClient" -> {
-                return Mono.justOrEmpty((ChatErnieRequest) chatBaseRequest)
-                        .doOnNext(ErnieBotClient::validChatErnieRequest)
-                        .map(ConvertUtils::toErnieRequest)
-                        .map(BaseRequest.BaseRequestBuilder::build)
-                        .doOnNext(request -> log.info("{}-singleRequest => {}", getTag(), request.toString()))
-                        .flatMap(request ->
-                                ChatUtils.monoChatPost(getURL(), getCustomAccessToken(), request, ChatResponse.class)
-                        );
-            }
-            default -> {
-                return Mono.just(chatBaseRequest)
-                        .switchIfEmpty(Mono.error(new BusinessException(ErrorCode.PARAMS_ERROR)))
-                        .doOnNext(ChatBaseRequest::validSelf)
-                        .map(ConvertUtils::toBaseRequest)
-                        .map(BaseRequest.BaseRequestBuilder::build)
-                        .doOnNext(baseRequest -> log.info("{}-singleRequest => {}", getTag(), baseRequest.toString()))
-                        .flatMap(baseRequest ->
-                                ChatUtils.monoChatPost(getURL(), getCustomAccessToken(), baseRequest, ChatResponse.class)
-                        );
-            }
-        }
+    public <T extends ChatBaseRequest> Mono<ChatResponse> chatSingleDefault(T chatBaseRequest) {
+
+        return Mono.just(chatBaseRequest)
+                .switchIfEmpty(Mono.error(new BusinessException(ErrorCode.PARAMS_ERROR)))
+                .doOnNext(ChatBaseRequest::validSelf)
+                .map(ConvertUtils::toBaseRequest)
+                .map(BaseRequest.BaseRequestBuilder::build)
+                .doOnNext(baseRequest -> log.info("{}-singleRequest => {}", getTag(), baseRequest.toString()))
+                .flatMap(baseRequest ->
+                        ChatUtils.monoChatPost(getURL(), getCustomAccessToken(), baseRequest, ChatResponse.class)
+                );
+    }
+
+    public <T extends ChatBaseRequest> Mono<ChatResponse> chatSingleErnie(T chatBaseRequest) {
+        return Mono.justOrEmpty((ChatErnieRequest) chatBaseRequest)
+                .doOnNext(ErnieBotClient::validChatErnieRequest)
+                .map(ConvertUtils::toErnieRequest)
+                .map(BaseRequest.BaseRequestBuilder::build)
+                .doOnNext(request -> log.info("{}-singleRequest => {}", getTag(), request.toString()))
+                .flatMap(request ->
+                        ChatUtils.monoChatPost(getURL(), getCustomAccessToken(), request, ChatResponse.class)
+                );
 
     }
 
