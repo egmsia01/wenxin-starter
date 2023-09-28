@@ -84,6 +84,7 @@ public class GearWenXinConfig implements CommandLineRunner {
     private String gpt4all_j_url;
     private String stablelm_alpha_7b_url;
     private String star_coder_url;
+    private String custom_model_url;
 
     @Override
     public void run(String... args) {
@@ -600,6 +601,20 @@ public class GearWenXinConfig implements CommandLineRunner {
             @Override
             protected String getCustomURL() {
                 return star_coder_url;
+            }
+        };
+    }
+    @Bean
+    public CustomModelClient customModelClient() {
+        return new CustomModelClient() {
+            @Override
+            protected String getAccessToken() {
+                return access_token;
+            }
+
+            @Override
+            protected String getCustomURL() {
+                return custom_model_url;
             }
         };
     }
