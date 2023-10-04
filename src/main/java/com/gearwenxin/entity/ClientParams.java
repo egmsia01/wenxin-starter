@@ -19,6 +19,6 @@ public class ClientParams<T> {
     /**
      * 参数类
      */
-    private T params;
+    private T paramObj;
 
 }
