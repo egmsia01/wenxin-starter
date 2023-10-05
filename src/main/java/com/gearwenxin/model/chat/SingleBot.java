@@ -1,4 +1,4 @@
-package com.gearwenxin.model;
+package com.gearwenxin.model.chat;
 
 import com.gearwenxin.entity.chatmodel.ChatBaseRequest;
 import com.gearwenxin.entity.response.ChatResponse;

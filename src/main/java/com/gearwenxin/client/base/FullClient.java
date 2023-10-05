@@ -6,7 +6,7 @@ import com.gearwenxin.entity.Message;
 import com.gearwenxin.entity.chatmodel.ChatBaseRequest;
 import com.gearwenxin.entity.response.ChatResponse;
 import com.gearwenxin.exception.BusinessException;
-import com.gearwenxin.model.ContBot;
+import com.gearwenxin.model.chat.ContBot;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import reactor.core.publisher.Flux;

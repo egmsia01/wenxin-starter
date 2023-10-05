@@ -1,7 +1,7 @@
 package com.gearwenxin.service;
 
 import com.gearwenxin.entity.response.ChatResponse;
-import com.gearwenxin.model.ContBot;
+import com.gearwenxin.model.chat.ContBot;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 

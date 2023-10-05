@@ -1,4 +1,4 @@
-package com.gearwenxin.model;
+package com.gearwenxin.model.images;
 
 import com.gearwenxin.entity.request.ImageBaseRequest;
 import com.gearwenxin.entity.response.ImageResponse;

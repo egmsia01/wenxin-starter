@@ -1,5 +1,6 @@
 package com.gearwenxin.common;
 
+import com.gearwenxin.entity.RoleEnum;
 import com.gearwenxin.exception.BusinessException;
 import com.gearwenxin.entity.Message;
 import org.apache.commons.lang3.StringUtils;

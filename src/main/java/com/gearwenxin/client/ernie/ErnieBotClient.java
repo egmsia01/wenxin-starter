@@ -9,7 +9,7 @@ import com.gearwenxin.entity.Message;
 import com.gearwenxin.entity.request.ErnieRequest;
 import com.gearwenxin.common.ChatUtils;
 import com.gearwenxin.model.BaseBot;
-import com.gearwenxin.model.ContBot;
+import com.gearwenxin.model.chat.ContBot;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import reactor.core.publisher.Flux;

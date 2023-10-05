@@ -12,7 +12,7 @@ import com.gearwenxin.entity.request.ErnieRequest;
 import com.gearwenxin.entity.response.ChatResponse;
 import com.gearwenxin.exception.BusinessException;
 import com.gearwenxin.model.BaseBot;
-import com.gearwenxin.model.SingleBot;
+import com.gearwenxin.model.chat.SingleBot;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import reactor.core.publisher.Flux;
