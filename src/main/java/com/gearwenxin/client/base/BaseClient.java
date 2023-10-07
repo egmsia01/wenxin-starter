@@ -39,6 +39,7 @@ public abstract class BaseClient implements SingleBot, BaseBot {
         clientMapFlux.put("OtherClientCSS", this::chatSingleOfStreamDefault);
     }
 
+    @Deprecated
     @Override
     public Mono<ChatResponse> chatSingle(String content) {
         Function<String, Mono<ChatResponse>> fluxFunction = clientMapMono.get(getTag() + "CS");
@@ -48,6 +49,7 @@ public abstract class BaseClient implements SingleBot, BaseBot {
         return Mono.error(new BusinessException(ErrorCode.PARAMS_ERROR));
     }
 
+    @Deprecated
     @Override
     public Flux<ChatResponse> chatSingleOfStream(String content) {
         Function<String, Flux<ChatResponse>> fluxFunction = clientMapFlux.get(getTag() + "CSS");
