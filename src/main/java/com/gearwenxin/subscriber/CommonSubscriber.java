@@ -37,7 +37,7 @@ public class CommonSubscriber implements Subscriber<ChatResponse>, Disposable {
     @Override
     public void onSubscribe(Subscription subscription) {
         this.subscription = subscription;
-        subscription.request(50);
+        subscription.request(1);
         log.info("onSubscribe");
     }
 
@@ -54,7 +54,7 @@ public class CommonSubscriber implements Subscriber<ChatResponse>, Disposable {
         if (response.getResult() != null) {
             joiner.add(response.getResult());
         }
-        subscription.request(50);
+        subscription.request(1);
         emitter.next(response);
     }
 

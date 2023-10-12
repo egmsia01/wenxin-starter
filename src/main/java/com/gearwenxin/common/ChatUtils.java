@@ -117,6 +117,15 @@ public class ChatUtils {
                 .doOnError(WebClientResponseException.class, handleWebClientError());
     }
 
+    /**
+     * flux形式的回答 添加到历史消息中
+     * @param url
+     * @param token
+     * @param request
+     * @param messagesHistory
+     * @return
+     * @param <T>
+     */
     public static <T> Flux<ChatResponse> historyFlux(String url, String token, T request, Deque<Message> messagesHistory) {
         return Flux.create(emitter -> {
             CommonSubscriber subscriber = new CommonSubscriber(emitter, messagesHistory);

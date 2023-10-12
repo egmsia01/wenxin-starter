@@ -1,2 +1,1 @@
-# springboot stater auto MikuApiClient
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=com.gearwenxin.config.GearWenXinConfig

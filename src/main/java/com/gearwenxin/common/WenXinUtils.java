@@ -67,7 +67,6 @@ public class WenXinUtils {
         if (lastMessage != null && lastMessage.getRole() == RoleEnum.user &&
                 message.getRole() == RoleEnum.user) {
             // 移除上一条未回复的问题
-            // TODO: 临时解决方案
             messagesHistory.pollLast();
         }
         messagesHistory.offer(message);
@@ -76,6 +75,7 @@ public class WenXinUtils {
             return;
         }
 
+        // 统计用户消息总长度
         int totalLength = 0;
         for (Message msg : messagesHistory) {
             if (msg.getRole() == RoleEnum.user) {
@@ -83,6 +83,7 @@ public class WenXinUtils {
             }
         }
 
+        // 大于最大长度后删除最前面的对话
         while (totalLength > MAX_TOTAL_LENGTH) {
             Message firstMessage = messagesHistory.poll();
             Message secondMessage = messagesHistory.poll();

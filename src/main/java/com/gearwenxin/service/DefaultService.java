@@ -25,7 +25,6 @@ import reactor.core.publisher.Mono;
 public class DefaultService {
 
     public Mono<ChatResponse> chatSingle(ChatBaseRequest chatBaseRequest, BaseProperty baseProperty) {
-
         return Mono.just(chatBaseRequest)
                 .switchIfEmpty(Mono.error(new BusinessException(ErrorCode.PARAMS_ERROR)))
                 .doOnNext(ChatBaseRequest::validSelf)

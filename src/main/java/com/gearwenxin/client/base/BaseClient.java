@@ -18,7 +18,6 @@ import com.gearwenxin.service.DefaultService;
 import com.gearwenxin.service.ErnieService;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -93,6 +92,7 @@ public abstract class BaseClient implements SingleBot, BaseBot {
         return Flux.error(new BusinessException(ErrorCode.PARAMS_ERROR));
     }
 
+
     public Flux<ChatResponse> chatSingleOfStreamDefault(String content) {
         return defaultService.chatSingleOfStream(content, baseProperty);
     }
@@ -109,7 +109,6 @@ public abstract class BaseClient implements SingleBot, BaseBot {
         return ernieService.chatSingle(chatErnieRequest, baseProperty);
 
     }
-
 
     public Mono<ChatResponse> chatSingleErnie(String content) {
         return ernieService.chatSingle(content, baseProperty);
