@@ -68,7 +68,7 @@ Repository Path: [/io/github/gemingjia/gear-wenxinworkshop-starter)
 - Gradle
 ```gradle
 dependencies {
-  implementation 'io.github.gemingjia:gear-wenxinworkshop-starter:0.0.9.2' 
+  implementation 'io.github.gemingjia:gear-wenxinworkshop-starter:0.0.9.1' 
 }
 ```
 
