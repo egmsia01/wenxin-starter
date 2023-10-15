@@ -1,6 +1,6 @@
 package com.gearwenxin.entity;
 
-import com.gearwenxin.entity.enums.RoleEnum;
+import com.gearwenxin.entity.enums.Role;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -19,7 +19,7 @@ public class Message {
      * user: 表示用户
      * assistant: 表示对话助手
      */
-    private RoleEnum role;
+    private Role role;
 
     /**
      * 对话内容，不能为空

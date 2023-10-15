@@ -1,6 +1,6 @@
 package com.gearwenxin.entity;
 
-import com.gearwenxin.entity.enums.RoleEnum;
+import com.gearwenxin.entity.enums.Role;
 
 /**
  * @author Ge Mingjia
@@ -14,7 +14,7 @@ public class Example {
    * assistant: 表示对话助手 
    * function: 表示函数
    */
-  private RoleEnum role;
+  private Role role;
 
   /**
    * 对话内容,当前message存在function_call时可以为空,其他场景不能为空

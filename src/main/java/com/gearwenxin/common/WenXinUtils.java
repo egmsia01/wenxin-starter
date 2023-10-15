@@ -1,6 +1,6 @@
 package com.gearwenxin.common;
 
-import com.gearwenxin.entity.enums.RoleEnum;
+import com.gearwenxin.entity.enums.Role;
 import com.gearwenxin.exception.BusinessException;
 import com.gearwenxin.entity.Message;
 import org.apache.commons.lang3.StringUtils;
@@ -38,14 +38,14 @@ public class WenXinUtils {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "content is null");
         }
 
-        return new Message(RoleEnum.user, content);
+        return new Message(Role.user, content);
     }
 
     public static Message buildAssistantMessage(String content) {
         if (content == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "content is null");
         }
-        return new Message(RoleEnum.assistant, content);
+        return new Message(Role.assistant, content);
     }
 
     /**
@@ -64,21 +64,21 @@ public class WenXinUtils {
         }
 
         Message lastMessage = messagesHistory.peekLast();
-        if (lastMessage != null && lastMessage.getRole() == RoleEnum.user &&
-                message.getRole() == RoleEnum.user) {
+        if (lastMessage != null && lastMessage.getRole() == Role.user &&
+                message.getRole() == Role.user) {
             // 移除上一条未回复的问题
             messagesHistory.pollLast();
         }
         messagesHistory.offer(message);
 
-        if (message.getRole() == RoleEnum.assistant) {
+        if (message.getRole() == Role.assistant) {
             return;
         }
 
         // 统计用户消息总长度
         int totalLength = 0;
         for (Message msg : messagesHistory) {
-            if (msg.getRole() == RoleEnum.user) {
+            if (msg.getRole() == Role.user) {
                 totalLength += msg.getContent().length();
             }
         }
