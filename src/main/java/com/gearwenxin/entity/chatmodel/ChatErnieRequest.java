@@ -32,4 +32,14 @@ public class ChatErnieRequest extends ChatBaseRequest {
      */
     private Float penaltyScore;
 
+    // TODO: 增加函数触发列表 List<FunctionInfo> functions;
+
+    /**
+     * 模型人设，主要用于人设设定，例如，你是xxx公司制作的AI助手，说明：
+     * （1）长度限制1024个字符
+     * （2）如果使用functions参数，不支持设定人设system
+     */
+    // TODO: 如果使用functions参数，不支持设定人设 system
+    private String system;
+
 }
