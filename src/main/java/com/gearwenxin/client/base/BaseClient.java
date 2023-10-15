@@ -1,15 +1,9 @@
 package com.gearwenxin.client.base;
 
-import com.gearwenxin.client.ernie.ErnieBotClient;
-import com.gearwenxin.common.ChatUtils;
-import com.gearwenxin.common.ConvertUtils;
 import com.gearwenxin.common.ErrorCode;
-import com.gearwenxin.common.WenXinUtils;
 import com.gearwenxin.entity.BaseProperty;
-import com.gearwenxin.entity.BaseRequest;
 import com.gearwenxin.entity.chatmodel.ChatBaseRequest;
 import com.gearwenxin.entity.chatmodel.ChatErnieRequest;
-import com.gearwenxin.entity.request.ErnieRequest;
 import com.gearwenxin.entity.response.ChatResponse;
 import com.gearwenxin.exception.BusinessException;
 import com.gearwenxin.model.BaseBot;
@@ -107,7 +101,6 @@ public abstract class BaseClient implements SingleBot, BaseBot {
 
     public Mono<ChatResponse> chatSingleErnie(ChatErnieRequest chatErnieRequest) {
         return ernieService.chatSingle(chatErnieRequest, baseProperty);
-
     }
 
     public Mono<ChatResponse> chatSingleErnie(String content) {

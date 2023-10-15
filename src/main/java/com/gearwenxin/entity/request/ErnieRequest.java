@@ -3,10 +3,12 @@ package com.gearwenxin.entity.request;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.gearwenxin.entity.BaseRequest;
 
+import com.gearwenxin.entity.FunctionInfo;
 import com.gearwenxin.entity.Message;
 import lombok.*;
 
 import java.util.Deque;
+import java.util.List;
 
 /**
  * @author Ge Mingjia
@@ -48,6 +50,20 @@ public class ErnieRequest extends BaseRequest {
     @JsonProperty("penalty_score")
     private Float penaltyScore;
 
+    /**
+     * 一个可触发函数的描述列表
+     */
+    @JsonProperty("functions")
+    private List<FunctionInfo> functions;
+
+    /**
+     * 模型人设，主要用于人设设定，例如，你是xxx公司制作的AI助手，说明：
+     * （1）长度限制1024个字符
+     * （2）如果使用functions参数，不支持设定人设system
+     */
+    @JsonProperty("system")
+    private String system;
+
     public static class ErnieRequestBuilder extends BaseRequestBuilder {
         private Float temperature;
         private Float topP;
@@ -55,6 +71,8 @@ public class ErnieRequest extends BaseRequest {
         private String userId;
         private Deque<Message> messages;
         private Boolean stream;
+        private List<FunctionInfo> functions;
+        private String system;
 
         public ErnieRequestBuilder temperature(Float temperature) {
             this.temperature = temperature;
@@ -89,6 +107,16 @@ public class ErnieRequest extends BaseRequest {
             return this;
         }
 
+        public ErnieRequestBuilder functions(List<FunctionInfo> functions) {
+            this.functions = functions;
+            return this;
+        }
+
+        public ErnieRequestBuilder system(String system) {
+            this.system = system;
+            return this;
+        }
+
         @Override
         public ErnieRequest build() {
             ErnieRequest ernieRequest = new ErnieRequest();
@@ -98,6 +126,8 @@ public class ErnieRequest extends BaseRequest {
             ernieRequest.setUserId(userId);
             ernieRequest.setMessages(messages);
             ernieRequest.setStream(stream);
+            ernieRequest.setFunctions(functions);
+            ernieRequest.setSystem(system);
             return ernieRequest;
         }
     }

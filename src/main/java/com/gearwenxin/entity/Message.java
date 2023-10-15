@@ -1,5 +1,6 @@
 package com.gearwenxin.entity;
 
+import com.gearwenxin.entity.enums.RoleEnum;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

@@ -1,4 +1,4 @@
-package com.gearwenxin.entity;
+package com.gearwenxin.entity.enums;
 
 /**
  * @author Ge Mingjia
