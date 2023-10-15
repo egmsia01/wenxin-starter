@@ -1,6 +1,7 @@
 package com.gearwenxin.entity.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.gearwenxin.entity.FunctionCall;
 import com.gearwenxin.entity.Usage;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -93,5 +94,11 @@ public class ChatResponse implements Serializable {
      */
     @JsonProperty("error_msg")
     private String errorMsg;
+
+    /**
+     * 由模型生成的函数调用，包含函数名称，和调用参数
+     */
+    @JsonProperty("function_call")
+    private FunctionCall functionCall;
 
 }
