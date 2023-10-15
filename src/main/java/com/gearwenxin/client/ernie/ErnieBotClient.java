@@ -191,6 +191,10 @@ public abstract class ErnieBotClient extends BaseClient implements ContBot<ChatE
         if (request.getTemperature() != null && (request.getPenaltyScore() < 1.0 || request.getPenaltyScore() > 2.0)) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "penaltyScore should be in [1, 2]");
         }
+        // TODO: 检查system与function call
+//        if (StringUtils.isBlank(request.getSystem())&&request.getFunction() != null){
+//            throw new BusinessException(ErrorCode.PARAMS_ERROR, "if 'function' not null, the 'system' must be null");
+//        }
 
     }
 }
