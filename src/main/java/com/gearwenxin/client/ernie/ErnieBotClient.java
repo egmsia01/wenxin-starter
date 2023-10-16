@@ -120,7 +120,7 @@ public abstract class ErnieBotClient extends BaseClient implements ContBot<ChatE
     public Mono<ChatResponse> chatCont(ChatErnieRequest chatErnieRequest, String msgUid) {
         return Mono.justOrEmpty(Tuples.of(chatErnieRequest, msgUid))
                 .filter(tuple -> StringUtils.isNotBlank(tuple.getT2()))
-                .doOnNext(tuple -> this.validChatErnieRequest(tuple.getT1()))
+                .doOnNext(tuple -> validChatErnieRequest(tuple.getT1()))
                 .flatMap(tuple -> {
                     Map<String, Deque<Message>> messageHistoryMap = getMessageHistoryMap();
                     Deque<Message> messagesHistory = messageHistoryMap.computeIfAbsent(

@@ -39,7 +39,7 @@ public class ErnieService {
 
     public Mono<ChatResponse> chatSingle(ChatErnieRequest chatBaseRequest, BaseProperty baseProperty) {
         return Mono.justOrEmpty(chatBaseRequest)
-                .doOnNext(ErnieBotClient::validChatErnieRequest)
+                .doOnNext(ChatErnieRequest::validSelf)
                 .map(ConvertUtils::toErnieRequest)
                 .map(BaseRequest.BaseRequestBuilder::build)
                 .doOnNext(request -> log.info("{}-singleRequest => {}", baseProperty.getTag(), request.toString()))
@@ -52,7 +52,7 @@ public class ErnieService {
     public Flux<ChatResponse> chatSingleOfStream(ChatErnieRequest chatBaseRequest, BaseProperty baseProperty) {
 
         return Mono.justOrEmpty(chatBaseRequest)
-                .doOnNext(ErnieBotClient::validChatErnieRequest)
+                .doOnNext(ChatErnieRequest::validSelf)
                 .map(ConvertUtils::toErnieRequest)
                 .map(builder -> builder.stream(true).build())
                 .doOnNext(request -> log.info("{}-singleRequest_stream => {}", baseProperty.getTag(), request.toString()))
