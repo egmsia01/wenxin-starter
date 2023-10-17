@@ -3,6 +3,8 @@ package com.gearwenxin.entity;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
+import java.util.List;
+
 /**
  * @author Ge Mingjia
  * @date 2023/7/20
@@ -27,5 +29,11 @@ public class Usage {
      */
     @JsonProperty("total_tokens")
     private int totalTokens;
+
+    /**
+     * plugin消耗的tokens
+     */
+    @JsonProperty("plugins")
+    private List<PluginUsage> plugins;
 
 }
