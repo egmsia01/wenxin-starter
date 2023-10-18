@@ -227,10 +227,11 @@ public class ChatController {
     private ErnieBotClient ernieBotClient;
  
     // 流式返回，单次对话
-    @PostMapping(value = "/stream/chat", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public BaseResponse<Flux<ChatResponse>> chatSingleStream(String msg) {
-        Flux<ChatResponse> chatResponseFlux = ernieBotClient.chatSingleOfStream(msg).block();
-        return BaseResponse.success(chatResponseFlux);
+    @GetMapping(value = "/stream/chat", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public Flux<String> chatSingleStream(@RequestParam String msg) {
+        Flux<ChatResponse> chatResponse = ernieBotClient.chatSingleOfStream(msg);
+
+        return chatResponse.map(response -> "data: " + response.getResult() + "\n\n");
     }
  
 }
@@ -274,10 +275,11 @@ public class ChatController {
     private ErnieBotClient ernieBotClient;
  
     // 流式返回，连续对话
-    @PostMapping(value = "/stream/chats", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public Flux<ChatResponse> chatContStream(String msg, String msgUid) {
-        Flux<ChatResponse> chatResponseFlux = ernieBotClient.chatContOfStream(msg, msgUid);
-        return chatResponseFlux;
+    @GetMapping(value = "/stream/chats", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public Flux<String> chatContStream(@RequestParam String msg, @RequestParam String msgUid) {
+        Flux<ChatResponse> chatResponse = ernieBotClient.chatContOfStream(msg, msgUid);
+
+        return chatResponse.map(response -> "data: " + response.getResult() + "\n\n");
     }
  
 }
