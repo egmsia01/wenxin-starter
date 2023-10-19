@@ -13,6 +13,7 @@ import com.gearwenxin.service.DefaultService;
 import com.gearwenxin.service.ErnieService;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -32,11 +33,9 @@ public abstract class BaseClient implements SingleBot, BaseBot {
 
     private BaseProperty baseProperty = null;
 
-    @Resource
-    private DefaultService defaultService;
+    private final DefaultService defaultService = new DefaultService();
 
-    @Resource
-    private ErnieService ernieService;
+    private final ErnieService ernieService = new ErnieService();
 
     public void initClient() {
         baseProperty = BaseProperty.builder()
@@ -44,6 +43,7 @@ public abstract class BaseClient implements SingleBot, BaseBot {
                 .tag(getTag())
                 .accessToken(getCustomAccessToken())
                 .build();
+
         clientMapMono.put("ErnieBotClient" + ChatType.once, this::chatSingleErnie);
         clientMapMono.put("OtherClient" + ChatType.once, this::chatSingleDefault);
         clientMapFlux.put("ErnieBotClient" + ChatType.contStream, this::chatSingleOfStreamErnie);

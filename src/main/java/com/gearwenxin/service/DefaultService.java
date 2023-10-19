@@ -21,7 +21,7 @@ import reactor.core.publisher.Mono;
  * @date 2023/9/24
  */
 @Slf4j
-@Service("default")
+@Service
 public class DefaultService {
 
     public Mono<ChatResponse> chatSingle(ChatBaseRequest chatBaseRequest, BaseProperty baseProperty) {

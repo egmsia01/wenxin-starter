@@ -1,4 +1,4 @@
-package com.gearwenxin.config;
+package com.gearwenxin;
 
 import com.gearwenxin.client.*;
 import com.gearwenxin.client.cerebras.CerebrasGPT13BClient;
@@ -34,6 +34,8 @@ import com.gearwenxin.common.ChatUtils;
 import com.gearwenxin.common.ErrorCode;
 import com.gearwenxin.entity.response.TokenResponse;
 import com.gearwenxin.exception.BusinessException;
+import com.gearwenxin.service.DefaultService;
+import com.gearwenxin.service.ErnieService;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
@@ -99,7 +101,6 @@ public class GearWenXinConfig implements CommandLineRunner {
             this.access_token = tokenResponse.getAccessToken();
         }
     }
-
     @Bean
     public CommonModelClient commonModelClient() {
         return new CommonModelClient() {

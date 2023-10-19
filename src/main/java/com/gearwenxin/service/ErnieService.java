@@ -1,6 +1,5 @@
 package com.gearwenxin.service;
 
-import com.gearwenxin.client.ernie.ErnieBotClient;
 import com.gearwenxin.common.ChatUtils;
 import com.gearwenxin.common.ConvertUtils;
 import com.gearwenxin.common.ErrorCode;
@@ -22,7 +21,7 @@ import reactor.core.publisher.Mono;
  * @date 2023/9/24
  */
 @Slf4j
-@Service("ernie")
+@Service
 public class ErnieService {
     public Flux<ChatResponse> chatSingleOfStream(String content, BaseProperty baseProperty) {
         return Mono.justOrEmpty(content)
