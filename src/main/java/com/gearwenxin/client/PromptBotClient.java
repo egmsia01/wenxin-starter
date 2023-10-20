@@ -4,9 +4,8 @@ import com.gearwenxin.common.ChatUtils;
 import com.gearwenxin.common.ConvertUtils;
 import com.gearwenxin.common.ErrorCode;
 import com.gearwenxin.common.Constant;
-import com.gearwenxin.exception.BusinessException;
+import com.gearwenxin.exception.WenXinException;
 
-import com.gearwenxin.entity.Message;
 import com.gearwenxin.entity.chatmodel.ChatPromptRequest;
 import com.gearwenxin.entity.request.PromptRequest;
 import com.gearwenxin.entity.response.PromptResponse;
@@ -18,7 +17,6 @@ import org.springframework.util.CollectionUtils;
 import reactor.core.publisher.Mono;
 
 import java.util.Map;
-import java.util.Deque;
 
 /**
  * @author Ge Mingjia
@@ -63,7 +61,7 @@ public abstract class PromptBotClient implements PromptBot, BaseBot {
                 chatPromptRequest.getId() <= 0 ||
                 CollectionUtils.isEmpty(chatPromptRequest.getParamMap())
         ) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+            throw new WenXinException(ErrorCode.PARAMS_ERROR);
         }
         PromptRequest promptRequest = ConvertUtils.toPromptRequest(chatPromptRequest);
         String id = promptRequest.getId();

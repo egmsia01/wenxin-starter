@@ -2,7 +2,7 @@ package com.gearwenxin.client.ernie;
 
 import com.gearwenxin.client.base.BaseClient;
 import com.gearwenxin.common.*;
-import com.gearwenxin.exception.BusinessException;
+import com.gearwenxin.exception.WenXinException;
 import com.gearwenxin.entity.chatmodel.ChatErnieRequest;
 import com.gearwenxin.entity.response.ChatResponse;
 import com.gearwenxin.entity.Message;
@@ -73,7 +73,7 @@ public abstract class ErnieBotClient extends BaseClient implements ContBot<ChatE
     public Mono<ChatResponse> chatCont(String content, String msgUid) {
         return Mono.justOrEmpty(Tuples.of(content, msgUid))
                 .filter(tuple -> StringUtils.isNotBlank(tuple.getT1()) && StringUtils.isNotBlank(tuple.getT2()))
-                .switchIfEmpty(Mono.error(new BusinessException(ErrorCode.PARAMS_ERROR)))
+                .switchIfEmpty(Mono.error(new WenXinException(ErrorCode.PARAMS_ERROR)))
                 .flatMap(tuple -> {
                     Map<String, Deque<Message>> messageHistoryMap = getMessageHistoryMap();
                     Deque<Message> messagesHistory = messageHistoryMap.computeIfAbsent(
@@ -96,7 +96,7 @@ public abstract class ErnieBotClient extends BaseClient implements ContBot<ChatE
     public Flux<ChatResponse> chatContOfStream(String content, String msgUid) {
         return Mono.justOrEmpty(Tuples.of(content, msgUid))
                 .filter(tuple -> StringUtils.isNotBlank(tuple.getT1()) && StringUtils.isNotBlank(tuple.getT2()))
-                .switchIfEmpty(Mono.error(new BusinessException(ErrorCode.PARAMS_ERROR)))
+                .switchIfEmpty(Mono.error(new WenXinException(ErrorCode.PARAMS_ERROR)))
                 .flatMapMany(tuple -> {
                     Map<String, Deque<Message>> messageHistoryMap = getMessageHistoryMap();
                     Deque<Message> messagesHistory = messageHistoryMap.computeIfAbsent(
@@ -169,11 +169,11 @@ public abstract class ErnieBotClient extends BaseClient implements ContBot<ChatE
 
         // 检查content不为空
         if (StringUtils.isBlank(request.getContent())) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR, "content cannot be empty");
+            throw new WenXinException(ErrorCode.PARAMS_ERROR, "content cannot be empty");
         }
         // 检查单个content长度
         if (request.getContent().length() > MAX_CONTENT_LENGTH) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR, "content's length cannot be more than 2000");
+            throw new WenXinException(ErrorCode.PARAMS_ERROR, "content's length cannot be more than 2000");
         }
         // 检查temperature和topP不都有值
         if (request.getTemperature() != null && request.getTopP() != null) {
@@ -181,19 +181,19 @@ public abstract class ErnieBotClient extends BaseClient implements ContBot<ChatE
         }
         // 检查temperature范围
         if (request.getTemperature() != null && (request.getTemperature() <= 0 || request.getTemperature() > 1.0)) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR, "temperature should be in (0, 1]");
+            throw new WenXinException(ErrorCode.PARAMS_ERROR, "temperature should be in (0, 1]");
         }
         // 检查topP范围
         if (request.getTopP() != null && (request.getTopP() < 0 || request.getTopP() > 1.0)) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR, "topP should be in [0, 1]");
+            throw new WenXinException(ErrorCode.PARAMS_ERROR, "topP should be in [0, 1]");
         }
         // 检查penaltyScore范围
         if (request.getTemperature() != null && (request.getPenaltyScore() < 1.0 || request.getPenaltyScore() > 2.0)) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR, "penaltyScore should be in [1, 2]");
+            throw new WenXinException(ErrorCode.PARAMS_ERROR, "penaltyScore should be in [1, 2]");
         }
         // TODO: 检查system与function call
 //        if (StringUtils.isBlank(request.getSystem())&&request.getFunction() != null){
-//            throw new BusinessException(ErrorCode.PARAMS_ERROR, "if 'function' not null, the 'system' must be null");
+//            throw new WenXinException(ErrorCode.PARAMS_ERROR, "if 'function' not null, the 'system' must be null");
 //        }
 
     }

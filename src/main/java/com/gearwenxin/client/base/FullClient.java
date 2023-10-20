@@ -5,7 +5,7 @@ import com.gearwenxin.entity.BaseRequest;
 import com.gearwenxin.entity.Message;
 import com.gearwenxin.entity.chatmodel.ChatBaseRequest;
 import com.gearwenxin.entity.response.ChatResponse;
-import com.gearwenxin.exception.BusinessException;
+import com.gearwenxin.exception.WenXinException;
 import com.gearwenxin.model.chat.ContBot;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -38,7 +38,7 @@ public abstract class FullClient extends BaseClient implements ContBot<ChatBaseR
     public Mono<ChatResponse> chatCont(String content, String msgUid) {
         return Mono.just(Tuples.of(content, msgUid))
                 .filter(tuple -> StringUtils.isNotBlank(tuple.getT1()) && StringUtils.isNotBlank(tuple.getT2()))
-                .switchIfEmpty(Mono.error(new BusinessException(ErrorCode.PARAMS_ERROR)))
+                .switchIfEmpty(Mono.error(new WenXinException(ErrorCode.PARAMS_ERROR)))
                 .flatMap(tuple -> {
                     Map<String, Deque<Message>> messageHistoryMap = getMessageHistoryMap();
                     Deque<Message> messagesHistory = messageHistoryMap.computeIfAbsent(
@@ -62,7 +62,7 @@ public abstract class FullClient extends BaseClient implements ContBot<ChatBaseR
     public Flux<ChatResponse> chatContOfStream(String content, String msgUid) {
         return Mono.just(Tuples.of(content, msgUid))
                 .filter(tuple -> StringUtils.isNotBlank(tuple.getT1()) && StringUtils.isNotBlank(tuple.getT2()))
-                .switchIfEmpty(Mono.error(new BusinessException(ErrorCode.PARAMS_ERROR)))
+                .switchIfEmpty(Mono.error(new WenXinException(ErrorCode.PARAMS_ERROR)))
                 .flatMapMany(tuple -> {
                     Map<String, Deque<Message>> messageHistoryMap = getMessageHistoryMap();
                     Deque<Message> messagesHistory = messageHistoryMap.computeIfAbsent(
@@ -88,7 +88,7 @@ public abstract class FullClient extends BaseClient implements ContBot<ChatBaseR
     public Mono<ChatResponse> chatCont(ChatBaseRequest chatBaseRequest, String msgUid) {
         return Mono.justOrEmpty(chatBaseRequest)
                 .filter(request -> StringUtils.isNotBlank(msgUid))
-                .switchIfEmpty(Mono.error(new BusinessException(ErrorCode.PARAMS_ERROR)))
+                .switchIfEmpty(Mono.error(new WenXinException(ErrorCode.PARAMS_ERROR)))
                 .doOnNext(ChatBaseRequest::validSelf)
                 .flatMap(request -> {
                     Map<String, Deque<Message>> messageHistoryMap = getMessageHistoryMap();
@@ -113,7 +113,7 @@ public abstract class FullClient extends BaseClient implements ContBot<ChatBaseR
     public Flux<ChatResponse> chatContOfStream(ChatBaseRequest chatBaseRequest, String msgUid) {
         return Mono.justOrEmpty(chatBaseRequest)
                 .filter(request -> StringUtils.isNotBlank(msgUid))
-                .switchIfEmpty(Mono.error(new BusinessException(ErrorCode.PARAMS_ERROR)))
+                .switchIfEmpty(Mono.error(new WenXinException(ErrorCode.PARAMS_ERROR)))
                 .doOnNext(ChatBaseRequest::validSelf)
                 .flatMapMany(request -> {
                     Map<String, Deque<Message>> messageHistoryMap = getMessageHistoryMap();

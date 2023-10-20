@@ -4,7 +4,7 @@ import com.gearwenxin.entity.BaseRequest;
 import com.gearwenxin.entity.chatmodel.*;
 import com.gearwenxin.entity.request.ErnieRequest;
 import com.gearwenxin.entity.request.PromptRequest;
-import com.gearwenxin.exception.BusinessException;
+import com.gearwenxin.exception.WenXinException;
 
 import java.util.Objects;
 
@@ -20,7 +20,7 @@ public class ConvertUtils {
 
         Objects.requireNonNull(chatRequest, "ChatErnieRequest is null");
         if (chatRequest.getContent() == null) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR, "content is null!");
+            throw new WenXinException(ErrorCode.PARAMS_ERROR, "content is null!");
         }
         return ErnieRequest.builder()
                 .userId(chatRequest.getUserId())
@@ -34,7 +34,7 @@ public class ConvertUtils {
 
         Objects.requireNonNull(chatRequest, "ChatBaseRequest is null");
         if (chatRequest.getContent() == null) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR, "content is null!");
+            throw new WenXinException(ErrorCode.PARAMS_ERROR, "content is null!");
         }
         return BaseRequest.builder()
                 .userId(chatRequest.getUserId())
@@ -45,7 +45,7 @@ public class ConvertUtils {
 
         Objects.requireNonNull(chatRequest, "ChatPromptRequest is null");
         if (chatRequest.getParamMap() == null) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR, "content is null!");
+            throw new WenXinException(ErrorCode.PARAMS_ERROR, "content is null!");
         }
         return PromptRequest.builder()
                 .id(String.valueOf(chatRequest.getId()))

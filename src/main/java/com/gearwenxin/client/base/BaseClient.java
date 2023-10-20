@@ -10,7 +10,7 @@ import com.gearwenxin.entity.chatmodel.ChatBaseRequest;
 import com.gearwenxin.entity.chatmodel.ChatErnieRequest;
 import com.gearwenxin.entity.request.ErnieRequest;
 import com.gearwenxin.entity.response.ChatResponse;
-import com.gearwenxin.exception.BusinessException;
+import com.gearwenxin.exception.WenXinException;
 import com.gearwenxin.model.BaseBot;
 import com.gearwenxin.model.chat.SingleBot;
 import lombok.extern.slf4j.Slf4j;
@@ -28,7 +28,7 @@ public abstract class BaseClient implements SingleBot, BaseBot {
     private Mono<BaseRequest> buildBaseRequest(String content) {
         return Mono.justOrEmpty(content)
                 .filter(StringUtils::isNotBlank)
-                .switchIfEmpty(Mono.error(new BusinessException(ErrorCode.PARAMS_ERROR)))
+                .switchIfEmpty(Mono.error(new WenXinException(ErrorCode.PARAMS_ERROR)))
                 .map(WenXinUtils::buildUserMessageDeque)
                 .map(messageDeque -> BaseRequest.builder().messages(messageDeque).build());
     }
@@ -92,7 +92,7 @@ public abstract class BaseClient implements SingleBot, BaseBot {
             }
             default -> {
                 return Mono.just(chatBaseRequest)
-                        .switchIfEmpty(Mono.error(new BusinessException(ErrorCode.PARAMS_ERROR)))
+                        .switchIfEmpty(Mono.error(new WenXinException(ErrorCode.PARAMS_ERROR)))
                         .doOnNext(ChatBaseRequest::validSelf)
                         .map(ConvertUtils::toBaseRequest)
                         .map(BaseRequest.BaseRequestBuilder::build)
@@ -120,7 +120,7 @@ public abstract class BaseClient implements SingleBot, BaseBot {
             }
             default -> {
                 return Mono.just(chatBaseRequest)
-                        .switchIfEmpty(Mono.error(new BusinessException(ErrorCode.PARAMS_ERROR)))
+                        .switchIfEmpty(Mono.error(new WenXinException(ErrorCode.PARAMS_ERROR)))
                         .doOnNext(ChatBaseRequest::validSelf)
                         .map(ConvertUtils::toBaseRequest)
                         .map(builder -> builder.stream(true).build())

@@ -4,7 +4,7 @@ import com.gearwenxin.common.ErrorCode;
 import com.gearwenxin.common.WenXinUtils;
 import com.gearwenxin.entity.Message;
 import com.gearwenxin.entity.response.ChatResponse;
-import com.gearwenxin.exception.BusinessException;
+import com.gearwenxin.exception.WenXinException;
 import lombok.extern.slf4j.Slf4j;
 import org.reactivestreams.Subscriber;
 import org.reactivestreams.Subscription;
@@ -49,7 +49,7 @@ public class CommonSubscriber implements Subscriber<ChatResponse>, Disposable {
 
         log.info("onNext");
         if (response == null) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR, "ChatResponse is null !");
+            throw new WenXinException(ErrorCode.PARAMS_ERROR, "ChatResponse is null !");
         }
         if (response.getResult() != null) {
             joiner.add(response.getResult());

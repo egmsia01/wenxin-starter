@@ -1,7 +1,7 @@
 package com.gearwenxin.entity.chatmodel;
 
 import com.gearwenxin.common.ErrorCode;
-import com.gearwenxin.exception.BusinessException;
+import com.gearwenxin.exception.WenXinException;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -36,11 +36,11 @@ public class ChatBaseRequest implements Serializable {
 
         // 检查content不为空
         if (StringUtils.isBlank(content)) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR, "content cannot be empty");
+            throw new WenXinException(ErrorCode.PARAMS_ERROR, "content cannot be empty");
         }
         // 检查单个content长度
         if (content.length() > MAX_CONTENT_LENGTH) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR, "content's length cannot be more than 2000");
+            throw new WenXinException(ErrorCode.PARAMS_ERROR, "content's length cannot be more than 2000");
         }
     }
 

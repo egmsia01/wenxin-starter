@@ -3,7 +3,7 @@ package com.gearwenxin.common;
 import com.gearwenxin.entity.Message;
 import com.gearwenxin.entity.response.ChatResponse;
 import com.gearwenxin.entity.response.TokenResponse;
-import com.gearwenxin.exception.BusinessException;
+import com.gearwenxin.exception.WenXinException;
 import com.gearwenxin.subscriber.CommonSubscriber;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -144,7 +144,7 @@ public class ChatUtils {
 
         return response.flatMap(chatResponse -> {
             if (chatResponse == null || chatResponse.getResult() == null) {
-                return Mono.error(new BusinessException(ErrorCode.SYSTEM_ERROR));
+                return Mono.error(new WenXinException(ErrorCode.SYSTEM_ERROR));
             }
             Message messageResult = WenXinUtils.buildAssistantMessage(chatResponse.getResult());
             WenXinUtils.offerMessage(messagesHistory, messageResult);
@@ -155,7 +155,7 @@ public class ChatUtils {
 
     public static Mono<TokenResponse> getAccessTokenByAKSK(String apiKey, String secretKey) {
         if (StringUtils.isBlank(apiKey) || StringUtils.isBlank(secretKey)) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+            throw new WenXinException(ErrorCode.PARAMS_ERROR);
         }
 
         String url = "https://aip.baidubce.com/oauth/2.0/token?grant_type=client_credentials&client_id=" + apiKey + "&client_secret=" + secretKey;
@@ -168,7 +168,7 @@ public class ChatUtils {
 
     public static String encodeURL(String component) {
         if (component == null) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR, "EncodeURL error!");
+            throw new WenXinException(ErrorCode.PARAMS_ERROR, "EncodeURL error!");
         }
         return URLEncoder.encode(component, StandardCharsets.UTF_8);
     }
@@ -181,7 +181,7 @@ public class ChatUtils {
 
     private static <T> void validateParams(String url, String accessToken, Object request, Class<T> type) {
         if (StringUtils.isBlank(url) || StringUtils.isBlank(accessToken) || request == null || type == null) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+            throw new WenXinException(ErrorCode.PARAMS_ERROR);
         }
     }
 
@@ -190,7 +190,7 @@ public class ChatUtils {
             log.error("请求错误 => {} {}", err instanceof WebClientResponseException
                     ? ((WebClientResponseException) err).getStatusCode()
                     : "Unknown", err.getMessage());
-            throw new BusinessException(ErrorCode.SYSTEM_NET_ERROR);
+            throw new WenXinException(ErrorCode.SYSTEM_NET_ERROR);
         };
     }
 

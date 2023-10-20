@@ -2,7 +2,7 @@ package com.gearwenxin.common;
 
 import com.gearwenxin.entity.FunctionCall;
 import com.gearwenxin.entity.enums.Role;
-import com.gearwenxin.exception.BusinessException;
+import com.gearwenxin.exception.WenXinException;
 import com.gearwenxin.entity.Message;
 import org.apache.commons.lang3.StringUtils;
 
@@ -23,7 +23,7 @@ public class WenXinUtils {
 
     public static Deque<Message> buildUserMessageDeque(String content, String name, FunctionCall functionCall) {
         if (content == null) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR, "content is null");
+            throw new WenXinException(ErrorCode.PARAMS_ERROR, "content is null");
         }
         Deque<Message> messageDeque = new LinkedList<>();
         Message message = buildUserMessage(content, name, functionCall);
@@ -44,13 +44,13 @@ public class WenXinUtils {
 
     public static Message buildUserMessage(String content, String name, FunctionCall functionCall) {
         if (content == null) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR, "content is null");
+            throw new WenXinException(ErrorCode.PARAMS_ERROR, "content is null");
         }
         if (functionCall == null) {
             return new Message(Role.user, content, null, null);
         }
         if (name == null) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR, "Message.name is null!");
+            throw new WenXinException(ErrorCode.PARAMS_ERROR, "Message.name is null!");
         }
 
         return new Message(Role.user, content, name, functionCall);
@@ -58,7 +58,7 @@ public class WenXinUtils {
 
     public static Message buildAssistantMessage(String content, String name, FunctionCall functionCall) {
         if (content == null) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR, "content is null");
+            throw new WenXinException(ErrorCode.PARAMS_ERROR, "content is null");
         }
         return new Message(Role.assistant, content, name, functionCall);
     }
@@ -76,10 +76,10 @@ public class WenXinUtils {
     public static void offerMessage(Deque<Message> messagesHistory, Message message) {
 
         if (messagesHistory == null || message == null) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+            throw new WenXinException(ErrorCode.PARAMS_ERROR);
         }
         if (StringUtils.isBlank(message.getContent())) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR, "message is null!");
+            throw new WenXinException(ErrorCode.PARAMS_ERROR, "message is null!");
         }
 
         Message lastMessage = messagesHistory.peekLast();
