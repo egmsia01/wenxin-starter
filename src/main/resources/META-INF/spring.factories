@@ -1,1 +1,1 @@
-org.springframework.boot.autoconfigure.EnableAutoConfiguration=com.gearwenxin.GearWenXinConfig
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=com.gearwenxin.config.GearWenXinConfig

@@ -1,25 +1,22 @@
 package com.gearwenxin.client.base;
 
+import com.gearwenxin.client.ernie.ErnieBotClient;
+import com.gearwenxin.common.ChatUtils;
+import com.gearwenxin.common.ConvertUtils;
 import com.gearwenxin.common.ErrorCode;
-import com.gearwenxin.entity.BaseProperty;
+import com.gearwenxin.common.WenXinUtils;
+import com.gearwenxin.entity.BaseRequest;
 import com.gearwenxin.entity.chatmodel.ChatBaseRequest;
 import com.gearwenxin.entity.chatmodel.ChatErnieRequest;
-import com.gearwenxin.entity.enums.ChatType;
+import com.gearwenxin.entity.request.ErnieRequest;
 import com.gearwenxin.entity.response.ChatResponse;
 import com.gearwenxin.exception.BusinessException;
 import com.gearwenxin.model.BaseBot;
 import com.gearwenxin.model.chat.SingleBot;
-import com.gearwenxin.service.DefaultService;
-import com.gearwenxin.service.ErnieService;
-import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
+import org.apache.commons.lang3.StringUtils;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.function.Function;
 
 /**
  * @author Ge Mingjia
@@ -28,88 +25,112 @@ import java.util.function.Function;
 @Slf4j
 public abstract class BaseClient implements SingleBot, BaseBot {
 
-    private static final Map<String, Function<String, Mono<ChatResponse>>> clientMapMono = new HashMap<>();
-    private static final Map<String, Function<String, Flux<ChatResponse>>> clientMapFlux = new HashMap<>();
-
-    private BaseProperty baseProperty = null;
-
-    private final DefaultService defaultService = new DefaultService();
-
-    private final ErnieService ernieService = new ErnieService();
-
-    public void initClient() {
-        baseProperty = BaseProperty.builder()
-                .url(getURL())
-                .tag(getTag())
-                .accessToken(getCustomAccessToken())
-                .build();
-
-        clientMapMono.put("ErnieBotClient" + ChatType.once, this::chatSingleErnie);
-        clientMapMono.put("OtherClient" + ChatType.once, this::chatSingleDefault);
-        clientMapFlux.put("ErnieBotClient" + ChatType.contStream, this::chatSingleOfStreamErnie);
-        clientMapFlux.put("OtherClient" + ChatType.contStream, this::chatSingleOfStreamDefault);
+    private Mono<BaseRequest> buildBaseRequest(String content) {
+        return Mono.justOrEmpty(content)
+                .filter(StringUtils::isNotBlank)
+                .switchIfEmpty(Mono.error(new BusinessException(ErrorCode.PARAMS_ERROR)))
+                .map(WenXinUtils::buildUserMessageDeque)
+                .map(messageDeque -> BaseRequest.builder().messages(messageDeque).build());
     }
 
     @Override
     public Mono<ChatResponse> chatSingle(String content) {
-        Function<String, Mono<ChatResponse>> fluxFunction = clientMapMono.get(getTag() + ChatType.once);
-        if (fluxFunction != null) {
-            return fluxFunction.apply(content);
+        switch (getTag()) {
+            case "ErnieBotClient", "ErnieBot4Client" -> {
+                return buildBaseRequest(content)
+                        .map(request -> ErnieRequest.builder().messages(request.getMessages()).build())
+                        .doOnNext(request -> log.info("{}-content_singleRequest => {}", getTag(), request.toString()))
+                        .flatMap(request ->
+                                ChatUtils.monoChatPost(getURL(), getCustomAccessToken(), request, ChatResponse.class)
+                        );
+            }
+            default -> {
+                return buildBaseRequest(content)
+                        .doOnNext(request -> log.info("{}-content_singleRequest => {}", getTag(), request.toString()))
+                        .flatMap(request ->
+                                ChatUtils.monoChatPost(getURL(), getCustomAccessToken(), request, ChatResponse.class)
+                        );
+            }
         }
-        return Mono.error(new BusinessException(ErrorCode.PARAMS_ERROR));
     }
 
     @Override
     public Flux<ChatResponse> chatSingleOfStream(String content) {
-
-        Function<String, Flux<ChatResponse>> fluxFunction = clientMapFlux.get(getTag() + ChatType.contStream);
-        if (fluxFunction != null) {
-            return fluxFunction.apply(content);
+        switch (getTag()) {
+            case "ErnieBotClient", "ErnieBot4Client" -> {
+                return buildBaseRequest(content)
+                        .map(request -> ErnieRequest.builder().messages(request.getMessages()).stream(true).build())
+                        .doOnNext(request -> log.info("{}-content_singleRequest_stream => {}", getTag(), request.toString()))
+                        .flatMapMany(request ->
+                                ChatUtils.fluxChatPost(getURL(), getCustomAccessToken(), request, ChatResponse.class)
+                        );
+            }
+            default -> {
+                return buildBaseRequest(content)
+                        .map(request -> BaseRequest.builder().messages(request.getMessages()).stream(true).build())
+                        .doOnNext(request -> log.info("{}-content_singleRequest_stream => {}", getTag(), request.toString()))
+                        .flatMapMany(request ->
+                                ChatUtils.fluxChatPost(getURL(), getCustomAccessToken(), request, ChatResponse.class)
+                        );
+            }
         }
-        return Flux.error(new BusinessException(ErrorCode.PARAMS_ERROR));
     }
+
 
     @Override
     public <T extends ChatBaseRequest> Mono<ChatResponse> chatSingle(T chatBaseRequest) {
-        Function<String, Mono<ChatResponse>> fluxFunction = clientMapMono.get(getTag() + ChatType.once);
-        if (fluxFunction != null) {
-//            return fluxFunction.apply(chatBaseRequest);
+        switch (getTag()) {
+            case "ErnieBotClient", "ErnieBot4Client" -> {
+                return Mono.justOrEmpty((ChatErnieRequest) chatBaseRequest)
+                        .doOnNext(ErnieBotClient::validChatErnieRequest)
+                        .map(ConvertUtils::toErnieRequest)
+                        .map(BaseRequest.BaseRequestBuilder::build)
+                        .doOnNext(request -> log.info("{}-singleRequest => {}", getTag(), request.toString()))
+                        .flatMap(request ->
+                                ChatUtils.monoChatPost(getURL(), getCustomAccessToken(), request, ChatResponse.class)
+                        );
+            }
+            default -> {
+                return Mono.just(chatBaseRequest)
+                        .switchIfEmpty(Mono.error(new BusinessException(ErrorCode.PARAMS_ERROR)))
+                        .doOnNext(ChatBaseRequest::validSelf)
+                        .map(ConvertUtils::toBaseRequest)
+                        .map(BaseRequest.BaseRequestBuilder::build)
+                        .doOnNext(baseRequest -> log.info("{}-singleRequest => {}", getTag(), baseRequest.toString()))
+                        .flatMap(baseRequest ->
+                                ChatUtils.monoChatPost(getURL(), getCustomAccessToken(), baseRequest, ChatResponse.class)
+                        );
+            }
         }
-        return Mono.error(new BusinessException(ErrorCode.PARAMS_ERROR));
+
     }
 
     @Override
     public <T extends ChatBaseRequest> Flux<ChatResponse> chatSingleOfStream(T chatBaseRequest) {
-        Function<String, Flux<ChatResponse>> fluxFunction = clientMapFlux.get(getTag() + ChatType.contStream);
-        if (fluxFunction != null) {
-//            return fluxFunction.apply(chatBaseRequest);
+        switch (getTag()) {
+            case "ErnieBotClient", "ErnieBot4Client" -> {
+                return Mono.justOrEmpty((ChatErnieRequest) chatBaseRequest)
+                        .doOnNext(ErnieBotClient::validChatErnieRequest)
+                        .map(ConvertUtils::toErnieRequest)
+                        .map(builder -> builder.stream(true).build())
+                        .doOnNext(request -> log.info("{}-singleRequest_stream => {}", getTag(), request.toString()))
+                        .flatMapMany(request ->
+                                ChatUtils.fluxChatPost(getURL(), getCustomAccessToken(), request, ChatResponse.class)
+                        );
+            }
+            default -> {
+                return Mono.just(chatBaseRequest)
+                        .switchIfEmpty(Mono.error(new BusinessException(ErrorCode.PARAMS_ERROR)))
+                        .doOnNext(ChatBaseRequest::validSelf)
+                        .map(ConvertUtils::toBaseRequest)
+                        .map(builder -> builder.stream(true).build())
+                        .doOnNext(baseRequest -> log.info("{}-singleRequest_stream => {}", getTag(), baseRequest.toString()))
+                        .flatMapMany(baseRequest ->
+                                ChatUtils.fluxChatPost(getURL(), getCustomAccessToken(), baseRequest, ChatResponse.class)
+                        );
+            }
         }
-        return Flux.error(new BusinessException(ErrorCode.PARAMS_ERROR));
-    }
 
-
-    public Flux<ChatResponse> chatSingleOfStreamDefault(String content) {
-        return defaultService.chatSingleOfStream(content, baseProperty);
-    }
-
-    public Flux<ChatResponse> chatSingleOfStreamErnie(String content) {
-        return ernieService.chatSingleOfStream(content, baseProperty);
-    }
-
-    public Mono<ChatResponse> chatSingleDefault(ChatBaseRequest chatBaseRequest) {
-        return defaultService.chatSingle(chatBaseRequest, baseProperty);
-    }
-
-    public Mono<ChatResponse> chatSingleErnie(ChatErnieRequest chatErnieRequest) {
-        return ernieService.chatSingle(chatErnieRequest, baseProperty);
-    }
-
-    public Mono<ChatResponse> chatSingleErnie(String content) {
-        return ernieService.chatSingle(content, baseProperty);
-    }
-
-    public Mono<ChatResponse> chatSingleDefault(String content) {
-        return defaultService.chatSingle(content, baseProperty);
     }
 
 }
