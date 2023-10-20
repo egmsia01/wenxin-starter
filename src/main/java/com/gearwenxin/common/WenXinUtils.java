@@ -1,5 +1,6 @@
 package com.gearwenxin.common;
 
+import com.gearwenxin.entity.FunctionCall;
 import com.gearwenxin.entity.enums.Role;
 import com.gearwenxin.exception.BusinessException;
 import com.gearwenxin.entity.Message;
@@ -17,11 +18,15 @@ import static com.gearwenxin.common.Constant.MAX_TOTAL_LENGTH;
 public class WenXinUtils {
 
     public static Deque<Message> buildUserMessageDeque(String content) {
+        return buildUserMessageDeque(content, null, null);
+    }
+
+    public static Deque<Message> buildUserMessageDeque(String content, String name, FunctionCall functionCall) {
         if (content == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "content is null");
         }
         Deque<Message> messageDeque = new LinkedList<>();
-        Message message = buildUserMessage(content);
+        Message message = buildUserMessage(content, name, functionCall);
         messageDeque.offer(message);
         return messageDeque;
     }
@@ -34,18 +39,32 @@ public class WenXinUtils {
     }
 
     public static Message buildUserMessage(String content) {
+        return buildUserMessage(content, null, null);
+    }
+
+    public static Message buildUserMessage(String content, String name, FunctionCall functionCall) {
         if (content == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "content is null");
         }
+        if (functionCall == null) {
+            return new Message(Role.user, content, null, null);
+        }
+        if (name == null) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "Message.name is null!");
+        }
 
-        return new Message(Role.user, content);
+        return new Message(Role.user, content, name, functionCall);
+    }
+
+    public static Message buildAssistantMessage(String content, String name, FunctionCall functionCall) {
+        if (content == null) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "content is null");
+        }
+        return new Message(Role.assistant, content, name, functionCall);
     }
 
     public static Message buildAssistantMessage(String content) {
-        if (content == null) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR, "content is null");
-        }
-        return new Message(Role.assistant, content);
+        return new Message(Role.assistant, content, null, null);
     }
 
     /**
