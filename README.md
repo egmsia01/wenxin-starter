@@ -151,10 +151,19 @@ public class ChatController {
 [![Star History Chart](https://api.star-history.com/svg?repos=gemingjia/gear-wenxinworkshop-starter&type=Date)](https://star-history.com/#gemingjia/gear-wenxinworkshop-starter)
 
 ## 更新日志
+
+v0.0.9.1
+1.完全的响应式风格。
+2.修复 快速连续请求导致的npe问题 ( #8 )。
+3.修复 响应前再次请求导致的消息格式错误( #10 )。
+4.修复 api_key配置错误导致的异常。
+5.优化 非空校验。
+6.优化 消息队列的数据结构。
+7.优化 流式返回性能。
+8.同步官网响应字段（2023-9-13）。
+
 v0.0.7.2
-
 全面转向webflux响应式风格，请注意适配返回值
-
 - 重构 完全适配webflux响应式风格，去除代码中的阻塞操作。
 - 优化 接口命名
 - 优化 空值检测
@@ -164,9 +173,7 @@ v0.0.7.2
 - 新增 9+模型的API支持
 
 v0.0.6
-
 ！此版本与之前版本客户端路径不兼容，请重新导包
-
 - 重构 客户端的实现方式，大幅增加了拓展性
 - 修复 URL错乱问题
 - 优化 导入/导出历史消息记录方法
