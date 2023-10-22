@@ -29,7 +29,6 @@ public class ErnieRequest extends BaseRequest {
      * （3）建议该参数和top_p只设置1个
      * （4）建议top_p和temperature不要同时更改
      */
-
     @JsonProperty("temperature")
     private Float temperature;
 
