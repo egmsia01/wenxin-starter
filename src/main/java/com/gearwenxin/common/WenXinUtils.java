@@ -88,7 +88,6 @@ public class WenXinUtils {
         Message lastMessage = messagesHistory.peekLast();
         if (lastMessage != null && lastMessage.getRole() == Role.user &&
                 message.getRole() == Role.user) {
-            // 移除上一条未回复的问题
             messagesHistory.pollLast();
         }
         messagesHistory.offer(message);

@@ -37,4 +37,5 @@ public class Message {
      */
     @JsonProperty("function_call")
     private FunctionCall functionCall;
+
 }

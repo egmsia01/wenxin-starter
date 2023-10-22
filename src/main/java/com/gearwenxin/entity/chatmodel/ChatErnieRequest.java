@@ -1,6 +1,7 @@
 package com.gearwenxin.entity.chatmodel;
 
 import com.gearwenxin.common.ErrorCode;
+import com.gearwenxin.entity.FunctionInfo;
 import com.gearwenxin.exception.WenXinException;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -8,6 +9,8 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+
+import java.util.List;
 
 import static com.gearwenxin.common.Constant.MAX_CONTENT_LENGTH;
 
@@ -39,7 +42,10 @@ public class ChatErnieRequest extends ChatBaseRequest {
      */
     private Float penaltyScore;
 
-    // TODO: 增加函数触发列表 List<FunctionInfo> functions;
+    /**
+     * 一个可触发函数的描述列表
+     */
+    private List<FunctionInfo> functions;
 
     /**
      * 模型人设，主要用于人设设定，例如，你是xxx公司制作的AI助手，说明：
@@ -75,10 +81,10 @@ public class ChatErnieRequest extends ChatBaseRequest {
         if (getTemperature() != null && (getPenaltyScore() < 1.0 || getPenaltyScore() > 2.0)) {
             throw new WenXinException(ErrorCode.PARAMS_ERROR, "penaltyScore should be in [1, 2]");
         }
-        // TODO: 检查system与function call
-//        if (StringUtils.isBlank(getSystem()) && getFunction() != null) {
-//            throw new WenXinException(ErrorCode.PARAMS_ERROR, "if 'function' not null, the 'system' must be null");
-//        }
+        // 检查system与function call
+        if (StringUtils.isBlank(getSystem()) && getFunctions() != null) {
+            throw new WenXinException(ErrorCode.PARAMS_ERROR, "if 'function' not null, the 'system' must be null");
+        }
 
     }
 }
