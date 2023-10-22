@@ -27,7 +27,9 @@ public class ConvertUtils {
                 .messages(WenXinUtils.buildUserMessageDeque(chatRequest.getContent()))
                 .temperature(chatRequest.getTemperature())
                 .topP(chatRequest.getTopP())
-                .penaltyScore(chatRequest.getPenaltyScore());
+                .penaltyScore(chatRequest.getPenaltyScore())
+                .functions(chatRequest.getFunctions())
+                .system(chatRequest.getSystem());
     }
 
     public static BaseRequest.BaseRequestBuilder toBaseRequest(ChatBaseRequest chatRequest) {

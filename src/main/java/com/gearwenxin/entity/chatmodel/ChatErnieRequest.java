@@ -52,7 +52,6 @@ public class ChatErnieRequest extends ChatBaseRequest {
      * （1）长度限制1024个字符
      * （2）如果使用functions参数，不支持设定人设system
      */
-    // TODO: 如果使用functions参数，不支持设定人设 system
     private String system;
 
     public void validSelf() {

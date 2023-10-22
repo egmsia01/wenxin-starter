@@ -1,11 +1,17 @@
 package com.gearwenxin.entity;
 
 import com.gearwenxin.entity.enums.Role;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * @author Ge Mingjia
  * @date 2023/10/15
  */
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class Example {
 
   /**

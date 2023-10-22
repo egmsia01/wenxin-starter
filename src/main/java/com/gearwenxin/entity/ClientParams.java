@@ -1,9 +1,16 @@
 package com.gearwenxin.entity;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 /**
  * @author Ge Mingjia
  * @date 2023/10/3
  */
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class ClientParams<T> {
 
     /**
