@@ -19,7 +19,6 @@
 # Gear-WenXinWorkShop-Starter
 
 ## 获取access-token
-![image](https://github.com/gemingjia/gear-wenxinworkshop-starter/assets/80268501/7225fb98-761a-4ead-b626-d59fc0931161)
 
 1. 查看下面文章：
 [文心一言获取access_token，并接入文心一言API](https://juejin.cn/post/7260418945721991227)
