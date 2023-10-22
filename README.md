@@ -18,28 +18,22 @@
 </div>
 # Gear-WenXinWorkShop-Starter
 
-## 在线体验：[文心千帆](http://mopen.cloud/)  (被打了，暂时关闭)
-
-## 获取access-token方法
+## 获取access-token
 ![image](https://github.com/gemingjia/gear-wenxinworkshop-starter/assets/80268501/7225fb98-761a-4ead-b626-d59fc0931161)
-可直接查看下面文章：
 
-[申请文心一言&文心千帆大模型API资格、获取access_token，并使用SpringBoot接入文心一言API](https://juejin.cn/post/7260418945721991227)
-
+1. 查看下面文章：
+[文心一言获取access_token，并接入文心一言API](https://juejin.cn/post/7260418945721991227)
+2. 直接配置`api_key`、`secret_key`，starter支持自动获取`access_token`。
 ---
 
-1. 进入 [控制台](https://console.bce.baidu.com/ai/?_=#/ai/wenxinworkshop/overview/index)，点击[创建应用](https://console.bce.baidu.com/ai/?_=#/ai/wenxinworkshop/app/create)
-2. 进入左侧 [应用列表](https://console.bce.baidu.com/ai/?_=#/ai/wenxinworkshop/app/list)，复制 `API Key` 与 `Secret Key`
-3. 将你的 `API Key` 与 `Secret Key` 替换链接的[Key]，访问以下地址
- > https://aip.baidubce.com/oauth/2.0/token?grant_type=client_credentials&client_id=[API-Key]&client_secret=[Secret-Key]
-
 ## 项目简介
-- 百度 **“文心千帆 WENXINWORKSHOP”** 大模型的spring-boot-starter，可以帮助您快速接入百度的AI能力，只需一行代码即可调用百度文心千帆大模型。
+- 百度 **“文心千帆 WENXINWORKSHOP”** 大模型的spring-boot-starter，可以帮助您快速接入百度的AI能力。
 - 完整对接文心千帆的官方API文档。
-- 支持根据提示词生成图片。
+- 支持文生图。
+- 内置对话记忆。
 - 支持对话的流式返回。
 - 完整支持文心千帆官网所有模型API，包括  `文心一言 ErnieBot`、`ERNIE-Bot-turbo`、`BLOOMZ-7B`、`Ernie-Bot-VilG`、`VisualGLM-6B`、`Llama-2`、`Linly-Chinese-LLaMA-2-7B`、`Linly-Chinese-LLaMA-2-13B`、`ChatGLM2-6B`、`RWKV-4-World`、`OpenLLaMA-7B`、`Falcon-7B`、`Dolly-12B`、`MPT-7B-Instruct`、`Stable-Diffusion-v1.5`、`RWKV-4-pile-14B`、`RWKV-5-World`、`RWKV-Raven-14B`、`Falcon-40B`、`MPT-30B-instruct`、`Flan-UL2`、`Cerebras-GPT-13B`、`Cerebras-GPT-6.7B`、`Pythia-12B`、`Pythia-6.9B`、`GPT-J-6B`、`GPT-NeoX-20B`、`OA-Pythia-12B-SFT-4`、`GPT4All-J`、`StableLM-Alpha-7B` 、 `StarCoder`、`Prompt模板`模型的API（单轮对话、连续对话、流式返回、图片生成）。
-- 后续将增加更多模型的支持。
+- 即将增加插件支持。
 
 ## 快速开始
 
@@ -78,6 +72,11 @@ dependencies {
   gear:
     wenxin:
       access-token: xx.xxxxxxxxxx.xxxxxx.xxxxxxx.xxxxx-xxxx
+  -------------或者-----------------
+  gear:
+    wenxin:
+      api-key: xxxxxxxxxxxxxxxxxxx
+      secret-key: xxxxxxxxxxxxxxxxxxxxxxxxxxxxx
   ```
 - application.properties
   ```properties
