@@ -148,6 +148,9 @@ public class ChatController {
 
 ## 更新日志
 
+v0.0.9.6 - Canary
+- 分支 [support-jdk1.8](https://github.com/gemingjia/gear-wenxinworkshop-starter/tree/support-jdk1.8) 新增对JDK 1.8的支持（未经过充分测试，可能存在一些无法预知的问题）
+
 v0.0.9.5 - Canary
 - 支持文心4.0
 - 同步官网响应字段（2023-10-20）。
