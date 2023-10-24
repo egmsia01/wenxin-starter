@@ -36,43 +36,42 @@ public abstract class BaseClient implements SingleBot, BaseBot {
     @Override
     public Mono<ChatResponse> chatSingle(String content) {
         switch (getTag()) {
-            case "ErnieBotClient", "ErnieBot4Client" -> {
+            case "ErnieBotClient":
+            case "ErnieBot4Client":
                 return buildBaseRequest(content)
                         .map(request -> ErnieRequest.builder().messages(request.getMessages()).build())
                         .doOnNext(request -> log.info("{}-content_singleRequest => {}", getTag(), request.toString()))
                         .flatMap(request ->
                                 ChatUtils.monoChatPost(getURL(), getCustomAccessToken(), request, ChatResponse.class)
                         );
-            }
-            default -> {
+            default:
                 return buildBaseRequest(content)
                         .doOnNext(request -> log.info("{}-content_singleRequest => {}", getTag(), request.toString()))
                         .flatMap(request ->
                                 ChatUtils.monoChatPost(getURL(), getCustomAccessToken(), request, ChatResponse.class)
                         );
-            }
         }
+
     }
 
     @Override
     public Flux<ChatResponse> chatSingleOfStream(String content) {
         switch (getTag()) {
-            case "ErnieBotClient", "ErnieBot4Client" -> {
+            case "ErnieBotClient":
+            case "ErnieBot4Client":
                 return buildBaseRequest(content)
                         .map(request -> ErnieRequest.builder().messages(request.getMessages()).stream(true).build())
                         .doOnNext(request -> log.info("{}-content_singleRequest_stream => {}", getTag(), request.toString()))
                         .flatMapMany(request ->
                                 ChatUtils.fluxChatPost(getURL(), getCustomAccessToken(), request, ChatResponse.class)
                         );
-            }
-            default -> {
+            default:
                 return buildBaseRequest(content)
                         .map(request -> BaseRequest.builder().messages(request.getMessages()).stream(true).build())
                         .doOnNext(request -> log.info("{}-content_singleRequest_stream => {}", getTag(), request.toString()))
                         .flatMapMany(request ->
                                 ChatUtils.fluxChatPost(getURL(), getCustomAccessToken(), request, ChatResponse.class)
                         );
-            }
         }
     }
 
@@ -80,7 +79,8 @@ public abstract class BaseClient implements SingleBot, BaseBot {
     @Override
     public <T extends ChatBaseRequest> Mono<ChatResponse> chatSingle(T chatBaseRequest) {
         switch (getTag()) {
-            case "ErnieBotClient", "ErnieBot4Client" -> {
+            case "ErnieBotClient":
+            case "ErnieBot4Client":
                 return Mono.justOrEmpty((ChatErnieRequest) chatBaseRequest)
                         .doOnNext(ErnieBotClient::validChatErnieRequest)
                         .map(ConvertUtils::toErnieRequest)
@@ -89,8 +89,7 @@ public abstract class BaseClient implements SingleBot, BaseBot {
                         .flatMap(request ->
                                 ChatUtils.monoChatPost(getURL(), getCustomAccessToken(), request, ChatResponse.class)
                         );
-            }
-            default -> {
+            default:
                 return Mono.just(chatBaseRequest)
                         .switchIfEmpty(Mono.error(new WenXinException(ErrorCode.PARAMS_ERROR)))
                         .doOnNext(ChatBaseRequest::validSelf)
@@ -100,7 +99,6 @@ public abstract class BaseClient implements SingleBot, BaseBot {
                         .flatMap(baseRequest ->
                                 ChatUtils.monoChatPost(getURL(), getCustomAccessToken(), baseRequest, ChatResponse.class)
                         );
-            }
         }
 
     }
@@ -108,7 +106,8 @@ public abstract class BaseClient implements SingleBot, BaseBot {
     @Override
     public <T extends ChatBaseRequest> Flux<ChatResponse> chatSingleOfStream(T chatBaseRequest) {
         switch (getTag()) {
-            case "ErnieBotClient", "ErnieBot4Client" -> {
+            case "ErnieBotClient":
+            case "ErnieBot4Client":
                 return Mono.justOrEmpty((ChatErnieRequest) chatBaseRequest)
                         .doOnNext(ErnieBotClient::validChatErnieRequest)
                         .map(ConvertUtils::toErnieRequest)
@@ -117,8 +116,7 @@ public abstract class BaseClient implements SingleBot, BaseBot {
                         .flatMapMany(request ->
                                 ChatUtils.fluxChatPost(getURL(), getCustomAccessToken(), request, ChatResponse.class)
                         );
-            }
-            default -> {
+            default:
                 return Mono.just(chatBaseRequest)
                         .switchIfEmpty(Mono.error(new WenXinException(ErrorCode.PARAMS_ERROR)))
                         .doOnNext(ChatBaseRequest::validSelf)
@@ -128,7 +126,6 @@ public abstract class BaseClient implements SingleBot, BaseBot {
                         .flatMapMany(baseRequest ->
                                 ChatUtils.fluxChatPost(getURL(), getCustomAccessToken(), baseRequest, ChatResponse.class)
                         );
-            }
         }
 
     }

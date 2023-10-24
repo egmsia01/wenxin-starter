@@ -27,12 +27,6 @@ public class ChatResponse implements Serializable {
     private String id;
 
     /**
-     * 用于定位的log_id
-     */
-    @JsonProperty("log_id")
-    private String logId;
-
-    /**
      * 回包类型
      * chat.completion：多轮对话返回
      */

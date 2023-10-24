@@ -15,6 +15,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -119,12 +120,13 @@ public class ChatUtils {
 
     /**
      * flux形式的回答 添加到历史消息中
+     *
      * @param url
      * @param token
      * @param request
      * @param messagesHistory
-     * @return
      * @param <T>
+     * @return
      */
     public static <T> Flux<ChatResponse> historyFlux(String url, String token, T request, Deque<Message> messagesHistory) {
         return Flux.create(emitter -> {
@@ -170,7 +172,11 @@ public class ChatUtils {
         if (component == null) {
             throw new WenXinException(ErrorCode.PARAMS_ERROR, "EncodeURL error!");
         }
-        return URLEncoder.encode(component, StandardCharsets.UTF_8);
+        try {
+            return URLEncoder.encode(component, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            throw new WenXinException(ErrorCode.PARAMS_ERROR);
+        }
     }
 
     private static WebClient buildWebClient(String baseUrl) {
