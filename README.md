@@ -48,20 +48,18 @@
 
 ### 1、添加依赖
 
-Repository Path: [/io/github/gemingjia/gear-wenxinworkshop-starter)
-
 - Maven
 ```xml
 <dependency>
   <groupId>io.github.gemingjia</groupId>
   <artifactId>gear-wenxinworkshop-starter</artifactId>
-  <version>0.0.9.1</version>
+  <version>0.0.9.5</version>
 </dependency>
 ```
 - Gradle
 ```gradle
 dependencies {
-  implementation 'io.github.gemingjia:gear-wenxinworkshop-starter:0.0.9.1' 
+  implementation 'io.github.gemingjia:gear-wenxinworkshop-starter:0.0.9.5' 
 }
 ```
 
@@ -71,7 +69,7 @@ dependencies {
   gear:
     wenxin:
       access-token: xx.xxxxxxxxxx.xxxxxx.xxxxxxx.xxxxx-xxxx
-  -------------或者-----------------
+  -------------或-----------------
   gear:
     wenxin:
       api-key: xxxxxxxxxxxxxxxxxxx
@@ -89,33 +87,33 @@ dependencies {
 @RestController
 public class ChatController {
 
-  // 要调用的模型的客户端
+  // 要调用的模型的客户端（示例为文心4.0）
   @Resource
-  private ErnieBotClient ernieBotClient;
+  private ErnieBot4Client ernieBot4Client;
 
   // 单次对话（阻塞）
   @PostMapping("/chat")
   public BaseRsponse<ChatResponse> chatSingle(String msg) {
-    return ernieBotClient.chatSingle(msg).block();
+    return ernieBot4Client.chatSingle(msg).block();
   }
 
   // 单次对话
   @PostMapping("/chat")
   public Mono<ChatResponse> chatSingle(String msg) {
-    return ernieBotClient.chatSingle(msg);
+    return ernieBot4Client.chatSingle(msg);
   }
 
   // 连续对话
   @PostMapping("/chats")
   public Mono<ChatResponse> chatCont(String msg) {
     String chatUID = "test-user-1001";
-    return ernieBotClient.chatCont(msg, chatUID);
+    return ernieBot4Client.chatCont(msg, chatUID);
   }
 
   // 流式返回，单次对话
   @GetMapping(value = "/stream/chat", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
   public Flux<String> chatSingleStream(@RequestParam String msg) {
-    Flux<ChatResponse> chatResponse = ernieBotClient.chatSingleOfStream(msg);
+    Flux<ChatResponse> chatResponse = ernieBot4Client.chatSingleOfStream(msg);
 
     return chatResponse.map(response -> "data: " + response.getResult() + "\n\n");
   }
@@ -123,12 +121,12 @@ public class ChatController {
   // 流式返回，连续对话
   @GetMapping(value = "/stream/chats", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
   public Flux<String> chatContStream(@RequestParam String msg, @RequestParam String msgUid) {
-    Flux<ChatResponse> chatResponse = ernieBotClient.chatContOfStream(msg, msgUid);
+    Flux<ChatResponse> chatResponse = ernieBot4Client.chatContOfStream(msg, msgUid);
 
     return chatResponse.map(response -> "data: " + response.getResult() + "\n\n");
   }
 
-  // 模板对话
+  // Prompt模板
   @PostMapping("/prompt")
   public Mono<PromptResponse> chatSingle() {
     Map<String, String> map = new HashMap<>();
@@ -149,6 +147,10 @@ public class ChatController {
 [![Star History Chart](https://api.star-history.com/svg?repos=gemingjia/gear-wenxinworkshop-starter&type=Date)](https://star-history.com/#gemingjia/gear-wenxinworkshop-starter)
 
 ## 更新日志
+
+v0.0.9.5 - Canary
+- 支持文心4.0
+- 同步官网响应字段（2023-10-20）。
 
 v0.0.9.1
 - 完全的响应式风格。
