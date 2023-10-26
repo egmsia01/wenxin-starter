@@ -11,7 +11,6 @@ import org.reactivestreams.Subscriber;
 import org.reactivestreams.Subscription;
 import reactor.core.Disposable;
 import reactor.core.publisher.FluxSink;
-import reactor.core.publisher.Mono;
 
 import java.util.Deque;
 import java.util.StringJoiner;
@@ -80,8 +79,8 @@ public class CommonSubscriber implements Subscriber<ChatResponse>, Disposable {
         if (StringUtils.isNotBlank(result)) {
             Message message = buildAssistantMessage(result);
             WenXinUtils.offerMessage(messagesHistory, message);
-            emitter.complete();
         }
+        emitter.complete();
     }
 
     @Override

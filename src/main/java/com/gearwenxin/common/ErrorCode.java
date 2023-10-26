@@ -12,7 +12,8 @@ public enum ErrorCode {
     NO_AUTH_ERROR(40101, "无权限"),
     SYSTEM_ERROR(50000, "系统内部异常"),
     OPERATION_ERROR(50001, "操作失败"),
-    SYSTEM_NET_ERROR(50002,"系统网络异常");
+    SYSTEM_NET_ERROR(50002, "系统网络异常"),
+    SYSTEM_INPUT_ERROR(336104, "用户输入错误】system内容不合法");
 
     /**
      * 状态码

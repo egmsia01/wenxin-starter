@@ -2,6 +2,7 @@ package com.gearwenxin.common;
 
 import com.gearwenxin.entity.Message;
 import com.gearwenxin.entity.response.ChatResponse;
+import com.gearwenxin.entity.response.ErrorResponse;
 import com.gearwenxin.entity.response.TokenResponse;
 import com.gearwenxin.exception.WenXinException;
 import com.gearwenxin.subscriber.CommonSubscriber;
@@ -56,6 +57,7 @@ public class ChatUtils {
                 .body(BodyInserters.fromValue(request))
                 .retrieve()
                 .bodyToMono(type)
+                .doOnSuccess(ChatUtils::handleErrResponse)
                 .doOnError(WebClientResponseException.class, handleWebClientError());
     }
 
@@ -78,6 +80,7 @@ public class ChatUtils {
                 .accept(MediaType.TEXT_EVENT_STREAM)
                 .retrieve()
                 .bodyToFlux(type)
+                .doOnNext(ChatUtils::handleErrResponse)
                 .doOnError(WebClientResponseException.class, handleWebClientError());
     }
 
@@ -116,6 +119,7 @@ public class ChatUtils {
                 .uri("")
                 .retrieve()
                 .bodyToMono(type)
+                .doOnNext(ChatUtils::handleErrResponse)
                 .doOnError(WebClientResponseException.class, handleWebClientError());
     }
 
@@ -193,5 +197,24 @@ public class ChatUtils {
             throw new WenXinException(ErrorCode.SYSTEM_NET_ERROR);
         };
     }
+
+    private static <T> void handleErrResponse(T response) {
+        if (response instanceof ChatResponse chatResponse) {
+            if (chatResponse.getErrorCode() != null) {
+
+                ErrorResponse errorResponse = ErrorResponse.builder()
+                        .id(chatResponse.getId())
+                        .logId(chatResponse.getLogId())
+                        .ebCode(chatResponse.getEbCode())
+                        .errorMsg(chatResponse.getErrorMsg())
+                        .errorCode(chatResponse.getErrorCode())
+                        .build();
+
+                log.warn(errorResponse.toString());
+                throw new WenXinException(ErrorCode.SYSTEM_INPUT_ERROR);
+            }
+        }
+    }
+
 
 }
