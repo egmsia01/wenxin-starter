@@ -67,7 +67,7 @@ public class WenXinUtils {
     }
 
     public static Message buildAssistantMessage(String content) {
-        return new Message(Role.assistant, content, null, null);
+        return buildAssistantMessage(content, null, null);
     }
 
     /**

@@ -96,6 +96,12 @@ public class ChatResponse implements Serializable {
     private Integer errorCode;
 
     /**
+     * 错误代码，正常为 null
+     */
+    @JsonProperty("eb_code")
+    private Integer ebCode;
+
+    /**
      * 错误信息，正常为 null
      */
     @JsonProperty("error_msg")
