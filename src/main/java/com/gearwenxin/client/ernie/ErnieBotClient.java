@@ -193,7 +193,7 @@ public abstract class ErnieBotClient extends BaseClient implements ContBot<ChatE
             throw new WenXinException(ErrorCode.PARAMS_ERROR, "penaltyScore should be in [1, 2]");
         }
         // 检查system与function call
-        if (StringUtils.isBlank(request.getSystem()) && request.getFunctions() != null) {
+        if (StringUtils.isNotBlank(request.getSystem()) && request.getFunctions() != null) {
             throw new WenXinException(ErrorCode.PARAMS_ERROR, "if 'function' not null, the 'system' must be null");
         }
         // 检查system长度
