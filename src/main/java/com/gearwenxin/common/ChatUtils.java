@@ -23,6 +23,8 @@ import java.util.Deque;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+import static com.gearwenxin.common.Constant.GET_ACCESS_TOKEN_URL;
+
 /**
  * @author Ge Mingjia
  * @date 2023/7/21
@@ -118,13 +120,7 @@ public class ChatUtils {
     }
 
     /**
-     * flux形式的回答 添加到历史消息中
-     * @param url
-     * @param token
-     * @param request
-     * @param messagesHistory
-     * @return
-     * @param <T>
+     * flux形式的回答，添加到历史消息中
      */
     public static <T> Flux<ChatResponse> historyFlux(String url, String token, T request, Deque<Message> messagesHistory) {
         return Flux.create(emitter -> {
@@ -144,8 +140,12 @@ public class ChatUtils {
 
         return response.flatMap(chatResponse -> {
             if (chatResponse == null || chatResponse.getResult() == null) {
-                return Mono.error(new WenXinException(ErrorCode.SYSTEM_ERROR));
+                return Mono.error(new WenXinException(ErrorCode.SYSTEM_ERROR, "响应错误！"));
             }
+//            if (chatResponse.getNeedClearHistory()) {
+//                messagesHistory.clear();
+//                return Mono.just(chatResponse);
+//            }
             Message messageResult = WenXinUtils.buildAssistantMessage(chatResponse.getResult());
             WenXinUtils.offerMessage(messagesHistory, messageResult);
 
@@ -158,7 +158,7 @@ public class ChatUtils {
             throw new WenXinException(ErrorCode.PARAMS_ERROR);
         }
 
-        String url = "https://aip.baidubce.com/oauth/2.0/token?grant_type=client_credentials&client_id=" + apiKey + "&client_secret=" + secretKey;
+        final String url = String.format(GET_ACCESS_TOKEN_URL, apiKey, secretKey);
 
         return buildWebClient(url).get()
                 .retrieve()
