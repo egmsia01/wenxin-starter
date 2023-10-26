@@ -119,7 +119,7 @@ public class ChatUtils {
                 .uri("")
                 .retrieve()
                 .bodyToMono(type)
-                .doOnNext(ChatUtils::handleErrResponse)
+                .doOnSuccess(ChatUtils::handleErrResponse)
                 .doOnError(WebClientResponseException.class, handleWebClientError());
     }
 
@@ -211,7 +211,7 @@ public class ChatUtils {
                         .build();
 
                 log.warn(errorResponse.toString());
-                throw new WenXinException(ErrorCode.SYSTEM_INPUT_ERROR);
+                throw new WenXinException(ErrorCode.WENXIN_ERROR, errorResponse.getErrorMsg());
             }
         }
     }
