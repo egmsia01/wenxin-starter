@@ -197,7 +197,7 @@ public abstract class ErnieBotClient extends BaseClient implements ContBot<ChatE
             throw new WenXinException(ErrorCode.PARAMS_ERROR, "if 'function' not null, the 'system' must be null");
         }
         // 检查system长度
-        if (request.getSystem().length() > MAX_SYSTEM_LENGTH) {
+        if (request.getSystem() != null && request.getSystem().length() > MAX_SYSTEM_LENGTH) {
             throw new WenXinException(ErrorCode.PARAMS_ERROR, "system's length cannot be more than 1024");
         }
 
