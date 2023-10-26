@@ -90,13 +90,7 @@ public class ChatController {
   // 要调用的模型的客户端（示例为文心4.0）
   @Resource
   private ErnieBot4Client ernieBot4Client;
-
-  // 单次对话（阻塞）
-  @PostMapping("/chat")
-  public BaseRsponse<ChatResponse> chatSingle(String msg) {
-    return ernieBot4Client.chatSingle(msg).block();
-  }
-
+  
   // 单次对话
   @PostMapping("/chat")
   public Mono<ChatResponse> chatSingle(String msg) {
@@ -147,6 +141,14 @@ public class ChatController {
 [![Star History Chart](https://api.star-history.com/svg?repos=gemingjia/gear-wenxinworkshop-starter&type=Date)](https://star-history.com/#gemingjia/gear-wenxinworkshop-starter)
 
 ## 更新日志
+
+v0.0.9.7 - pre release
+- 新增 对function call的简单支持 
+- 新增 更细化的错误处理 
+- 修复 ban_round类型错误导致的反序列化错误 #15。 
+- 修复 system字段无长度限制 #16 
+- 修复 system字段包含敏感词导致的npe问题 
+- 修复 概率出现的The connection observed an error错误
 
 v0.0.9.5 - Canary
 - 支持文心4.0
