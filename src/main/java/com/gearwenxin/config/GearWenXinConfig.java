@@ -90,13 +90,19 @@ public class GearWenXinConfig implements CommandLineRunner {
         if (api_key == null || secret_key == null) {
             return;
         }
-        TokenResponse tokenResponse = ChatUtils.getAccessTokenByAKSK(api_key, secret_key).block();
-        if (tokenResponse != null) {
-            if (tokenResponse.getAccessToken() == null && access_token == null) {
-                log.warn("api_key or secret_key error！");
-            }
-            this.access_token = tokenResponse.getAccessToken();
-        }
+        ChatUtils.getAccessTokenByAKSK(api_key, secret_key)
+                .doOnNext(tokenResponse -> {
+                    if (tokenResponse.getAccessToken() == null && access_token == null) {
+                        log.warn("api_key or secret_key error！");
+                    }
+                })
+                .map(TokenResponse::getAccessToken)
+                .doOnNext(this::setAccessToken)
+                .subscribe();
+    }
+
+    private void setAccessToken(String accessToken) {
+        this.access_token = accessToken;
     }
 
     @Bean
