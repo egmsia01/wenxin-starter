@@ -222,11 +222,6 @@ public class GearWenXinConfig implements CommandLineRunner {
             protected String getAccessToken() {
                 return access_token;
             }
-
-            @Override
-            protected String getCustomURL() {
-                return llama2_7b_url;
-            }
         };
     }
 
@@ -237,11 +232,6 @@ public class GearWenXinConfig implements CommandLineRunner {
             protected String getAccessToken() {
                 return access_token;
             }
-
-            @Override
-            protected String getCustomURL() {
-                return llama2_13b_url;
-            }
         };
     }
 
@@ -251,11 +241,6 @@ public class GearWenXinConfig implements CommandLineRunner {
             @Override
             protected String getAccessToken() {
                 return access_token;
-            }
-
-            @Override
-            protected String getCustomURL() {
-                return llama2_70b_url;
             }
         };
     }
