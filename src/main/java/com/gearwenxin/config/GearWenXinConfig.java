@@ -9,7 +9,9 @@ import com.gearwenxin.client.ernie.ErnieBotTurboClient;
 import com.gearwenxin.client.ernie.ErnieBotVilGClient;
 import com.gearwenxin.client.falcon.Falcon40BClient;
 import com.gearwenxin.client.falcon.Falcon7BClient;
+import com.gearwenxin.client.glm.ChatGLM26B32KClient;
 import com.gearwenxin.client.glm.ChatGLM26BClient;
+import com.gearwenxin.client.glm.ChatGLM26BINT4Client;
 import com.gearwenxin.client.glm.VisualGLM6BClient;
 import com.gearwenxin.client.gpt.GPT4AllJClient;
 import com.gearwenxin.client.gpt.GPTJ6BClient;
@@ -55,6 +57,7 @@ public class GearWenXinConfig implements CommandLineRunner {
     private String common_url;
     private String vilg_url;
     private String chat_glm2_6b_url;
+    private String chat_glm2_6b_int4_url;
     private String visual_glm_6b_url;
     private String linly_chinese_llama2_7b_url;
     private String linly_chinese_llama2_13b_url;
@@ -613,6 +616,31 @@ public class GearWenXinConfig implements CommandLineRunner {
             @Override
             protected String getCustomURL() {
                 return custom_model_url;
+            }
+        };
+    }
+
+    @Bean
+    public ChatGLM26BINT4Client chatGLM26BINT4Client() {
+        return new ChatGLM26BINT4Client() {
+            @Override
+            protected String getAccessToken() {
+                return access_token;
+            }
+
+            @Override
+            protected String getCustomURL() {
+                return chat_glm2_6b_int4_url;
+            }
+        };
+    }
+
+    @Bean
+    public ChatGLM26B32KClient chatGLM26B32KClient() {
+        return new ChatGLM26B32KClient() {
+            @Override
+            protected String getAccessToken() {
+                return access_token;
             }
         };
     }
