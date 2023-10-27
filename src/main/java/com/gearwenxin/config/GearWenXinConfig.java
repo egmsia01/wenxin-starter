@@ -56,9 +56,6 @@ public class GearWenXinConfig implements CommandLineRunner {
     private String vilg_url;
     private String chat_glm2_6b_url;
     private String visual_glm_6b_url;
-    private String llama2_7b_url;
-    private String llama2_13b_url;
-    private String llama2_70b_url;
     private String linly_chinese_llama2_7b_url;
     private String linly_chinese_llama2_13b_url;
     private String falcon_7b_url;
