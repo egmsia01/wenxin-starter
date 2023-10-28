@@ -91,18 +91,10 @@ public class GearWenXinConfig implements CommandLineRunner {
             return;
         }
         ChatUtils.getAccessTokenByAKSK(api_key, secret_key)
-                .doOnNext(tokenResponse -> {
-                    if (tokenResponse.getAccessToken() == null && access_token == null) {
-                        log.warn("api_key or secret_key error！");
-                    }
-                })
+                .filter(tokenResponse -> tokenResponse != null && tokenResponse.getAccessToken() != null)
                 .map(TokenResponse::getAccessToken)
-                .doOnNext(this::setAccessToken)
+                .doOnNext(this::setAccess_token)
                 .subscribe();
-    }
-
-    private void setAccessToken(String accessToken) {
-        this.access_token = accessToken;
     }
 
     @Bean
