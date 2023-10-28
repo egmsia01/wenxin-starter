@@ -42,6 +42,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import java.util.Objects;
+
 /**
  * @author Ge Mingjia
  */
@@ -91,7 +93,12 @@ public class GearWenXinConfig implements CommandLineRunner {
             return;
         }
         ChatUtils.getAccessTokenByAKSK(api_key, secret_key)
-                .filter(tokenResponse -> tokenResponse != null && tokenResponse.getAccessToken() != null)
+                .filter(Objects::nonNull)
+                .doOnNext(tokenResponse -> {
+                    if (tokenResponse.getAccessToken() == null && access_token == null) {
+                        log.warn("api_key or secret_key error！");
+                    }
+                })
                 .map(TokenResponse::getAccessToken)
                 .doOnNext(this::setAccess_token)
                 .subscribe();

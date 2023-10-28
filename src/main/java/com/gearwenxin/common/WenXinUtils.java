@@ -115,4 +115,16 @@ public class WenXinUtils {
 
     }
 
+    public static void assertNotBlank(String str, String message) {
+        if (StringUtils.isBlank(str)) {
+            throw new WenXinException(ErrorCode.PARAMS_ERROR, message);
+        }
+    }
+
+    public static void assertNotNull(Object obj, String message) {
+        if (obj == null) {
+            throw new WenXinException(ErrorCode.PARAMS_ERROR, message);
+        }
+    }
+
 }

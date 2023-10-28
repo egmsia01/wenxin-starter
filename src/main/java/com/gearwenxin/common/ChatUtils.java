@@ -25,6 +25,8 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import static com.gearwenxin.common.Constant.GET_ACCESS_TOKEN_URL;
+import static com.gearwenxin.common.WenXinUtils.assertNotBlank;
+import static com.gearwenxin.common.WenXinUtils.assertNotNull;
 
 /**
  * @author Ge Mingjia
@@ -159,7 +161,7 @@ public class ChatUtils {
 
     public static Mono<TokenResponse> getAccessTokenByAKSK(String apiKey, String secretKey) {
         if (StringUtils.isBlank(apiKey) || StringUtils.isBlank(secretKey)) {
-            throw new WenXinException(ErrorCode.PARAMS_ERROR);
+            throw new WenXinException(ErrorCode.PARAMS_ERROR, "api-key或secret-key错误");
         }
 
         final String url = String.format(GET_ACCESS_TOKEN_URL, apiKey, secretKey);
@@ -171,9 +173,7 @@ public class ChatUtils {
     }
 
     public static String encodeURL(String component) {
-        if (component == null) {
-            throw new WenXinException(ErrorCode.PARAMS_ERROR, "EncodeURL error!");
-        }
+        assertNotBlank(component, "EncodeURL error!");
         return URLEncoder.encode(component, StandardCharsets.UTF_8);
     }
 
@@ -184,9 +184,10 @@ public class ChatUtils {
     }
 
     private static <T> void validateParams(String url, String accessToken, Object request, Class<T> type) {
-        if (StringUtils.isBlank(url) || StringUtils.isBlank(accessToken) || request == null || type == null) {
-            throw new WenXinException(ErrorCode.PARAMS_ERROR);
-        }
+        assertNotBlank(url, "model url is null");
+        assertNotBlank(accessToken, "accessToken is null");
+        assertNotNull(request, "request is null");
+        assertNotNull(type, "response type is null");
     }
 
     private static Consumer<Throwable> handleWebClientError() {
