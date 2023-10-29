@@ -7,7 +7,6 @@ import com.gearwenxin.entity.response.TokenResponse;
 import com.gearwenxin.exception.WenXinException;
 import com.gearwenxin.subscriber.CommonSubscriber;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.web.reactive.function.BodyInserters;
@@ -198,6 +197,7 @@ public class ChatUtils {
     }
 
     private static <T> void handleErrResponse(T response) {
+        assertNotNull(response, "响应异常");
         if (response instanceof ChatResponse chatResponse) {
             if (chatResponse.getErrorCode() != null) {
 
@@ -209,7 +209,6 @@ public class ChatUtils {
                         .errorCode(chatResponse.getErrorCode())
                         .build();
 
-                log.warn(errorResponse.toString());
                 throw new WenXinException(ErrorCode.WENXIN_ERROR, errorResponse.getErrorMsg());
             }
         }
