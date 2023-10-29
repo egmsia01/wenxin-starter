@@ -160,9 +160,7 @@ public class ChatUtils {
     }
 
     public static Mono<TokenResponse> getAccessTokenByAKSK(String apiKey, String secretKey) {
-        if (StringUtils.isBlank(apiKey) || StringUtils.isBlank(secretKey)) {
-            throw new WenXinException(ErrorCode.PARAMS_ERROR, "api-key或secret-key错误");
-        }
+        assertNotBlank("api-key或secret-key错误", apiKey, secretKey);
 
         final String url = String.format(GET_ACCESS_TOKEN_URL, apiKey, secretKey);
 
