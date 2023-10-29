@@ -23,9 +23,8 @@ public class WenXinUtils {
 
     // TODO:全局适配
     public static Deque<Message> buildUserMessageDeque(String content, String name, FunctionCall functionCall) {
-        if (content == null) {
-            throw new WenXinException(ErrorCode.PARAMS_ERROR, "content is null");
-        }
+        assertNotNull(content, "content is null");
+
         Deque<Message> messageDeque = new LinkedList<>();
         Message message = buildUserMessage(content, name, functionCall);
         messageDeque.offer(message);
@@ -45,24 +44,18 @@ public class WenXinUtils {
 
     // TODO:全局适配
     public static Message buildUserMessage(String content, String name, FunctionCall functionCall) {
-        if (content == null) {
-            throw new WenXinException(ErrorCode.PARAMS_ERROR, "content is null");
-        }
+        assertNotNull(content, "content is null");
         if (functionCall == null) {
             return new Message(Role.user, content, null, null);
         }
-        if (name == null) {
-            throw new WenXinException(ErrorCode.PARAMS_ERROR, "Message.name is null!");
-        }
+        assertNotNull(name, "content is null");
 
         return new Message(Role.user, content, name, functionCall);
     }
 
     // TODO:全局适配
     public static Message buildAssistantMessage(String content, String name, FunctionCall functionCall) {
-        if (content == null) {
-            throw new WenXinException(ErrorCode.PARAMS_ERROR, "content is null");
-        }
+        assertNotNull(content, "content is null");
         return new Message(Role.assistant, content, name, functionCall);
     }
 
@@ -77,13 +70,9 @@ public class WenXinUtils {
      * @param message         需添加的Message
      */
     public static void offerMessage(Deque<Message> messagesHistory, Message message) {
-
-        if (messagesHistory == null || message == null) {
-            throw new WenXinException(ErrorCode.PARAMS_ERROR);
-        }
-        if (StringUtils.isBlank(message.getContent())) {
-            throw new WenXinException(ErrorCode.PARAMS_ERROR, "message is null!");
-        }
+        assertNotNull(messagesHistory, "messagesHistory is null");
+        assertNotNull(message, "message is null");
+        assertNotBlank(message.getContent(), "message.content is null or blank");
 
         Message lastMessage = messagesHistory.peekLast();
         if (lastMessage != null && lastMessage.getRole() == Role.user &&
@@ -118,6 +107,14 @@ public class WenXinUtils {
     public static void assertNotBlank(String str, String message) {
         if (StringUtils.isBlank(str)) {
             throw new WenXinException(ErrorCode.PARAMS_ERROR, message);
+        }
+    }
+
+    public static void assertNotBlank(String message, String... strings) {
+        for (String str : strings) {
+            if (StringUtils.isBlank(str)) {
+                throw new WenXinException(ErrorCode.PARAMS_ERROR, message);
+            }
         }
     }
 
