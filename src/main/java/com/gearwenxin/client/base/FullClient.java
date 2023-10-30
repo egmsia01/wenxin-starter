@@ -135,4 +135,44 @@ public abstract class FullClient extends BaseClient implements ContBot<ChatBaseR
                 });
     }
 
+    private Mono<ChatResponse> processChatRequest(String content, String msgUid, boolean isStream, ChatBaseRequest chatBaseRequest) {
+        return Mono.justOrEmpty(Tuples.of(content, msgUid, chatBaseRequest))
+                .filter(tuple -> StringUtils.isNotBlank(tuple.getT2()))
+                .doOnNext(tuple -> chatBaseRequest.validSelf())
+                .flatMap(tuple -> {
+                    Map<String, Deque<Message>> messageHistoryMap = getMessageHistoryMap();
+                    Deque<Message> messagesHistory = messageHistoryMap.computeIfAbsent(
+                            tuple.getT2(), key -> new LinkedList<>()
+                    );
+
+                    String messageContent = chatBaseRequest.getContent();
+                    Message message = WenXinUtils.buildUserMessage(messageContent);
+                    WenXinUtils.offerMessage(messagesHistory, message);
+
+                    BaseRequest.BaseRequestBuilder baseRequestBuilder = ConvertUtils.toBaseRequest(tuple.getT3())
+                            .messages(messagesHistory);
+
+                    if (isStream) {
+                        baseRequestBuilder.stream(true);
+                    }
+
+                    BaseRequest baseRequest = baseRequestBuilder.build();
+
+                    log.info("{}-contRequest{} => {}", getTag(), isStream ? "-stream" : "", baseRequest.toString());
+
+                    return ChatUtils.historyMono(getURL(), getCustomAccessToken(), baseRequest, messagesHistory);
+                });
+    }
+
+//    private Flux<ChatResponse> processFluxChatRequest(
+//            String content,
+//            String msgUid,
+//            ChatBaseRequest chatBaseRequest,
+//            boolean isStream
+//    ) {
+//        // TODO:补全代码
+//        return chatBaseRequest != null ?
+//                Flux.empty() : ChatUtils.historyFlux(getURL(), getCustomAccessToken(), baseRequest, messagesHistory);
+//    }
+
 }
