@@ -39,8 +39,14 @@
 [使用demo](https://github.com/gemingjia/springboot-wenxin-demo)
 
 ```text
-0.0.9.1版本更改了历史消息的数据结构，由Queue更换为Deque，如有使用消息导入导出功能请注意修改，Deque兼容Queue的方法，您只需全局替换“Queue”为“Deque”即可，其余无需做任何修改，很抱歉给您带来不便。
+SpringBoot 3.x中，默认不再扫描 @Configuration 类中的 @Bean 方法定义的 bean ，需要额外配置扫描这些 bean。
+如遇到`A component required a bean of type xxx that could not be found.`报错，请在启动类添加注解：
+`@ComponentScan(basePackages = {"com.gearwenxin", "你的启动类所在包名"})`
+```
 
+```text
+0.0.9.1版本更改了历史消息的数据结构，由Queue更换为Deque，如有使用消息导入导出功能请注意修改。
+Deque兼容Queue的方法，您只需全局替换“Queue”为“Deque”即可，其余无需做任何修改。
 
 除"ErnieBot"与"Prompt"外，其余的对话型模型接收参数类统一为 ChatBaseRequest，响应类为 ChatResponse
 图片生成型模型接收参数类统一为 ChatImageRequest，响应类为 ImageResponse，内容为base64编码的图片。
@@ -149,6 +155,9 @@ v0.0.9.7 - pre release
 - 修复 system字段无长度限制 #16 
 - 修复 system字段包含敏感词导致的npe问题 
 - 修复 概率出现的The connection observed an error错误
+
+v0.0.9.6
+- [new]  支持JDK1.8  JDK1.8专版
 
 v0.0.9.5 - Canary
 - 支持文心4.0
