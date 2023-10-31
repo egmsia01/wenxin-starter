@@ -34,12 +34,15 @@ import com.gearwenxin.client.rwkv.RWKVRaven14BClient;
 import com.gearwenxin.client.stable.StableDiffusionV1_5Client;
 import com.gearwenxin.client.stable.StableLMAlpha7BClient;
 import com.gearwenxin.common.ChatUtils;
+import com.gearwenxin.common.ErrorCode;
 import com.gearwenxin.entity.response.TokenResponse;
+import com.gearwenxin.exception.WenXinException;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
 import java.util.Objects;
@@ -96,7 +99,7 @@ public class GearWenXinConfig implements CommandLineRunner {
                 .filter(Objects::nonNull)
                 .doOnNext(tokenResponse -> {
                     if (tokenResponse.getAccessToken() == null && access_token == null) {
-                        log.warn("api_key or secret_key error！");
+                        throw new WenXinException(ErrorCode.SYSTEM_ERROR, "api_key or secret_key error！");
                     }
                 })
                 .map(TokenResponse::getAccessToken)
