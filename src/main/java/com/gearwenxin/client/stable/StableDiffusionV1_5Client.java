@@ -10,7 +10,7 @@ import java.util.Deque;
 
 /**
  * @author Ge Mingjia
- * @date 2023/7/20
+
  */
 @Slf4j
 public abstract class StableDiffusionV1_5Client extends ImageClient {

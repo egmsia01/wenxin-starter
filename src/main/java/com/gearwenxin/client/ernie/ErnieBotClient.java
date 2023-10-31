@@ -25,7 +25,7 @@ import static com.gearwenxin.common.WenXinUtils.*;
 
 /**
  * @author Ge Mingjia
- * @date 2023/7/20
+
  */
 @Slf4j
 public abstract class ErnieBotClient extends BaseClient implements ContBot<ChatErnieRequest>, BaseBot {

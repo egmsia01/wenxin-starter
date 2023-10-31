@@ -9,7 +9,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author Ge Mingjia
- * @date 2023/7/24
+
  */
 public abstract class OpenLLaMA7BClient extends FullClient {
 

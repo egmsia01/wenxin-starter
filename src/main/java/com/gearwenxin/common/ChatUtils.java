@@ -30,7 +30,6 @@ import static com.gearwenxin.common.WenXinUtils.assertNotNull;
 
 /**
  * @author Ge Mingjia
- * @date 2023/7/21
  */
 @Slf4j
 public class ChatUtils {

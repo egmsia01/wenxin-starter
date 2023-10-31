@@ -10,7 +10,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author Leon2young
- * @date 2023/10/14
  */
 public abstract class AquilaChat7BClient extends FullClient {
 

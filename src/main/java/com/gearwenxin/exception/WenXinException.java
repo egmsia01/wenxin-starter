@@ -5,7 +5,6 @@ import lombok.Getter;
 
 /**
  * @author Ge Mingjia
- * @date 2023/7/22
  */
 @Getter
 public class WenXinException extends RuntimeException {

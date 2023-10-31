@@ -13,7 +13,6 @@ import static com.gearwenxin.common.Constant.MAX_TOTAL_LENGTH;
 
 /**
  * @author Ge Mingjia
- * @date 2023/7/23
  */
 public class WenXinUtils {
 

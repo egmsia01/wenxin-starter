@@ -4,7 +4,6 @@ import com.gearwenxin.common.ErrorCode;
 
 /**
  * @author Ge Mingjia
- * @date 2023/10/20
  */
 @Deprecated
 public class BusinessException extends RuntimeException {

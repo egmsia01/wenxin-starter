@@ -11,7 +11,6 @@ import static com.gearwenxin.common.Constant.MAX_CONTENT_LENGTH;
 
 /**
  * @author Ge Mingjia
- * @date 2023/8/3
  */
 @Data
 @AllArgsConstructor

@@ -13,7 +13,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author Ge Mingjia
- * @date 2023/7/20
+
  */
 @Slf4j
 public abstract class ErnieBot4Client extends ErnieBotClient implements ContBot<ChatErnieRequest>, BaseBot {

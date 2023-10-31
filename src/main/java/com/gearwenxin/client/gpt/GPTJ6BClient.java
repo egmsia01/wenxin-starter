@@ -4,7 +4,7 @@ import com.gearwenxin.client.base.BaseClient;
 
 /**
  * @author Ge Mingjia
- * @date 2023/8/5
+
  */
 public abstract class GPTJ6BClient extends BaseClient {
 

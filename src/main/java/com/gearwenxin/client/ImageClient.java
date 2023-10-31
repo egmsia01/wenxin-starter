@@ -12,7 +12,7 @@ import reactor.core.publisher.Mono;
 
 /**
  * @author Ge Mingjia
- * @date 2023/7/20
+
  */
 @Slf4j
 public abstract class ImageClient implements ImageBot<ImageBaseRequest>, BaseBot {

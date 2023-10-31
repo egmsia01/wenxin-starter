@@ -6,7 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author Ge Mingjia
- * @date 2023/7/20
+
  */
 @Slf4j
 public abstract class EmbeddingV1Client implements BaseBot {

@@ -17,7 +17,7 @@ import static com.gearwenxin.common.Constant.MAX_SYSTEM_LENGTH;
 
 /**
  * @author Ge Mingjia
- * @date 2023/7/20
+
  * <p>
  * ContBot 模型
  */
