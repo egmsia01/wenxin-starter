@@ -127,14 +127,6 @@ public class ChatUtils {
 
     /**
      * flux形式的回答，添加到历史消息中
-     * flux形式的回答 添加到历史消息中
-     *
-     * @param url
-     * @param token
-     * @param request
-     * @param messagesHistory
-     * @param <T>
-     * @return
      */
     public static <T> Flux<ChatResponse> historyFlux(String url, String token, T request, Deque<Message> messagesHistory) {
         return Flux.create(emitter -> {
@@ -180,10 +172,6 @@ public class ChatUtils {
 
     public static String encodeURL(String component) {
         assertNotBlank(component, "EncodeURL error!");
-        return URLEncoder.encode(component, StandardCharsets.UTF_8);
-        if (component == null) {
-            throw new WenXinException(ErrorCode.PARAMS_ERROR, "EncodeURL error!");
-        }
         try {
             return URLEncoder.encode(component, "UTF-8");
         } catch (UnsupportedEncodingException e) {
@@ -215,12 +203,13 @@ public class ChatUtils {
 
     private static <T> void handleErrResponse(T response) {
         assertNotNull(response, "响应异常");
-        if (response instanceof ChatResponse chatResponse) {
+        if (response instanceof ChatResponse) {
+            ChatResponse chatResponse = (ChatResponse) response;
             if (chatResponse.getErrorCode() != null) {
 
                 ErrorResponse errorResponse = ErrorResponse.builder()
                         .id(chatResponse.getId())
-                        .logId(chatResponse.getLogId())
+//                        .logId(chatResponse.getLogId())
                         .ebCode(chatResponse.getEbCode())
                         .errorMsg(chatResponse.getErrorMsg())
                         .errorCode(chatResponse.getErrorCode())
