@@ -53,13 +53,13 @@
 <dependency>
   <groupId>io.github.gemingjia</groupId>
   <artifactId>gear-wenxinworkshop-starter</artifactId>
-  <version>0.0.9.5</version>
+  <version>0.0.9.7</version>
 </dependency>
 ```
 - Gradle
 ```gradle
 dependencies {
-  implementation 'io.github.gemingjia:gear-wenxinworkshop-starter:0.0.9.5' 
+  implementation 'io.github.gemingjia:gear-wenxinworkshop-starter:0.0.9.7' 
 }
 ```
 
@@ -90,13 +90,7 @@ public class ChatController {
   // 要调用的模型的客户端（示例为文心4.0）
   @Resource
   private ErnieBot4Client ernieBot4Client;
-
-  // 单次对话（阻塞）
-  @PostMapping("/chat")
-  public BaseRsponse<ChatResponse> chatSingle(String msg) {
-    return ernieBot4Client.chatSingle(msg).block();
-  }
-
+  
   // 单次对话
   @PostMapping("/chat")
   public Mono<ChatResponse> chatSingle(String msg) {
@@ -148,6 +142,14 @@ public class ChatController {
 
 ## 更新日志
 
+v0.0.9.7 - pre release
+- 新增 对function call的简单支持 
+- 新增 更细化的错误处理 
+- 修复 ban_round类型错误导致的反序列化错误 #15。 
+- 修复 system字段无长度限制 #16 
+- 修复 system字段包含敏感词导致的npe问题 
+- 修复 概率出现的The connection observed an error错误
+
 v0.0.9.5 - Canary
 - 支持文心4.0
 - 同步官网响应字段（2023-10-20）。
@@ -193,4 +195,26 @@ v0.0.6
 </div>
 
 ## 开源协议
-[LICENSE](https://www.apache.org/licenses/LICENSE-2.0)
+```text
+MIT License
+
+Copyright (c) 2023 GMerge
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+```

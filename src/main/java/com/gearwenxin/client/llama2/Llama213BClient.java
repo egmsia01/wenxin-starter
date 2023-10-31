@@ -19,11 +19,10 @@ public abstract class Llama213BClient extends FullClient {
 
     private String accessToken = null;
     private static final String TAG = "Llama2-13B-Client";
+    private static final String URL = Constant.LLAMA2_13B_URL;
     private static Map<String, Deque<Message>> LLAMA2_13B_MESSAGES_HISTORY_MAP = new ConcurrentHashMap<>();
 
     protected abstract String getAccessToken();
-
-    protected abstract String getCustomURL();
 
     @Override
     public String getCustomAccessToken() {
@@ -42,7 +41,7 @@ public abstract class Llama213BClient extends FullClient {
 
     @Override
     public String getURL() {
-        return getCustomURL() != null ? getCustomURL() : Constant.LLAMA2_13B_URL;
+        return URL;
     }
 
     @Override

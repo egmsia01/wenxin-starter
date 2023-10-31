@@ -28,7 +28,7 @@ public abstract class BaseClient implements SingleBot, BaseBot {
     private Mono<BaseRequest> buildBaseRequest(String content) {
         return Mono.justOrEmpty(content)
                 .filter(StringUtils::isNotBlank)
-                .switchIfEmpty(Mono.error(new WenXinException(ErrorCode.PARAMS_ERROR)))
+                .switchIfEmpty(Mono.error(() -> new WenXinException(ErrorCode.PARAMS_ERROR)))
                 .map(WenXinUtils::buildUserMessageDeque)
                 .map(messageDeque -> BaseRequest.builder().messages(messageDeque).build());
     }
@@ -40,13 +40,13 @@ public abstract class BaseClient implements SingleBot, BaseBot {
             case "ErnieBot4Client":
                 return buildBaseRequest(content)
                         .map(request -> ErnieRequest.builder().messages(request.getMessages()).build())
-                        .doOnNext(request -> log.info("{}-content_singleRequest => {}", getTag(), request.toString()))
+                        .doOnNext(request -> log.info("{}-content-singleRequest => {}", getTag(), request.toString()))
                         .flatMap(request ->
                                 ChatUtils.monoChatPost(getURL(), getCustomAccessToken(), request, ChatResponse.class)
                         );
             default:
                 return buildBaseRequest(content)
-                        .doOnNext(request -> log.info("{}-content_singleRequest => {}", getTag(), request.toString()))
+                        .doOnNext(request -> log.info("{}-content-singleRequest => {}", getTag(), request.toString()))
                         .flatMap(request ->
                                 ChatUtils.monoChatPost(getURL(), getCustomAccessToken(), request, ChatResponse.class)
                         );
@@ -61,14 +61,14 @@ public abstract class BaseClient implements SingleBot, BaseBot {
             case "ErnieBot4Client":
                 return buildBaseRequest(content)
                         .map(request -> ErnieRequest.builder().messages(request.getMessages()).stream(true).build())
-                        .doOnNext(request -> log.info("{}-content_singleRequest_stream => {}", getTag(), request.toString()))
+                        .doOnNext(request -> log.info("{}-content-singleRequest-stream => {}", getTag(), request.toString()))
                         .flatMapMany(request ->
                                 ChatUtils.fluxChatPost(getURL(), getCustomAccessToken(), request, ChatResponse.class)
                         );
             default:
                 return buildBaseRequest(content)
                         .map(request -> BaseRequest.builder().messages(request.getMessages()).stream(true).build())
-                        .doOnNext(request -> log.info("{}-content_singleRequest_stream => {}", getTag(), request.toString()))
+                        .doOnNext(request -> log.info("{}-content-singleRequest-stream => {}", getTag(), request.toString()))
                         .flatMapMany(request ->
                                 ChatUtils.fluxChatPost(getURL(), getCustomAccessToken(), request, ChatResponse.class)
                         );
@@ -91,7 +91,7 @@ public abstract class BaseClient implements SingleBot, BaseBot {
                         );
             default:
                 return Mono.just(chatBaseRequest)
-                        .switchIfEmpty(Mono.error(new WenXinException(ErrorCode.PARAMS_ERROR)))
+                        .switchIfEmpty(Mono.error(() -> new WenXinException(ErrorCode.PARAMS_ERROR)))
                         .doOnNext(ChatBaseRequest::validSelf)
                         .map(ConvertUtils::toBaseRequest)
                         .map(BaseRequest.BaseRequestBuilder::build)
@@ -112,17 +112,17 @@ public abstract class BaseClient implements SingleBot, BaseBot {
                         .doOnNext(ErnieBotClient::validChatErnieRequest)
                         .map(ConvertUtils::toErnieRequest)
                         .map(builder -> builder.stream(true).build())
-                        .doOnNext(request -> log.info("{}-singleRequest_stream => {}", getTag(), request.toString()))
+                        .doOnNext(request -> log.info("{}-singleRequest-stream => {}", getTag(), request.toString()))
                         .flatMapMany(request ->
                                 ChatUtils.fluxChatPost(getURL(), getCustomAccessToken(), request, ChatResponse.class)
                         );
             default:
                 return Mono.just(chatBaseRequest)
-                        .switchIfEmpty(Mono.error(new WenXinException(ErrorCode.PARAMS_ERROR)))
+                        .switchIfEmpty(Mono.error(() -> new WenXinException(ErrorCode.PARAMS_ERROR)))
                         .doOnNext(ChatBaseRequest::validSelf)
                         .map(ConvertUtils::toBaseRequest)
                         .map(builder -> builder.stream(true).build())
-                        .doOnNext(baseRequest -> log.info("{}-singleRequest_stream => {}", getTag(), baseRequest.toString()))
+                        .doOnNext(baseRequest -> log.info("{}-singleRequest-stream => {}", getTag(), baseRequest.toString()))
                         .flatMapMany(baseRequest ->
                                 ChatUtils.fluxChatPost(getURL(), getCustomAccessToken(), baseRequest, ChatResponse.class)
                         );

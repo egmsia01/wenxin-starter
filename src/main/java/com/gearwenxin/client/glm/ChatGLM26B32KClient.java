@@ -1,26 +1,26 @@
-package com.gearwenxin.client.llama2;
+package com.gearwenxin.client.glm;
 
 import com.gearwenxin.client.base.FullClient;
 import com.gearwenxin.common.Constant;
 import com.gearwenxin.entity.Message;
 
-import java.util.Map;
 import java.util.Deque;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author Ge Mingjia
  * @date 2023/7/24
  */
-public abstract class Llama27BClient extends FullClient {
+public abstract class ChatGLM26B32KClient extends FullClient {
 
-    protected Llama27BClient() {
+    protected ChatGLM26B32KClient() {
     }
 
     private String accessToken = null;
-    private static final String TAG = "Llama2-7B-Client";
-    private static final String URL = Constant.LLAMA2_7B_URL;
-    private static Map<String, Deque<Message>> LLAMA2_7B_MESSAGES_HISTORY_MAP = new ConcurrentHashMap<>();
+    private static final String TAG = "ChatGLM2-6B-32K-Client";
+    private static final String URL = Constant.CHAT_GLM_6B_32K_URL;
+    private static Map<String, Deque<Message>> CHAT_GLM2_6B_32K_MESSAGES_HISTORY_MAP = new ConcurrentHashMap<>();
 
     protected abstract String getAccessToken();
 
@@ -31,12 +31,12 @@ public abstract class Llama27BClient extends FullClient {
 
     @Override
     public Map<String, Deque<Message>> getMessageHistoryMap() {
-        return LLAMA2_7B_MESSAGES_HISTORY_MAP;
+        return CHAT_GLM2_6B_32K_MESSAGES_HISTORY_MAP;
     }
 
     @Override
     public void initMessageHistoryMap(Map<String, Deque<Message>> map) {
-        LLAMA2_7B_MESSAGES_HISTORY_MAP = map;
+        CHAT_GLM2_6B_32K_MESSAGES_HISTORY_MAP = map;
     }
 
     @Override

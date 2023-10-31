@@ -6,6 +6,7 @@ import com.gearwenxin.entity.Message;
 import com.gearwenxin.entity.response.ChatResponse;
 import com.gearwenxin.exception.WenXinException;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.reactivestreams.Subscriber;
 import org.reactivestreams.Subscription;
 import reactor.core.Disposable;
@@ -38,7 +39,7 @@ public class CommonSubscriber implements Subscriber<ChatResponse>, Disposable {
     public void onSubscribe(Subscription subscription) {
         this.subscription = subscription;
         subscription.request(1);
-        log.info("onSubscribe");
+        log.debug("onSubscribe");
     }
 
     @Override
@@ -47,7 +48,7 @@ public class CommonSubscriber implements Subscriber<ChatResponse>, Disposable {
             return;
         }
 
-        log.info("onNext");
+        log.debug("onNext");
         if (response == null) {
             throw new WenXinException(ErrorCode.PARAMS_ERROR, "ChatResponse is null !");
         }
@@ -64,7 +65,7 @@ public class CommonSubscriber implements Subscriber<ChatResponse>, Disposable {
             return;
         }
 
-        log.info("onError");
+        log.debug("onError");
         emitter.error(throwable);
     }
 
@@ -73,17 +74,18 @@ public class CommonSubscriber implements Subscriber<ChatResponse>, Disposable {
         if (isDisposed()) {
             return;
         }
-
-        log.info("onComplete");
+        log.debug("onComplete");
         String result = joiner.toString();
-        Message message = buildAssistantMessage(result);
-        WenXinUtils.offerMessage(messagesHistory, message);
+        if (StringUtils.isNotBlank(result)) {
+            Message message = buildAssistantMessage(result);
+            WenXinUtils.offerMessage(messagesHistory, message);
+        }
         emitter.complete();
     }
 
     @Override
     public void dispose() {
-        log.info("dispose");
+        log.debug("dispose");
         subscription.cancel();
     }
 

@@ -18,6 +18,12 @@ public interface Constant {
      */
     int MAX_TOTAL_LENGTH = 2000;
 
+    /**
+     * 最大system长度
+     */
+    int MAX_SYSTEM_LENGTH = 1024;
+
+    String GET_ACCESS_TOKEN_URL = "https://aip.baidubce.com/oauth/2.0/token?grant_type=client_credentials&client_id=%s&client_secret=%s";
     String ERNIE_BOT_URL = "https://aip.baidubce.com/rpc/2.0/ai_custom/v1/wenxinworkshop/chat/completions";
     String ERNIE_BOT_4_URL = "https://aip.baidubce.com/rpc/2.0/ai_custom/v1/wenxinworkshop/chat/completions_pro";
     String ERNIE_BOT_TURBO_URL = "https://aip.baidubce.com/rpc/2.0/ai_custom/v1/wenxinworkshop/chat/eb-instant";

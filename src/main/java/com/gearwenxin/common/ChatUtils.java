@@ -2,11 +2,11 @@ package com.gearwenxin.common;
 
 import com.gearwenxin.entity.Message;
 import com.gearwenxin.entity.response.ChatResponse;
+import com.gearwenxin.entity.response.ErrorResponse;
 import com.gearwenxin.entity.response.TokenResponse;
 import com.gearwenxin.exception.WenXinException;
 import com.gearwenxin.subscriber.CommonSubscriber;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.web.reactive.function.BodyInserters;
@@ -23,6 +23,10 @@ import java.util.Map;
 import java.util.Deque;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
+
+import static com.gearwenxin.common.Constant.GET_ACCESS_TOKEN_URL;
+import static com.gearwenxin.common.WenXinUtils.assertNotBlank;
+import static com.gearwenxin.common.WenXinUtils.assertNotNull;
 
 /**
  * @author Ge Mingjia
@@ -55,6 +59,7 @@ public class ChatUtils {
                 .body(BodyInserters.fromValue(request))
                 .retrieve()
                 .bodyToMono(type)
+                .doOnSuccess(ChatUtils::handleErrResponse)
                 .doOnError(WebClientResponseException.class, handleWebClientError());
     }
 
@@ -77,6 +82,7 @@ public class ChatUtils {
                 .accept(MediaType.TEXT_EVENT_STREAM)
                 .retrieve()
                 .bodyToFlux(type)
+                .doOnNext(ChatUtils::handleErrResponse)
                 .doOnError(WebClientResponseException.class, handleWebClientError());
     }
 
@@ -115,10 +121,12 @@ public class ChatUtils {
                 .uri("")
                 .retrieve()
                 .bodyToMono(type)
+                .doOnSuccess(ChatUtils::handleErrResponse)
                 .doOnError(WebClientResponseException.class, handleWebClientError());
     }
 
     /**
+     * flux形式的回答，添加到历史消息中
      * flux形式的回答 添加到历史消息中
      *
      * @param url
@@ -146,8 +154,12 @@ public class ChatUtils {
 
         return response.flatMap(chatResponse -> {
             if (chatResponse == null || chatResponse.getResult() == null) {
-                return Mono.error(new WenXinException(ErrorCode.SYSTEM_ERROR));
+                return Mono.error(new WenXinException(ErrorCode.SYSTEM_ERROR, "响应错误！"));
             }
+//            if (chatResponse.getNeedClearHistory()) {
+//                messagesHistory.clear();
+//                return Mono.just(chatResponse);
+//            }
             Message messageResult = WenXinUtils.buildAssistantMessage(chatResponse.getResult());
             WenXinUtils.offerMessage(messagesHistory, messageResult);
 
@@ -156,11 +168,9 @@ public class ChatUtils {
     }
 
     public static Mono<TokenResponse> getAccessTokenByAKSK(String apiKey, String secretKey) {
-        if (StringUtils.isBlank(apiKey) || StringUtils.isBlank(secretKey)) {
-            throw new WenXinException(ErrorCode.PARAMS_ERROR);
-        }
+        assertNotBlank("api-key或secret-key错误", apiKey, secretKey);
 
-        String url = "https://aip.baidubce.com/oauth/2.0/token?grant_type=client_credentials&client_id=" + apiKey + "&client_secret=" + secretKey;
+        final String url = String.format(GET_ACCESS_TOKEN_URL, apiKey, secretKey);
 
         return buildWebClient(url).get()
                 .retrieve()
@@ -169,6 +179,8 @@ public class ChatUtils {
     }
 
     public static String encodeURL(String component) {
+        assertNotBlank(component, "EncodeURL error!");
+        return URLEncoder.encode(component, StandardCharsets.UTF_8);
         if (component == null) {
             throw new WenXinException(ErrorCode.PARAMS_ERROR, "EncodeURL error!");
         }
@@ -186,9 +198,10 @@ public class ChatUtils {
     }
 
     private static <T> void validateParams(String url, String accessToken, Object request, Class<T> type) {
-        if (StringUtils.isBlank(url) || StringUtils.isBlank(accessToken) || request == null || type == null) {
-            throw new WenXinException(ErrorCode.PARAMS_ERROR);
-        }
+        assertNotBlank(url, "model url is null");
+        assertNotBlank(accessToken, "accessToken is null");
+        assertNotNull(request, "request is null");
+        assertNotNull(type, "response type is null");
     }
 
     private static Consumer<Throwable> handleWebClientError() {
@@ -199,5 +212,24 @@ public class ChatUtils {
             throw new WenXinException(ErrorCode.SYSTEM_NET_ERROR);
         };
     }
+
+    private static <T> void handleErrResponse(T response) {
+        assertNotNull(response, "响应异常");
+        if (response instanceof ChatResponse chatResponse) {
+            if (chatResponse.getErrorCode() != null) {
+
+                ErrorResponse errorResponse = ErrorResponse.builder()
+                        .id(chatResponse.getId())
+                        .logId(chatResponse.getLogId())
+                        .ebCode(chatResponse.getEbCode())
+                        .errorMsg(chatResponse.getErrorMsg())
+                        .errorCode(chatResponse.getErrorCode())
+                        .build();
+
+                throw new WenXinException(ErrorCode.WENXIN_ERROR, errorResponse.getErrorMsg());
+            }
+        }
+    }
+
 
 }

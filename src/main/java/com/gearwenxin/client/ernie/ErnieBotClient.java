@@ -20,6 +20,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static com.gearwenxin.common.Constant.MAX_CONTENT_LENGTH;
+import static com.gearwenxin.common.Constant.MAX_SYSTEM_LENGTH;
 import static com.gearwenxin.common.WenXinUtils.*;
 
 /**
@@ -191,10 +192,14 @@ public abstract class ErnieBotClient extends BaseClient implements ContBot<ChatE
         if (request.getTemperature() != null && (request.getPenaltyScore() < 1.0 || request.getPenaltyScore() > 2.0)) {
             throw new WenXinException(ErrorCode.PARAMS_ERROR, "penaltyScore should be in [1, 2]");
         }
-        // TODO: 检查system与function call
-//        if (StringUtils.isBlank(request.getSystem())&&request.getFunction() != null){
-//            throw new WenXinException(ErrorCode.PARAMS_ERROR, "if 'function' not null, the 'system' must be null");
-//        }
+        // 检查system与function call
+        if (StringUtils.isNotBlank(request.getSystem()) && request.getFunctions() != null) {
+            throw new WenXinException(ErrorCode.PARAMS_ERROR, "if 'function' not null, the 'system' must be null");
+        }
+        // 检查system长度
+        if (request.getSystem() != null && request.getSystem().length() > MAX_SYSTEM_LENGTH) {
+            throw new WenXinException(ErrorCode.PARAMS_ERROR, "system's length cannot be more than 1024");
+        }
 
     }
 }

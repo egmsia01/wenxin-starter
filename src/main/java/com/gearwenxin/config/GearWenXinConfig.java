@@ -9,7 +9,9 @@ import com.gearwenxin.client.ernie.ErnieBotTurboClient;
 import com.gearwenxin.client.ernie.ErnieBotVilGClient;
 import com.gearwenxin.client.falcon.Falcon40BClient;
 import com.gearwenxin.client.falcon.Falcon7BClient;
+import com.gearwenxin.client.glm.ChatGLM26B32KClient;
 import com.gearwenxin.client.glm.ChatGLM26BClient;
+import com.gearwenxin.client.glm.ChatGLM26BINT4Client;
 import com.gearwenxin.client.glm.VisualGLM6BClient;
 import com.gearwenxin.client.gpt.GPT4AllJClient;
 import com.gearwenxin.client.gpt.GPTJ6BClient;
@@ -40,6 +42,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import java.util.Objects;
+
 /**
  * @author Ge Mingjia
  */
@@ -55,10 +59,8 @@ public class GearWenXinConfig implements CommandLineRunner {
     private String common_url;
     private String vilg_url;
     private String chat_glm2_6b_url;
+    private String chat_glm2_6b_int4_url;
     private String visual_glm_6b_url;
-    private String llama2_7b_url;
-    private String llama2_13b_url;
-    private String llama2_70b_url;
     private String linly_chinese_llama2_7b_url;
     private String linly_chinese_llama2_13b_url;
     private String falcon_7b_url;
@@ -90,13 +92,16 @@ public class GearWenXinConfig implements CommandLineRunner {
         if (api_key == null || secret_key == null) {
             return;
         }
-        TokenResponse tokenResponse = ChatUtils.getAccessTokenByAKSK(api_key, secret_key).block();
-        if (tokenResponse != null) {
-            if (tokenResponse.getAccessToken() == null && access_token == null) {
-                log.warn("api_key or secret_key error！");
-            }
-            this.access_token = tokenResponse.getAccessToken();
-        }
+        ChatUtils.getAccessTokenByAKSK(api_key, secret_key)
+                .filter(Objects::nonNull)
+                .doOnNext(tokenResponse -> {
+                    if (tokenResponse.getAccessToken() == null && access_token == null) {
+                        log.warn("api_key or secret_key error！");
+                    }
+                })
+                .map(TokenResponse::getAccessToken)
+                .doOnNext(this::setAccess_token)
+                .subscribe();
     }
 
     @Bean
@@ -216,11 +221,6 @@ public class GearWenXinConfig implements CommandLineRunner {
             protected String getAccessToken() {
                 return access_token;
             }
-
-            @Override
-            protected String getCustomURL() {
-                return llama2_7b_url;
-            }
         };
     }
 
@@ -231,11 +231,6 @@ public class GearWenXinConfig implements CommandLineRunner {
             protected String getAccessToken() {
                 return access_token;
             }
-
-            @Override
-            protected String getCustomURL() {
-                return llama2_13b_url;
-            }
         };
     }
 
@@ -245,11 +240,6 @@ public class GearWenXinConfig implements CommandLineRunner {
             @Override
             protected String getAccessToken() {
                 return access_token;
-            }
-
-            @Override
-            protected String getCustomURL() {
-                return llama2_70b_url;
             }
         };
     }
@@ -625,6 +615,31 @@ public class GearWenXinConfig implements CommandLineRunner {
             @Override
             protected String getCustomURL() {
                 return custom_model_url;
+            }
+        };
+    }
+
+    @Bean
+    public ChatGLM26BINT4Client chatGLM26BINT4Client() {
+        return new ChatGLM26BINT4Client() {
+            @Override
+            protected String getAccessToken() {
+                return access_token;
+            }
+
+            @Override
+            protected String getCustomURL() {
+                return chat_glm2_6b_int4_url;
+            }
+        };
+    }
+
+    @Bean
+    public ChatGLM26B32KClient chatGLM26B32KClient() {
+        return new ChatGLM26B32KClient() {
+            @Override
+            protected String getAccessToken() {
+                return access_token;
             }
         };
     }
