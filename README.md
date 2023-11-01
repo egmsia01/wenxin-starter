@@ -39,8 +39,7 @@
 [使用demo](https://github.com/gemingjia/springboot-wenxin-demo)
 
 ```text
-SpringBoot 3.x中，默认不再扫描 @Configuration 类中的 @Bean 方法定义的 bean ，需要额外配置扫描这些 bean。
-如遇到`A component required a bean of type xxx that could not be found.`报错，请在启动类添加注解：
+SpringBoot 3.x中，如遇到`A component required a bean of type xxx that could not be found.`报错，请在启动类添加注解：
 `@ComponentScan(basePackages = {"com.gearwenxin", "你的启动类所在包名"})`
 ```
 
