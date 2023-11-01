@@ -28,7 +28,7 @@ public class SQLCoder7BClient extends BaseClient {
     }
 
     private String getCustomURL() {
-        return wenXinProperties.get();
+        return wenXinProperties.getSQLCoder_7B();
     }
 
     @Override
