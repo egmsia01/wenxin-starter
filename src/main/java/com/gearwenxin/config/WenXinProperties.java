@@ -10,16 +10,13 @@ import org.springframework.stereotype.Component;
  * @author Ge Mingjia
  * @date 2023/11/1
  */
-@Setter
+@Data
 @Component
 @ConfigurationProperties("gear.wenxin")
 public class WenXinProperties {
 
-    @Getter
     private String accessToken;
-    @Getter
     private String apiKey;
-    @Getter
     private String secretKey;
 
     private String common_url;
