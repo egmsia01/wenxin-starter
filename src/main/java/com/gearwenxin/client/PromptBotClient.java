@@ -12,9 +12,12 @@ import com.gearwenxin.entity.request.PromptRequest;
 import com.gearwenxin.entity.response.PromptResponse;
 import com.gearwenxin.model.BaseBot;
 import com.gearwenxin.model.PromptBot;
+import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import reactor.core.publisher.Mono;
 
@@ -25,9 +28,11 @@ import java.util.Map;
  * @date 2023/7/20
  */
 @Slf4j
+@Lazy
+@Service
 public class PromptBotClient implements PromptBot, BaseBot {
 
-    @Autowired
+    @Resource
     private WenXinProperties wenXinProperties;
 
     private String accessToken = null;

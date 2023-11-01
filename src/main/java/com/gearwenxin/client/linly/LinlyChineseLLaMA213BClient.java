@@ -1,7 +1,12 @@
 package com.gearwenxin.client.linly;
 
 import com.gearwenxin.client.base.FullClient;
+import com.gearwenxin.config.WenXinProperties;
 import com.gearwenxin.entity.Message;
+import jakarta.annotation.Resource;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.stereotype.Service;
 
 import java.util.Map;
 import java.util.Deque;
@@ -11,19 +16,25 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author Ge Mingjia
  * @date 2023/7/24
  */
-public abstract class LinlyChineseLLaMA213BClient extends FullClient {
+@Slf4j
+@Lazy
+@Service
+public class LinlyChineseLLaMA213BClient extends FullClient {
 
-    protected LinlyChineseLLaMA213BClient() {
-    }
+    @Resource
+    private WenXinProperties wenXinProperties;
 
     private String accessToken = null;
     private static final String TAG = "Linly-Chinese-LLaMA2-13B-Client";
     private static Map<String, Deque<Message>> LINLY_LLAMA2_13B_MESSAGES_HISTORY_MAP = new ConcurrentHashMap<>();
 
-    protected abstract String getAccessToken();
+    private String getAccessToken() {
+        return wenXinProperties.getAccessToken();
+    }
 
-    // 获取不固定的模型URL
-    protected abstract String getCustomURL();
+    private String getCustomURL() {
+        return wenXinProperties.getLinly_Chinese_LLaMA2_13B_URL();
+    }
 
     @Override
     public String getCustomAccessToken() {

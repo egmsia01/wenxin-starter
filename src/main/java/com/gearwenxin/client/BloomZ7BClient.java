@@ -5,6 +5,8 @@ import com.gearwenxin.common.Constant;
 import com.gearwenxin.config.WenXinProperties;
 import com.gearwenxin.entity.Message;
 import jakarta.annotation.Resource;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
@@ -15,6 +17,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author Ge Mingjia
  * @date 2023/7/24
  */
+@Slf4j
 @Service
 public class BloomZ7BClient extends FullClient {
 

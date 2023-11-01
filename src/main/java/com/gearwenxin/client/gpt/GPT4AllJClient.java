@@ -1,22 +1,34 @@
 package com.gearwenxin.client.gpt;
 
 import com.gearwenxin.client.base.BaseClient;
+import com.gearwenxin.config.WenXinProperties;
+import jakarta.annotation.Resource;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.stereotype.Service;
 
 /**
  * @author Ge Mingjia
  * @date 2023/8/5
  */
-public abstract class GPT4AllJClient extends BaseClient {
+@Slf4j
+@Lazy
+@Service
+public class GPT4AllJClient extends BaseClient {
 
-    protected GPT4AllJClient() {
-    }
+    @Resource
+    private WenXinProperties wenXinProperties;
 
     private String accessToken = null;
     private static final String TAG = "GPT4All-J-Client";
 
-    protected abstract String getAccessToken();
+    private String getAccessToken() {
+        return wenXinProperties.getAccessToken();
+    }
 
-    protected abstract String getCustomURL();
+    private String getCustomURL() {
+        return wenXinProperties.getGPT4All_J_URL();
+    }
 
     @Override
     public String getCustomAccessToken() {
