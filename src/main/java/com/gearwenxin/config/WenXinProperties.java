@@ -52,6 +52,7 @@ public class WenXinProperties {
     private String stablelm_alpha_7b_url;
     private String star_coder_url;
     private String custom_model_url;
+    private String sql_coder_7b_url;
 
     public String getCommon_Url() {
         return common_url;
@@ -172,4 +173,9 @@ public class WenXinProperties {
     public String getCustom_Model_URL() {
         return custom_model_url;
     }
+
+    public String getSQLCoder_7B() {
+        return sql_coder_7b_url;
+    }
+
 }
