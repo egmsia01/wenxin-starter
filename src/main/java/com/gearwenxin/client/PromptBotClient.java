@@ -4,6 +4,7 @@ import com.gearwenxin.common.ChatUtils;
 import com.gearwenxin.common.ConvertUtils;
 import com.gearwenxin.common.ErrorCode;
 import com.gearwenxin.common.Constant;
+import com.gearwenxin.config.WenXinProperties;
 import com.gearwenxin.exception.WenXinException;
 
 import com.gearwenxin.entity.chatmodel.ChatPromptRequest;
@@ -13,6 +14,7 @@ import com.gearwenxin.model.BaseBot;
 import com.gearwenxin.model.PromptBot;
 import lombok.extern.slf4j.Slf4j;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
 import reactor.core.publisher.Mono;
 
@@ -23,17 +25,19 @@ import java.util.Map;
  * @date 2023/7/20
  */
 @Slf4j
-public abstract class PromptBotClient implements PromptBot, BaseBot {
+public class PromptBotClient implements PromptBot, BaseBot {
 
-    protected PromptBotClient() {
-    }
+    @Autowired
+    private WenXinProperties wenXinProperties;
 
     private String accessToken = null;
     private static final String TAG = "Prompt-Bot-Client";
 
     private static final String URL = Constant.PROMPT_URL;
 
-    protected abstract String getAccessToken();
+    public String getAccessToken() {
+        return wenXinProperties.getAccessToken();
+    }
 
     @Override
     public String getCustomAccessToken() {

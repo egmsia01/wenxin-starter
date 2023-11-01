@@ -1,7 +1,12 @@
 package com.gearwenxin.client.falcon;
 
 import com.gearwenxin.client.base.FullClient;
+import com.gearwenxin.config.WenXinProperties;
 import com.gearwenxin.entity.Message;
+import jakarta.annotation.Resource;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.stereotype.Service;
 
 import java.util.Map;
 import java.util.Deque;
@@ -11,19 +16,25 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author Ge Mingjia
  * @date 2023/7/24
  */
-public abstract class Falcon7BClient extends FullClient {
+@Slf4j
+@Lazy
+@Service
+public class Falcon7BClient extends FullClient {
 
-    protected Falcon7BClient() {
-    }
+    @Resource
+    private WenXinProperties wenXinProperties;
 
     private String accessToken = null;
     private static final String TAG = "Falcon-7B-Client";
     private static Map<String, Deque<Message>> FALCON_7B_MESSAGES_HISTORY_MAP = new ConcurrentHashMap<>();
 
-    protected abstract String getAccessToken();
+    private String getAccessToken() {
+        return wenXinProperties.getAccessToken();
+    }
 
-    // 获取不固定的模型URL
-    protected abstract String getCustomURL();
+    private String getCustomURL() {
+        return wenXinProperties.getFalcon_7B_URL();
+    }
 
     @Override
     public String getCustomAccessToken() {

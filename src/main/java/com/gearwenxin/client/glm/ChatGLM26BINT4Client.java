@@ -1,7 +1,12 @@
 package com.gearwenxin.client.glm;
 
 import com.gearwenxin.client.base.FullClient;
+import com.gearwenxin.config.WenXinProperties;
 import com.gearwenxin.entity.Message;
+import jakarta.annotation.Resource;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.stereotype.Service;
 
 import java.util.Deque;
 import java.util.Map;
@@ -11,18 +16,24 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author Ge Mingjia
  * @date 2023/7/24
  */
-public abstract class ChatGLM26BINT4Client extends FullClient {
+@Slf4j
+@Lazy
+@Service
+public class ChatGLM26BINT4Client extends FullClient {
 
-    protected ChatGLM26BINT4Client() {
-    }
+    @Resource
+    private WenXinProperties wenXinProperties;
 
     private String accessToken = null;
     private static final String TAG = "ChatGLM2-6B-INT4-Client";
     private static Map<String, Deque<Message>> CHAT_GLM2_6B_INT4_MESSAGES_HISTORY_MAP = new ConcurrentHashMap<>();
+    private String getAccessToken() {
+        return wenXinProperties.getAccessToken();
+    }
 
-    protected abstract String getAccessToken();
-
-    protected abstract String getCustomURL();
+    private String getCustomURL() {
+        return wenXinProperties.getChatGLM2_6B_INT4_URL();
+    }
 
     @Override
     public String getCustomAccessToken() {

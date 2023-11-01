@@ -2,9 +2,12 @@ package com.gearwenxin.client.ernie;
 
 import com.gearwenxin.client.base.FullClient;
 import com.gearwenxin.common.*;
+import com.gearwenxin.config.WenXinProperties;
 import com.gearwenxin.entity.Message;
 
+import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
 
 import java.util.Map;
 import java.util.Deque;
@@ -16,10 +19,11 @@ import java.util.concurrent.ConcurrentHashMap;
  * @date 2023/7/20
  */
 @Slf4j
-public abstract class ErnieBotTurboClient extends FullClient {
+@Service
+public class ErnieBotTurboClient extends FullClient {
 
-    protected ErnieBotTurboClient() {
-    }
+    @Resource
+    private WenXinProperties wenXinProperties;
 
     private String accessToken = null;
     private static final String TAG = "Ernie-Bot-Turbo-Client";
@@ -27,7 +31,9 @@ public abstract class ErnieBotTurboClient extends FullClient {
 
     private static Map<String, Deque<Message>> TURBO_MESSAGES_HISTORY_MAP = new ConcurrentHashMap<>();
 
-    protected abstract String getAccessToken();
+    private String getAccessToken() {
+        return wenXinProperties.getAccessToken();
+    }
 
     @Override
     public String getCustomAccessToken() {

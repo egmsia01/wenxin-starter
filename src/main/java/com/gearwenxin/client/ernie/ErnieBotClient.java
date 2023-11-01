@@ -2,6 +2,7 @@ package com.gearwenxin.client.ernie;
 
 import com.gearwenxin.client.base.BaseClient;
 import com.gearwenxin.common.*;
+import com.gearwenxin.config.WenXinProperties;
 import com.gearwenxin.exception.WenXinException;
 import com.gearwenxin.entity.chatmodel.ChatErnieRequest;
 import com.gearwenxin.entity.response.ChatResponse;
@@ -10,8 +11,10 @@ import com.gearwenxin.entity.request.ErnieRequest;
 import com.gearwenxin.common.ChatUtils;
 import com.gearwenxin.model.BaseBot;
 import com.gearwenxin.model.chat.ContBot;
+import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.util.function.Tuples;
@@ -28,10 +31,11 @@ import static com.gearwenxin.common.WenXinUtils.*;
  * @date 2023/7/20
  */
 @Slf4j
-public abstract class ErnieBotClient extends BaseClient implements ContBot<ChatErnieRequest>, BaseBot {
+@Service
+public class ErnieBotClient extends BaseClient implements ContBot<ChatErnieRequest>, BaseBot {
 
-    protected ErnieBotClient() {
-    }
+    @Resource
+    private WenXinProperties wenXinProperties;
 
     private String accessToken = null;
     private static final String TAG = "ErnieBotClient";
@@ -40,7 +44,9 @@ public abstract class ErnieBotClient extends BaseClient implements ContBot<ChatE
 
     private static final String URL = Constant.ERNIE_BOT_URL;
 
-    protected abstract String getAccessToken();
+    private String getAccessToken() {
+        return wenXinProperties.getAccessToken();
+    }
 
     @Override
     public String getTag() {
