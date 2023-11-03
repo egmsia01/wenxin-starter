@@ -110,6 +110,12 @@ public class WenXinUtils {
         }
     }
 
+    public static void assertNotBlankMono(String str, String message) {
+        if (StringUtils.isBlank(str)) {
+            throw new WenXinException(ErrorCode.PARAMS_ERROR, message);
+        }
+    }
+
     public static void assertNotBlank(String message, String... strings) {
         for (String str : strings) {
             if (StringUtils.isBlank(str)) {
