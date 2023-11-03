@@ -38,7 +38,7 @@ public class CommonSubscriber implements Subscriber<ChatResponse>, Disposable {
     @Override
     public void onSubscribe(Subscription subscription) {
         this.subscription = subscription;
-        subscription.request(1);
+        subscription.request(15);
         log.debug("onSubscribe");
     }
 
@@ -55,7 +55,7 @@ public class CommonSubscriber implements Subscriber<ChatResponse>, Disposable {
         if (response.getResult() != null) {
             joiner.add(response.getResult());
         }
-        subscription.request(1);
+        subscription.request(15);
         emitter.next(response);
     }
 
@@ -65,7 +65,7 @@ public class CommonSubscriber implements Subscriber<ChatResponse>, Disposable {
             return;
         }
 
-        log.debug("onError");
+        log.error("onError");
         emitter.error(throwable);
     }
 
@@ -79,6 +79,7 @@ public class CommonSubscriber implements Subscriber<ChatResponse>, Disposable {
         if (StringUtils.isNotBlank(result)) {
             Message message = buildAssistantMessage(result);
             WenXinUtils.offerMessage(messagesHistory, message);
+            log.debug("offerMessage onComplete");
         }
         emitter.complete();
     }
