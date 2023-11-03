@@ -57,7 +57,7 @@ public abstract class FullClient extends BaseClient implements ContBot<ChatBaseR
         return Flux.from(chatContProcess(chatBaseRequest, msgUid, true));
     }
 
-    public Publisher<ChatResponse> chatContProcess(ChatBaseRequest chatBaseRequest, String msgUid, boolean stream) {
+    private Publisher<ChatResponse> chatContProcess(ChatBaseRequest chatBaseRequest, String msgUid, boolean stream) {
         return Mono.justOrEmpty(chatBaseRequest)
                 .filter(request -> StringUtils.isNotBlank(msgUid))
                 .switchIfEmpty(Mono.error(() -> new WenXinException(ErrorCode.PARAMS_ERROR)))

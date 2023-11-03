@@ -3,10 +3,7 @@ package com.gearwenxin.entity.chatmodel;
 import com.gearwenxin.common.ErrorCode;
 import com.gearwenxin.entity.FunctionInfo;
 import com.gearwenxin.exception.WenXinException;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
