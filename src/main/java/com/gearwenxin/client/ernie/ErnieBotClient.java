@@ -3,8 +3,6 @@ package com.gearwenxin.client.ernie;
 import com.gearwenxin.client.base.BaseClient;
 import com.gearwenxin.common.*;
 import com.gearwenxin.config.WenXinProperties;
-import com.gearwenxin.entity.BaseRequest;
-import com.gearwenxin.entity.chatmodel.ChatBaseRequest;
 import com.gearwenxin.entity.request.ErnieRequest;
 import com.gearwenxin.exception.WenXinException;
 import com.gearwenxin.entity.chatmodel.ChatErnieRequest;
