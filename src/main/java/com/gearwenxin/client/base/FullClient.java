@@ -41,36 +41,10 @@ public abstract class FullClient extends BaseClient implements ContBot<ChatBaseR
                 return Mono.error(new WenXinException(ErrorCode.PARAMS_ERROR, "content or msgUid is null"));
             }
 
-            ChatBaseRequest chatBaseRequest = ChatBaseRequest.builder()
-                    .content(content)
-                    .build();
+            ChatBaseRequest chatBaseRequest = buildBaseRequest(content);
 
             return chatCont(chatBaseRequest, msgUid);
         });
-    }
-
-    @Override
-    public Mono<ChatResponse> chatCont(ChatBaseRequest chatBaseRequest, String msgUid) {
-        return Mono.justOrEmpty(chatBaseRequest)
-                .filter(request -> StringUtils.isNotBlank(msgUid))
-                .switchIfEmpty(Mono.error(() -> new WenXinException(ErrorCode.PARAMS_ERROR)))
-                .doOnNext(ChatBaseRequest::validSelf)
-                .flatMap(request -> {
-                    Deque<Message> messagesHistory = getMessageHistoryMap().computeIfAbsent(
-                            msgUid, key -> new LinkedList<>()
-                    );
-
-                    Message message = WenXinUtils.buildUserMessage(request.getContent());
-                    WenXinUtils.offerMessage(messagesHistory, message);
-
-                    BaseRequest baseRequest = ConvertUtils.toBaseRequest(request)
-                            .messages(messagesHistory)
-                            .build();
-
-                    log.info("{}-contRequest => {}", getTag(), baseRequest.toString());
-
-                    return ChatUtils.historyMono(getURL(), getCustomAccessToken(), baseRequest, messagesHistory);
-                });
     }
 
     @Override
@@ -80,37 +54,46 @@ public abstract class FullClient extends BaseClient implements ContBot<ChatBaseR
                 return Flux.error(new WenXinException(ErrorCode.PARAMS_ERROR, "content or msgUid is null"));
             }
 
-            ChatBaseRequest chatBaseRequest = ChatBaseRequest.builder()
-                    .content(content)
-                    .build();
+            ChatBaseRequest chatBaseRequest = buildBaseRequest(content);
 
             return chatContOfStream(chatBaseRequest, msgUid);
         });
     }
 
     @Override
-    public Flux<ChatResponse> chatContOfStream(ChatBaseRequest chatBaseRequest, String msgUid) {
-        return Mono.justOrEmpty(chatBaseRequest)
-                .filter(request -> StringUtils.isNotBlank(msgUid))
-                .switchIfEmpty(Mono.error(() -> new WenXinException(ErrorCode.PARAMS_ERROR)))
-                .doOnNext(ChatBaseRequest::validSelf)
-                .flatMapMany(request -> {
-                    Deque<Message> messagesHistory = getMessageHistoryMap().computeIfAbsent(
-                            msgUid, key -> new LinkedList<>()
-                    );
-
-                    Message message = WenXinUtils.buildUserMessage(request.getContent());
-                    WenXinUtils.offerMessage(messagesHistory, message);
-
-                    BaseRequest baseRequest = ConvertUtils.toBaseRequest(request)
-                            .messages(messagesHistory)
-                            .stream(true)
-                            .build();
-
-                    log.info("{}-contRequest-stream => {}", getTag(), baseRequest.toString());
-
-                    return ChatUtils.historyFlux(getURL(), getCustomAccessToken(), baseRequest, messagesHistory);
-                });
+    public Mono<ChatResponse> chatCont(ChatBaseRequest chatBaseRequest, String msgUid) {
+        return Mono.from(chatContProcess(chatBaseRequest, msgUid, false));
     }
+
+    @Override
+    public Flux<ChatResponse> chatContOfStream(ChatBaseRequest chatBaseRequest, String msgUid) {
+        return Flux.from(chatContProcess(chatBaseRequest, msgUid, true));
+    }
+
+    private Publisher<ChatResponse> chatContProcess(ChatBaseRequest chatBaseRequest, String msgUid, boolean stream) {
+        return Mono.justOrEmpty(chatBaseRequest).filter(request -> StringUtils.isNotBlank(msgUid)).switchIfEmpty(Mono.error(() -> new WenXinException(ErrorCode.PARAMS_ERROR))).doOnNext(ChatBaseRequest::validSelf).flatMapMany(request -> {
+            Deque<Message> messagesHistory = getMessageHistoryMap().computeIfAbsent(msgUid, key -> new LinkedList<>());
+
+            Message message = WenXinUtils.buildUserMessage(request.getContent());
+            WenXinUtils.offerMessage(messagesHistory, message);
+
+            BaseRequest baseRequest = ConvertUtils.toBaseRequest(request).messages(messagesHistory).stream(stream).build();
+
+            String logMessage = stream ? "{}-contRequest-stream => {}" : "{}-contRequest => {}";
+            log.info(logMessage, getTag(), baseRequest);
+
+            if (stream) {
+                return ChatUtils.historyFlux(getURL(), getCustomAccessToken(), baseRequest, messagesHistory);
+            } else {
+                return ChatUtils.historyMono(getURL(), getCustomAccessToken(), baseRequest, messagesHistory);
+            }
+        });
+    }
+
+    private ChatBaseRequest buildBaseRequest(String content) {
+        return ChatBaseRequest.builder().content(content).build();
+    }
+
+    private void
 
 }
