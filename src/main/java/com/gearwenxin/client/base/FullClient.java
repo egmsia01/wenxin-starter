@@ -1,12 +1,16 @@
 package com.gearwenxin.client.base;
 
+import com.gearwenxin.client.ernie.ErnieBotClient;
 import com.gearwenxin.common.*;
 import com.gearwenxin.entity.BaseRequest;
 import com.gearwenxin.entity.Message;
 import com.gearwenxin.entity.chatmodel.ChatBaseRequest;
+import com.gearwenxin.entity.chatmodel.ChatErnieRequest;
+import com.gearwenxin.entity.request.ErnieRequest;
 import com.gearwenxin.entity.response.ChatResponse;
 import com.gearwenxin.exception.WenXinException;
 import com.gearwenxin.model.chat.ContBot;
+import com.gearwenxin.service.ChatRequestProcessor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.reactivestreams.Publisher;
@@ -96,5 +100,44 @@ public abstract class FullClient extends BaseClient implements ContBot<ChatBaseR
     private ChatBaseRequest buildBaseRequest(String content) {
         return ChatBaseRequest.builder().content(content).build();
     }
+
+    private <R extends ChatBaseRequest> Publisher<ChatResponse> processRequestR(R requestR, String msgUid, boolean stream, ChatRequestProcessor<R> processor) {
+        return Mono.justOrEmpty(requestR)
+                .filter(request -> StringUtils.isNotBlank(msgUid))
+                .switchIfEmpty(Mono.error(() -> new WenXinException(ErrorCode.PARAMS_ERROR)))
+                .doOnNext(request -> {
+                    if (request.getClass() == ChatBaseRequest.class) {
+                        ChatBaseRequest.validSelf(request);
+                    } else if (request.getClass() == ChatErnieRequest.class) {
+                        ErnieBotClient.validChatErnieRequest((ChatErnieRequest) request);
+                    }
+                })
+                .flatMapMany(request -> {
+                    Deque<Message> messagesHistory = getMessageHistoryMap().computeIfAbsent(
+                            msgUid, key -> new LinkedList<>()
+                    );
+                    Message message = WenXinUtils.buildUserMessage(request.getContent());
+                    WenXinUtils.offerMessage(messagesHistory, message);
+
+                    Object baseRequest = null;
+                    if (request.getClass() == ChatBaseRequest.class) {
+                        baseRequest = ConvertUtils.toBaseRequest(request)
+                                .messages(messagesHistory)
+                                .stream(stream)
+                                .build();
+                    } else if (request.getClass() == ChatErnieRequest.class) {
+                        baseRequest = ConvertUtils.toErnieRequest((ChatErnieRequest) request)
+                                .messages(messagesHistory)
+                                .stream(stream)
+                                .build();
+                    }
+
+                    String logMessage = stream ? "{}-contRequest-stream => {}" : "{}-contRequest => {}";
+                    log.info(logMessage, getTag(), baseRequest);
+
+                    return processor.process(request, msgUid, stream);
+                });
+    }
+
 
 }
