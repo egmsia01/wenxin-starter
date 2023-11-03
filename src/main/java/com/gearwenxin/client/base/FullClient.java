@@ -9,6 +9,7 @@ import com.gearwenxin.exception.WenXinException;
 import com.gearwenxin.model.chat.ContBot;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.reactivestreams.Publisher;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -83,7 +84,7 @@ public abstract class FullClient extends BaseClient implements ContBot<ChatBaseR
                     .content(content)
                     .build();
 
-            return chatCont(chatBaseRequest, msgUid);
+            return chatContOfStream(chatBaseRequest, msgUid);
         });
     }
 
