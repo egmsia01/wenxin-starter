@@ -16,6 +16,7 @@ import reactor.core.publisher.Mono;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Deque;
+import java.util.function.BiFunction;
 
 import static com.gearwenxin.common.WenXinUtils.assertNotBlankMono;
 
@@ -38,12 +39,12 @@ public abstract class FullClient extends BaseClient implements ContBot<ChatBaseR
 
     @Override
     public Mono<ChatResponse> chatCont(String content, String msgUid) {
-        return Mono.defer(() -> chatCont(validAndBuildRequest(content, msgUid), msgUid));
+        return Mono.defer(() -> Mono.from(chatContFunc(content, msgUid, this::chatCont)));
     }
 
     @Override
     public Flux<ChatResponse> chatContOfStream(String content, String msgUid) {
-        return Flux.defer(() -> chatContOfStream(validAndBuildRequest(content, msgUid), msgUid));
+        return Flux.defer(() -> chatContFunc(content, msgUid, this::chatContOfStream));
     }
 
     @Override
@@ -56,7 +57,7 @@ public abstract class FullClient extends BaseClient implements ContBot<ChatBaseR
         return Flux.from(chatContProcess(chatBaseRequest, msgUid, true));
     }
 
-    private Publisher<ChatResponse> chatContProcess(ChatBaseRequest chatBaseRequest, String msgUid, boolean stream) {
+    public Publisher<ChatResponse> chatContProcess(ChatBaseRequest chatBaseRequest, String msgUid, boolean stream) {
         return Mono.justOrEmpty(chatBaseRequest)
                 .filter(request -> StringUtils.isNotBlank(msgUid))
                 .switchIfEmpty(Mono.error(() -> new WenXinException(ErrorCode.PARAMS_ERROR)))
@@ -85,10 +86,14 @@ public abstract class FullClient extends BaseClient implements ContBot<ChatBaseR
                 });
     }
 
-    private ChatBaseRequest validAndBuildRequest(String content, String msgUid) {
+    private Publisher<ChatResponse> chatContFunc(String content, String msgUid, BiFunction<ChatBaseRequest, String, Publisher<ChatResponse>> chatFunction) {
         assertNotBlankMono(content, "content is null or blank");
         assertNotBlankMono(msgUid, "msgUid is null or blank");
 
+        return chatFunction.apply(buildBaseRequest(content), msgUid);
+    }
+
+    private ChatBaseRequest buildBaseRequest(String content) {
         return ChatBaseRequest.builder().content(content).build();
     }
 
