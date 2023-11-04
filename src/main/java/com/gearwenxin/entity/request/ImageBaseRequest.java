@@ -5,6 +5,7 @@ import com.gearwenxin.common.ErrorCode;
 import com.gearwenxin.entity.enums.SamplerType;
 import com.gearwenxin.exception.WenXinException;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
@@ -14,6 +15,7 @@ import org.apache.commons.lang3.StringUtils;
  * @date 2023/8/3
  */
 @Data
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class ImageBaseRequest {
