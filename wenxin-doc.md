@@ -45,14 +45,14 @@ ErnieBot参数建议参考 [官方文档](https://cloud.baidu.com/doc/WENXINWORK
 
 ## 其余对话模型
 
-ChatBaseRequest：BLOOMZ-7B模型共同的参数配置类
+**ChatBaseRequest**：其余模型共同的参数配置类
 
 | 变量名  | 类型   | 说明                                                         |
 | ------- | ------ | ------------------------------------------------------------ |
 | userId  | String | 表示最终用户的唯一标识符，可以监视和检测滥用行为，防止接口恶意调用 |
 | content | String | 聊天文本信息。单个`content` 长度不能超过2000个字符；连续对话中，若 `content` 总长度大于2000字符，系统会依次遗忘最早的历史会话，直到 `content` 的总长度不超过2000个字符。 |
 
-响应类 `ChatResponse` ，同 **ErnieBot**。
+响应类 `ChatResponse` ，同 **ErnieBot**系列。
 
 ## 文生图
 
