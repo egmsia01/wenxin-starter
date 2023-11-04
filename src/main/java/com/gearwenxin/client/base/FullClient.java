@@ -40,22 +40,23 @@ public abstract class FullClient extends BaseClient implements ContBot<ChatBaseR
 
     @Override
     public Mono<ChatResponse> chatCont(String content, String msgUid) {
-        return Mono.defer(() -> Mono.from(chatContFunc(content, msgUid, this::chatCont)));
+        return Mono.from(this.chatContFunc(content, msgUid, this::chatCont));
     }
 
     @Override
     public Flux<ChatResponse> chatContOfStream(String content, String msgUid) {
-        return Flux.defer(() -> Flux.from(chatContFunc(content, msgUid, this::chatContOfStream)));
+        return Flux.from(this.chatContFunc(content, msgUid, this::chatContOfStream));
     }
 
     @Override
-    public <T extends ChatBaseRequest> Mono<ChatResponse> chatCont(T chatBaseRequest, String msgUid) {
-        return Mono.from(chatContProcess(chatBaseRequest, msgUid, false));
+    public <T extends ChatBaseRequest> Mono<ChatResponse> chatCont(T chatRequest, String msgUid) {
+        return Mono.from(chatContProcess(chatRequest, msgUid, false));
     }
 
     @Override
-    public <T extends ChatBaseRequest> Flux<ChatResponse> chatContOfStream(T chatBaseRequest, String msgUid) {
-        return Flux.from(chatContProcess(chatBaseRequest, msgUid, true));
+    public <T extends ChatBaseRequest> Flux<ChatResponse> chatContOfStream(T chatRequest, String msgUid) {
+        log.info("chatContOfStream(T chatRequest, String msgUid)");
+        return Flux.from(chatContProcess(chatRequest, msgUid, true));
     }
 
     public <T extends ChatBaseRequest> Publisher<ChatResponse> chatContProcess(T requestT, String msgUid, boolean stream) {

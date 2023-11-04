@@ -18,6 +18,8 @@ import org.apache.commons.lang3.StringUtils;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import static com.gearwenxin.common.Constant.MAX_CONTENT_LENGTH;
+
 /**
  * @author Ge Mingjia
  * @date 2023/8/4
@@ -93,7 +95,7 @@ public abstract class BaseClient implements SingleBot, BaseBot {
             default -> {
                 return Mono.just(chatBaseRequest)
                         .switchIfEmpty(Mono.error(() -> new WenXinException(ErrorCode.PARAMS_ERROR)))
-                        .doOnNext(ChatBaseRequest::validSelf)
+                        .doOnNext(BaseClient::validChatRequest)
                         .map(ConvertUtils::toBaseRequest)
                         .map(BaseRequest.BaseRequestBuilder::build)
                         .doOnNext(baseRequest -> log.info("{}-singleRequest => {}", getTag(), baseRequest.toString()))
@@ -121,7 +123,7 @@ public abstract class BaseClient implements SingleBot, BaseBot {
             default -> {
                 return Mono.just(chatBaseRequest)
                         .switchIfEmpty(Mono.error(() -> new WenXinException(ErrorCode.PARAMS_ERROR)))
-                        .doOnNext(ChatBaseRequest::validSelf)
+                        .doOnNext(BaseClient::validChatRequest)
                         .map(ConvertUtils::toBaseRequest)
                         .map(builder -> builder.stream(true).build())
                         .doOnNext(baseRequest -> log.info("{}-singleRequest-stream => {}", getTag(), baseRequest.toString()))
@@ -131,6 +133,18 @@ public abstract class BaseClient implements SingleBot, BaseBot {
             }
         }
 
+    }
+
+    public static void validChatRequest(ChatBaseRequest chatBaseRequest) {
+
+        // 检查content不为空
+        if (StringUtils.isBlank(chatBaseRequest.getContent())) {
+            throw new WenXinException(ErrorCode.PARAMS_ERROR, "content cannot be empty");
+        }
+        // 检查单个content长度
+        if (chatBaseRequest.getContent().length() > MAX_CONTENT_LENGTH) {
+            throw new WenXinException(ErrorCode.PARAMS_ERROR, "content's length cannot be more than 2000");
+        }
     }
 
 }

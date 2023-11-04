@@ -3,9 +3,6 @@ package com.gearwenxin.client.ernie;
 import com.gearwenxin.common.*;
 import com.gearwenxin.config.WenXinProperties;
 import com.gearwenxin.entity.Message;
-import com.gearwenxin.entity.chatmodel.ChatErnieRequest;
-import com.gearwenxin.model.BaseBot;
-import com.gearwenxin.model.chat.ContBot;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -20,7 +17,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 @Slf4j
 @Service
-public class ErnieBot4Client extends ErnieBotClient implements ContBot<ChatErnieRequest>, BaseBot {
+public class ErnieBot4Client extends ErnieBotClient {
 
     @Resource
     private WenXinProperties wenXinProperties;

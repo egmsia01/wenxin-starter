@@ -54,6 +54,7 @@ public class CommonSubscriber implements Subscriber<ChatResponse>, Disposable {
         }
         if (response.getResult() != null) {
             joiner.add(response.getResult());
+            log.info(response.getResult());
         }
         subscription.request(15);
         emitter.next(response);
