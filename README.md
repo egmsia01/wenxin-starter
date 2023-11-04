@@ -44,11 +44,14 @@ SpringBoot 3.x中，如遇到`A component required a bean of type xxx that could
 ```
 
 ```text
-0.0.9.1版本更改了历史消息的数据结构，由Queue更换为Deque，如有使用消息导入导出功能请注意修改。
-Deque兼容Queue的方法，您只需全局替换“Queue”为“Deque”即可，其余无需做任何修改。
+Client类型 -> 参数类 -> 响应类：
 
-除"ErnieBot"与"Prompt"外，其余的对话型模型接收参数类统一为 ChatBaseRequest，响应类为 ChatResponse
-图片生成型模型接收参数类统一为 ChatImageRequest，响应类为 ImageResponse，内容为base64编码的图片。
+ErnieBotClient、ErnieBot4Client、ErnieBotTurboClient -> ChatErnieRequest -> ChatResponse
+其他对话Client -> ChatBaseRequest -> ChatResponse
+PromptBotClient -> ChatPromptRequest -> PromptResponse
+文生图类Client -> ImageBaseRequest -> ImageResponse
+
+详见文档或文心一言官方文档。
 ```
 
 ### 1、添加依赖
@@ -148,7 +151,7 @@ public class ChatController {
             .prompt("一个头发中分并且穿着背带裤的人")
             // 大小
             .size("1024x1024")
-            // 反省提示词（不包含什么）
+            // 反向提示词（不包含什么）
             .negativePrompt("鸡")
             // 生成图片数量（1-4）
             .n(1)
@@ -188,6 +191,7 @@ v0.0.9.5 - Canary
 
 v0.0.9.1
 - 完全的响应式风格。
+- 更改历史消息的数据结构，Queue -> Deque，如有使用消息导入导出功能请注意修改。
 - 修复 快速连续请求导致的npe问题 ( #8 )。
 - 修复 响应前再次请求导致的消息格式错误( #10 )。
 - 修复 api_key配置错误导致的异常。
