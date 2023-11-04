@@ -58,13 +58,13 @@ Deque兼容Queue的方法，您只需全局替换“Queue”为“Deque”即可
 <dependency>
   <groupId>io.github.gemingjia</groupId>
   <artifactId>gear-wenxinworkshop-starter</artifactId>
-  <version>0.0.9.7</version>
+  <version>0.0.9.8</version>
 </dependency>
 ```
 - Gradle
 ```gradle
 dependencies {
-  implementation 'io.github.gemingjia:gear-wenxinworkshop-starter:0.0.9.7' 
+  implementation 'io.github.gemingjia:gear-wenxinworkshop-starter:0.0.9.8' 
 }
 ```
 
