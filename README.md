@@ -95,7 +95,9 @@ public class ChatController {
   // 要调用的模型的客户端（示例为文心4.0）
   @Resource
   private ErnieBot4Client ernieBot4Client;
-  
+  @Resource
+  private StableDiffusionXLClient stableDiffusionXLClient;
+
   // 单次对话
   @PostMapping("/chat")
   public Mono<ChatResponse> chatSingle(String msg) {
@@ -136,6 +138,28 @@ public class ChatController {
     promptRequest.setParamMap(map);
     
     return promptBotClient.chatPrompt(promptRequest);
+  }
+
+  // 文生图
+  @PostMapping("/image")
+  public Mono<ImageResponse> chatImage() {
+    ImageBaseRequest imageBaseRequest = ImageBaseRequest.builder()
+            // 提示词
+            .prompt("一个头发中分并且穿着背带裤的人")
+            // 大小
+            .size("1024x1024")
+            // 反省提示词（不包含什么）
+            .negativePrompt("鸡")
+            // 生成图片数量（1-4）
+            .n(1)
+            // 迭代轮次（10-50）
+            .steps(20)
+            // 采样方式
+            .samplerIndex(SamplerType.Euler_A.getValue())
+            .userId("1001")
+            .build();
+
+    return stableDiffusionXLClient.chatImage(imageBaseRequest);
   }
   
 }

@@ -54,6 +54,12 @@ ChatBaseRequest：BLOOMZ-7B模型共同的参数配置类
 
 响应类 `ChatResponse` ，同 **ErnieBot**。
 
+## 文生图
+
+详见下方使用示例。
+
+
+
 ## Prompt模板
 
 **ChatPromptRequest**：**Prompt** 模板参数配置类
@@ -277,6 +283,92 @@ public class ChatController {
  
 }
 ```
+
+
+
+## 文生图（Stable-Diffusion-XL）
+
+```java
+  // 文生图
+@PostMapping("/image")
+public Mono<ImageResponse> chatImage() {
+    ImageBaseRequest imageBaseRequest = ImageBaseRequest.builder()
+            // 提示词
+            .prompt("一个头发中分并且穿着背带裤的人")
+            // 大小
+            .size("1024x1024")
+            // 反省提示词（不包含什么）
+            .negativePrompt("鸡")
+            // 生成图片数量（1-4）
+            .n(1)
+            // 迭代轮次（10-50）
+            .steps(20)
+            // 采样方式
+            .samplerIndex(SamplerType.Euler_A.getValue())
+            .userId("1001")
+            .build();
+
+    return stableDiffusionXLClient.chatImage(imageBaseRequest);
+}
+
+// 文生图响应类
+public class ImageResponse {
+    /**
+     * 请求的ID。
+     */
+    private String id;
+
+    /**
+     * 回包类型。固定值为 "image"，表示图像生成返回。
+     */
+    private String object;
+
+    /**
+     * 时间戳，表示生成响应的时间。
+     */
+    private int created;
+
+    /**
+     * 生成图片结果列表。
+     */
+    private List<ImageData> data;
+
+    /**
+     * token统计信息，token数 = 汉字数 + 单词数 * 1.3 （仅为估算逻辑）。
+     */
+    private Usage usage;
+
+    /**
+     * 错误代码，正常为 null
+     */
+    private Integer errorCode;
+
+    /**
+     * 错误信息，正常为 null
+     */
+    private String errorMsg;
+}
+
+public class ImageData {
+
+    /**
+     * 固定值 "image"，表示图像。
+     */
+    private String object;
+
+    /**
+     * 图片base64编码内容。
+     */
+    private String b64Image;
+
+    /**
+     * 图片序号。
+     */
+    private int index;
+}
+```
+
+
 
 ## Prompt模板
 
