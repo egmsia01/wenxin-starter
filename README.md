@@ -148,7 +148,7 @@ public class ChatController {
             .prompt("一个头发中分并且穿着背带裤的人")
             // 大小
             .size("1024x1024")
-            // 反省提示词（不包含什么）
+            // 反向提示词（不包含什么）
             .negativePrompt("鸡")
             // 生成图片数量（1-4）
             .n(1)
