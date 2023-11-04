@@ -32,16 +32,4 @@ public class ChatBaseRequest implements Serializable {
      */
     private String content;
 
-    public static void validSelf(ChatBaseRequest chatBaseRequest) {
-
-        // 检查content不为空
-        if (StringUtils.isBlank(chatBaseRequest.getContent())) {
-            throw new WenXinException(ErrorCode.PARAMS_ERROR, "content cannot be empty");
-        }
-        // 检查单个content长度
-        if (chatBaseRequest.getContent().length() > MAX_CONTENT_LENGTH) {
-            throw new WenXinException(ErrorCode.PARAMS_ERROR, "content's length cannot be more than 2000");
-        }
-    }
-
 }

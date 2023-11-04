@@ -1,5 +1,6 @@
 package com.gearwenxin.model.chat;
 
+import com.gearwenxin.entity.chatmodel.ChatBaseRequest;
 import com.gearwenxin.entity.response.ChatResponse;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -38,7 +39,7 @@ public interface ContBot<T> {
      * @param msgUid      对话唯一识别码
      * @return ChatResponse 响应实体类
      */
-    Mono<ChatResponse> chatCont(T chatRequest, String msgUid);
+    <T extends ChatBaseRequest> Mono<ChatResponse> chatCont(T chatRequest, String msgUid);
 
     /**
      * 多轮对话，有上下文记忆，支持参数配置
@@ -48,6 +49,6 @@ public interface ContBot<T> {
      * @param msgUid      对话唯一识别码
      * @return ChatResponse 响应实体类
      */
-    Flux<ChatResponse> chatContOfStream(T chatRequest, String msgUid);
+    <T extends ChatBaseRequest> Flux<ChatResponse> chatContOfStream(T chatRequest, String msgUid);
 
 }

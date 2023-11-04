@@ -2,15 +2,12 @@ package com.gearwenxin.client.base;
 
 import com.gearwenxin.client.ernie.ErnieBotClient;
 import com.gearwenxin.common.*;
-import com.gearwenxin.entity.BaseRequest;
 import com.gearwenxin.entity.Message;
 import com.gearwenxin.entity.chatmodel.ChatBaseRequest;
 import com.gearwenxin.entity.chatmodel.ChatErnieRequest;
-import com.gearwenxin.entity.request.ErnieRequest;
 import com.gearwenxin.entity.response.ChatResponse;
 import com.gearwenxin.exception.WenXinException;
 import com.gearwenxin.model.chat.ContBot;
-import com.gearwenxin.service.ChatRequestProcessor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.reactivestreams.Publisher;
@@ -48,96 +45,80 @@ public abstract class FullClient extends BaseClient implements ContBot<ChatBaseR
 
     @Override
     public Flux<ChatResponse> chatContOfStream(String content, String msgUid) {
-        return Flux.defer(() -> chatContFunc(content, msgUid, this::chatContOfStream));
+        return Flux.defer(() -> Flux.from(chatContFunc(content, msgUid, this::chatContOfStream)));
     }
 
     @Override
-    public Mono<ChatResponse> chatCont(ChatBaseRequest chatBaseRequest, String msgUid) {
+    public <T extends ChatBaseRequest> Mono<ChatResponse> chatCont(T chatBaseRequest, String msgUid) {
         return Mono.from(chatContProcess(chatBaseRequest, msgUid, false));
     }
 
     @Override
-    public Flux<ChatResponse> chatContOfStream(ChatBaseRequest chatBaseRequest, String msgUid) {
+    public <T extends ChatBaseRequest> Flux<ChatResponse> chatContOfStream(T chatBaseRequest, String msgUid) {
         return Flux.from(chatContProcess(chatBaseRequest, msgUid, true));
     }
 
-    private Publisher<ChatResponse> chatContProcess(ChatBaseRequest chatBaseRequest, String msgUid, boolean stream) {
-        return Mono.justOrEmpty(chatBaseRequest)
-                .filter(request -> StringUtils.isNotBlank(msgUid))
+    public <T extends ChatBaseRequest> Publisher<ChatResponse> chatContProcess(T requestT, String msgUid, boolean stream) {
+        return Mono.justOrEmpty(requestT)
+                .filter(reqT -> StringUtils.isNotBlank(msgUid))
                 .switchIfEmpty(Mono.error(() -> new WenXinException(ErrorCode.PARAMS_ERROR)))
-                .doOnNext(ChatBaseRequest::validSelf)
-                .flatMapMany(request -> {
+                .doOnNext(reqT -> validRequest(requestT))
+                .flatMapMany(reqT -> {
                     Deque<Message> messagesHistory = getMessageHistoryMap().computeIfAbsent(
                             msgUid, key -> new LinkedList<>()
                     );
-
-                    Message message = WenXinUtils.buildUserMessage(request.getContent());
+                    Message message = WenXinUtils.buildUserMessage(reqT.getContent());
                     WenXinUtils.offerMessage(messagesHistory, message);
 
-                    BaseRequest baseRequest = ConvertUtils.toBaseRequest(request)
-                            .messages(messagesHistory)
-                            .stream(stream)
-                            .build();
+                    Object targetRequest = buildTargetRequest(messagesHistory, stream, reqT);
 
                     String logMessage = stream ? "{}-contRequest-stream => {}" : "{}-contRequest => {}";
-                    log.info(logMessage, getTag(), baseRequest);
+                    log.info(logMessage, getTag(), targetRequest);
 
-                    if (stream) {
-                        return ChatUtils.historyFlux(getURL(), getCustomAccessToken(), baseRequest, messagesHistory);
-                    } else {
-                        return ChatUtils.historyMono(getURL(), getCustomAccessToken(), baseRequest, messagesHistory);
-                    }
+                    return targetHistoryReturn(stream, targetRequest, messagesHistory);
                 });
+    }
+
+    public Publisher<ChatResponse> targetHistoryReturn(boolean stream, Object request, Deque<Message> messagesHistory) {
+        return stream ? ChatUtils.historyFlux(getURL(), getCustomAccessToken(), request, messagesHistory) :
+                ChatUtils.historyMono(getURL(), getCustomAccessToken(), request, messagesHistory);
+    }
+
+    public <T extends ChatBaseRequest> Object buildTargetRequest(Deque<Message> messagesHistory, boolean stream, T request) {
+        Object targetRequest = null;
+        if (request.getClass() == ChatBaseRequest.class) {
+            targetRequest = ConvertUtils.toBaseRequest(request)
+                    .messages(messagesHistory)
+                    .stream(stream)
+                    .build();
+        } else if (request.getClass() == ChatErnieRequest.class) {
+            targetRequest = ConvertUtils.toErnieRequest((ChatErnieRequest) request)
+                    .messages(messagesHistory)
+                    .stream(stream)
+                    .build();
+        }
+        return targetRequest;
+    }
+
+    public <T extends ChatBaseRequest> void validRequest(T request) {
+        if (request.getClass() == ChatBaseRequest.class) {
+            log.info("ChatBaseRequest.class");
+            BaseClient.validChatRequest(request);
+        } else if (request.getClass() == ChatErnieRequest.class) {
+            log.info("ChatErnieRequest.class");
+            ErnieBotClient.validChatErnieRequest((ChatErnieRequest) request);
+        }
     }
 
     private Publisher<ChatResponse> chatContFunc(String content, String msgUid, BiFunction<ChatBaseRequest, String, Publisher<ChatResponse>> chatFunction) {
         assertNotBlankMono(content, "content is null or blank");
         assertNotBlankMono(msgUid, "msgUid is null or blank");
 
-        return chatFunction.apply(buildBaseRequest(content), msgUid);
+        return chatFunction.apply(this.buildRequest(content), msgUid);
     }
 
-    private ChatBaseRequest buildBaseRequest(String content) {
+    private ChatBaseRequest buildRequest(String content) {
         return ChatBaseRequest.builder().content(content).build();
     }
-
-    private <R extends ChatBaseRequest> Publisher<ChatResponse> processRequestR(R requestR, String msgUid, boolean stream, ChatRequestProcessor<R> processor) {
-        return Mono.justOrEmpty(requestR)
-                .filter(request -> StringUtils.isNotBlank(msgUid))
-                .switchIfEmpty(Mono.error(() -> new WenXinException(ErrorCode.PARAMS_ERROR)))
-                .doOnNext(request -> {
-                    if (request.getClass() == ChatBaseRequest.class) {
-                        ChatBaseRequest.validSelf(request);
-                    } else if (request.getClass() == ChatErnieRequest.class) {
-                        ErnieBotClient.validChatErnieRequest((ChatErnieRequest) request);
-                    }
-                })
-                .flatMapMany(request -> {
-                    Deque<Message> messagesHistory = getMessageHistoryMap().computeIfAbsent(
-                            msgUid, key -> new LinkedList<>()
-                    );
-                    Message message = WenXinUtils.buildUserMessage(request.getContent());
-                    WenXinUtils.offerMessage(messagesHistory, message);
-
-                    Object baseRequest = null;
-                    if (request.getClass() == ChatBaseRequest.class) {
-                        baseRequest = ConvertUtils.toBaseRequest(request)
-                                .messages(messagesHistory)
-                                .stream(stream)
-                                .build();
-                    } else if (request.getClass() == ChatErnieRequest.class) {
-                        baseRequest = ConvertUtils.toErnieRequest((ChatErnieRequest) request)
-                                .messages(messagesHistory)
-                                .stream(stream)
-                                .build();
-                    }
-
-                    String logMessage = stream ? "{}-contRequest-stream => {}" : "{}-contRequest => {}";
-                    log.info(logMessage, getTag(), baseRequest);
-
-                    return processor.process(request, msgUid, stream);
-                });
-    }
-
 
 }
