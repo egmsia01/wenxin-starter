@@ -1,12 +1,14 @@
 # 一、前言
 
-目前支持 **ErnieBot**、**Ernie-Bot-Turbo**、**BLOOMZ-7B** 模型，以及 **Prompt模板 **。
+目前支持 **ErnieBot**、**Ernie-Bot-Turbo**、**BLOOMZ-7B** 等模型，以及 **Prompt模板 **。
 
 # 二、参数与返回值
 
 ## ErnieBot（文心一言）
 
-**ChatErnieRequest**：**ErnieBot **参数配置类
+ErnieBot参数建议参考 [官方文档](https://cloud.baidu.com/doc/WENXINWORKSHOP/s/clntwmv7t)
+
+**ChatErnieRequest**：**ErnieBot、Ernie4Bot、ErnieBotTurbo** 参数配置类
 
 | 变量名       | 类型   | 说明                                                         |
 | ------------ | ------ | ------------------------------------------------------------ |
@@ -41,10 +43,9 @@
 | totalTokens      | int  | tokens总数   |
 
 
+## 其余对话模型
 
-## Ernie-Bot-Turbo
-
-ChatTurbo7BRequest：Ernie-Bot-Turbo与BLOOMZ-7B模型共同的参数配置类
+ChatBaseRequest：BLOOMZ-7B模型共同的参数配置类
 
 | 变量名  | 类型   | 说明                                                         |
 | ------- | ------ | ------------------------------------------------------------ |
@@ -52,14 +53,6 @@ ChatTurbo7BRequest：Ernie-Bot-Turbo与BLOOMZ-7B模型共同的参数配置类
 | content | String | 聊天文本信息。单个`content` 长度不能超过2000个字符；连续对话中，若 `content` 总长度大于2000字符，系统会依次遗忘最早的历史会话，直到 `content` 的总长度不超过2000个字符。 |
 
 响应类 `ChatResponse` ，同 **ErnieBot**。
-
-
-
-## BLOOMZ-7B
-
-所有参数同 **Ernie-Bot-Turbo** 。
-
-
 
 ## Prompt模板
 
