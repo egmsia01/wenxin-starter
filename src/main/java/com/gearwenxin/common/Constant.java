@@ -38,5 +38,6 @@ public interface Constant {
     String AQUILA_CHAT_7B_URL = "https://aip.baidubce.com/rpc/2.0/ai_custom/v1/wenxinworkshop/chat/aquilachat_7b";
     String BGE_LARGE_ZH_URL = "https://aip.baidubce.com/rpc/2.0/ai_custom/v1/wenxinworkshop/embeddings/bge_large_zh";
     String BGE_LARGE_EN_URL = "https://aip.baidubce.com/rpc/2.0/ai_custom/v1/wenxinworkshop/embeddings/bge_large_en";
+    String STABLE_DIFFUSION_XL_URL = "https://aip.baidubce.com/rpc/2.0/ai_custom/v1/wenxinworkshop/text2image/sd_xl";
 
 }
