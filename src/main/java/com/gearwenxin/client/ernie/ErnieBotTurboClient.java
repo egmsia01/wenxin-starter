@@ -26,7 +26,7 @@ public class ErnieBotTurboClient extends FullClient {
     private WenXinProperties wenXinProperties;
 
     private String accessToken = null;
-    private static final String TAG = "Ernie-Bot-Turbo-Client";
+    private static final String TAG = "ErnieBotTurboClient";
     private static final String URL = Constant.ERNIE_BOT_TURBO_URL;
 
     private static Map<String, Deque<Message>> TURBO_MESSAGES_HISTORY_MAP = new ConcurrentHashMap<>();

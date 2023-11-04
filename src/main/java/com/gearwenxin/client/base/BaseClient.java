@@ -38,7 +38,7 @@ public abstract class BaseClient implements SingleBot, BaseBot {
     @Override
     public Mono<ChatResponse> chatSingle(String content) {
         switch (getTag()) {
-            case "ErnieBotClient", "ErnieBot4Client" -> {
+            case "ErnieBotClient", "ErnieBot4Client", "ErnieBotTurboClient" -> {
                 return buildBaseRequest(content)
                         .map(request -> ErnieRequest.builder().messages(request.getMessages()).build())
                         .doOnNext(request -> log.info("{}-content-singleRequest => {}", getTag(), request.toString()))
@@ -59,7 +59,7 @@ public abstract class BaseClient implements SingleBot, BaseBot {
     @Override
     public Flux<ChatResponse> chatSingleOfStream(String content) {
         switch (getTag()) {
-            case "ErnieBotClient", "ErnieBot4Client" -> {
+            case "ErnieBotClient", "ErnieBot4Client", "ErnieBotTurboClient" -> {
                 return buildBaseRequest(content)
                         .map(request -> ErnieRequest.builder().messages(request.getMessages()).stream(true).build())
                         .doOnNext(request -> log.info("{}-content-singleRequest-stream => {}", getTag(), request.toString()))
@@ -82,7 +82,7 @@ public abstract class BaseClient implements SingleBot, BaseBot {
     @Override
     public <T extends ChatBaseRequest> Mono<ChatResponse> chatSingle(T chatBaseRequest) {
         switch (getTag()) {
-            case "ErnieBotClient", "ErnieBot4Client" -> {
+            case "ErnieBotClient", "ErnieBot4Client", "ErnieBotTurboClient" -> {
                 return Mono.justOrEmpty((ChatErnieRequest) chatBaseRequest)
                         .doOnNext(ErnieBotClient::validChatErnieRequest)
                         .map(ConvertUtils::toErnieRequest)
@@ -110,7 +110,7 @@ public abstract class BaseClient implements SingleBot, BaseBot {
     @Override
     public <T extends ChatBaseRequest> Flux<ChatResponse> chatSingleOfStream(T chatBaseRequest) {
         switch (getTag()) {
-            case "ErnieBotClient", "ErnieBot4Client" -> {
+            case "ErnieBotClient", "ErnieBot4Client", "ErnieBotTurboClient" -> {
                 return Mono.justOrEmpty((ChatErnieRequest) chatBaseRequest)
                         .doOnNext(ErnieBotClient::validChatErnieRequest)
                         .map(ConvertUtils::toErnieRequest)
