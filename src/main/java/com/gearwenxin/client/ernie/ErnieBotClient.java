@@ -3,6 +3,7 @@ package com.gearwenxin.client.ernie;
 import com.gearwenxin.client.base.FullClient;
 import com.gearwenxin.common.*;
 import com.gearwenxin.config.WenXinProperties;
+import com.gearwenxin.entity.chatmodel.ChatBaseRequest;
 import com.gearwenxin.exception.WenXinException;
 import com.gearwenxin.entity.chatmodel.ChatErnieRequest;
 import com.gearwenxin.entity.response.ChatResponse;
@@ -18,6 +19,7 @@ import reactor.core.publisher.Mono;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiFunction;
+import java.util.function.Function;
 
 import static com.gearwenxin.common.Constant.MAX_CONTENT_LENGTH;
 import static com.gearwenxin.common.Constant.MAX_SYSTEM_LENGTH;
@@ -74,6 +76,16 @@ public class ErnieBotClient extends FullClient {
     }
 
     @Override
+    public Mono<ChatResponse> chatSingle(String content) {
+        return Mono.from(this.chatSingleFunc(content, this::chatSingle));
+    }
+
+    @Override
+    public Flux<ChatResponse> chatSingleOfStream(String content) {
+        return Flux.from(this.chatSingleFunc(content, this::chatSingleOfStream));
+    }
+
+    @Override
     public Mono<ChatResponse> chatCont(String content, String msgUid) {
         return Mono.from(this.chatContFunc(content, msgUid, super::chatCont));
     }
@@ -89,6 +101,12 @@ public class ErnieBotClient extends FullClient {
         assertNotBlankMono(msgUid, "msgUid is null or blank");
         log.info("=====ernie=====");
         return chatFunction.apply(buildRequest(content), msgUid);
+    }
+
+    private Publisher<ChatResponse> chatSingleFunc(String content, Function<ChatBaseRequest, Publisher<ChatResponse>> chatFunction) {
+        assertNotBlankMono(content, "content is null or blank");
+
+        return chatFunction.apply(this.buildRequest(content));
     }
 
     public ChatErnieRequest buildRequest(String content) {

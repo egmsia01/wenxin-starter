@@ -55,7 +55,6 @@ public abstract class FullClient extends BaseClient implements ContBot<ChatBaseR
 
     @Override
     public <T extends ChatBaseRequest> Flux<ChatResponse> chatContOfStream(T chatRequest, String msgUid) {
-        log.info("chatContOfStream(T chatRequest, String msgUid)");
         return Flux.from(chatContProcess(chatRequest, msgUid, true));
     }
 
@@ -76,11 +75,11 @@ public abstract class FullClient extends BaseClient implements ContBot<ChatBaseR
                     String logMessage = stream ? "{}-contRequest-stream => {}" : "{}-contRequest => {}";
                     log.info(logMessage, getTag(), targetRequest);
 
-                    return targetHistoryReturn(stream, targetRequest, messagesHistory);
+                    return typeReturnWithHistory(stream, targetRequest, messagesHistory);
                 });
     }
 
-    public Publisher<ChatResponse> targetHistoryReturn(boolean stream, Object request, Deque<Message> messagesHistory) {
+    public Publisher<ChatResponse> typeReturnWithHistory(boolean stream, Object request, Deque<Message> messagesHistory) {
         return stream ? ChatUtils.historyFlux(getURL(), getCustomAccessToken(), request, messagesHistory) :
                 ChatUtils.historyMono(getURL(), getCustomAccessToken(), request, messagesHistory);
     }

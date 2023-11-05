@@ -1,6 +1,5 @@
 package com.gearwenxin.client.ernie;
 
-import com.gearwenxin.client.base.FullClient;
 import com.gearwenxin.common.*;
 import com.gearwenxin.config.WenXinProperties;
 import com.gearwenxin.entity.Message;
