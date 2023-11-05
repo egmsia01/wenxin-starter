@@ -117,17 +117,15 @@ public class ChatController {
   // 流式返回，单次对话
   @GetMapping(value = "/stream/chat", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
   public Flux<String> chatSingleStream(@RequestParam String msg) {
-    Flux<ChatResponse> chatResponse = ernieBot4Client.chatSingleOfStream(msg);
-
-    return chatResponse.map(response -> "data: " + response.getResult() + "\n\n");
+    return ernieBot4Client.chatSingleOfStream(msg)
+            .map(response -> "data: " + response.getResult() + "\n\n");
   }
 
   // 流式返回，连续对话
   @GetMapping(value = "/stream/chats", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
   public Flux<String> chatContStream(@RequestParam String msg, @RequestParam String msgUid) {
-    Flux<ChatResponse> chatResponse = ernieBot4Client.chatContOfStream(msg, msgUid);
-
-    return chatResponse.map(response -> "data: " + response.getResult() + "\n\n");
+    return ernieBot4Client.chatContOfStream(msg, msgUid)
+            .map(response -> "data: " + response.getResult() + "\n\n");
   }
 
   // Prompt模板
