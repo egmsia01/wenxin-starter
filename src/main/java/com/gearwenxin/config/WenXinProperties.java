@@ -1,5 +1,6 @@
 package com.gearwenxin.config;
 
+import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
@@ -7,7 +8,7 @@ import org.springframework.stereotype.Component;
  * @author Ge Mingjia
  * @date 2023/11/1
  */
-//@Data
+@Data
 @Component
 @ConfigurationProperties("gear.wenxin")
 public class WenXinProperties {
