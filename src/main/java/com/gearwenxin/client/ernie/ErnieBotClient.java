@@ -84,14 +84,14 @@ public class ErnieBotClient extends FullClient {
         return Flux.from(this.chatContFunc(content, msgUid, super::chatContOfStream));
     }
 
-    private Publisher<ChatResponse> chatContFunc(String content, String msgUid, BiFunction<ChatErnieRequest, String, Publisher<ChatResponse>> chatFunction) {
+    public Publisher<ChatResponse> chatContFunc(String content, String msgUid, BiFunction<ChatErnieRequest, String, Publisher<ChatResponse>> chatFunction) {
         assertNotBlankMono(content, "content is null or blank");
         assertNotBlankMono(msgUid, "msgUid is null or blank");
         log.info("=====ernie=====");
         return chatFunction.apply(buildRequest(content), msgUid);
     }
 
-    private ChatErnieRequest buildRequest(String content) {
+    public ChatErnieRequest buildRequest(String content) {
         ChatErnieRequest chatErnieRequest = new ChatErnieRequest();
         chatErnieRequest.setContent(content);
         return chatErnieRequest;

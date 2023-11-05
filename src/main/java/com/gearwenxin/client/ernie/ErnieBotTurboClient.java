@@ -20,7 +20,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 @Slf4j
 @Service
-public class ErnieBotTurboClient extends FullClient {
+public class ErnieBotTurboClient extends ErnieBotClient {
 
     @Resource
     private WenXinProperties wenXinProperties;

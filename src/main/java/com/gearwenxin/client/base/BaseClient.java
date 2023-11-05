@@ -15,10 +15,14 @@ import com.gearwenxin.model.BaseBot;
 import com.gearwenxin.model.chat.SingleBot;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.reactivestreams.Publisher;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.function.BiFunction;
+
 import static com.gearwenxin.common.Constant.MAX_CONTENT_LENGTH;
+import static com.gearwenxin.common.WenXinUtils.assertNotBlankMono;
 
 /**
  * @author Ge Mingjia
@@ -37,6 +41,9 @@ public abstract class BaseClient implements SingleBot, BaseBot {
 
     @Override
     public Mono<ChatResponse> chatSingle(String content) {
+//        assertNotBlankMono(content, "content is null");
+//        ChatBaseRequest chatBaseRequest = ChatBaseRequest.builder().content(content).build();
+//        return chatSingle(chatBaseRequest);
         switch (getTag()) {
             case "ErnieBotClient", "ErnieBot4Client", "ErnieBotTurboClient" -> {
                 return buildBaseRequest(content)
@@ -133,6 +140,17 @@ public abstract class BaseClient implements SingleBot, BaseBot {
             }
         }
 
+    }
+
+    private Publisher<ChatResponse> chatSingleFunc(String content, String msgUid, BiFunction<ChatBaseRequest, String, Publisher<ChatResponse>> chatFunction) {
+        assertNotBlankMono(content, "content is null or blank");
+        assertNotBlankMono(msgUid, "msgUid is null or blank");
+
+        return chatFunction.apply(this.buildRequest(content), msgUid);
+    }
+
+    private ChatBaseRequest buildRequest(String content) {
+        return ChatBaseRequest.builder().content(content).build();
     }
 
     public static void validChatRequest(ChatBaseRequest chatBaseRequest) {
