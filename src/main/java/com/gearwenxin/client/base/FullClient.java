@@ -102,10 +102,8 @@ public abstract class FullClient extends BaseClient implements ContBot<ChatBaseR
 
     public <T extends ChatBaseRequest> void validRequest(T request) {
         if (request.getClass() == ChatBaseRequest.class) {
-            log.info("ChatBaseRequest.class");
             BaseClient.validChatRequest(request);
         } else if (request.getClass() == ChatErnieRequest.class) {
-            log.info("ChatErnieRequest.class");
             ErnieBotClient.validChatErnieRequest((ChatErnieRequest) request);
         }
     }

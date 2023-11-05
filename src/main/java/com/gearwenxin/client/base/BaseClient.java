@@ -10,6 +10,9 @@ import com.gearwenxin.entity.response.ChatResponse;
 import com.gearwenxin.exception.WenXinException;
 import com.gearwenxin.model.BaseBot;
 import com.gearwenxin.model.chat.SingleBot;
+import com.gearwenxin.validator.ChatBaseRequestValidator;
+import com.gearwenxin.validator.ChatErnieRequestValidator;
+import com.gearwenxin.validator.RequestValidator;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.reactivestreams.Publisher;
@@ -83,13 +86,23 @@ public abstract class BaseClient implements SingleBot, BaseBot {
 
     public <T extends ChatBaseRequest> void validRequest(T request) {
         if (request.getClass() == ChatBaseRequest.class) {
-            log.info("ChatBaseRequest.class");
             BaseClient.validChatRequest(request);
         } else if (request.getClass() == ChatErnieRequest.class) {
-            log.info("ChatErnieRequest.class");
             ErnieBotClient.validChatErnieRequest((ChatErnieRequest) request);
         }
     }
+
+//    public <T extends ChatBaseRequest> void validRequest(T request) {
+//        RequestValidator<T> validator;
+//        if (request.getClass() == ChatBaseRequest.class) {
+//            validator = new ChatBaseRequestValidator();
+//        } else if (request.getClass() == ChatErnieRequest.class) {
+//            validator = new ChatErnieRequestValidator();
+//        } else {
+//            throw new IllegalArgumentException("Unsupported request type");
+//        }
+//        validator.validate(request);
+//    }
 
     private Publisher<ChatResponse> chatSingleFunc(String content, Function<ChatBaseRequest, Publisher<ChatResponse>> chatFunction) {
         assertNotBlankMono(content, "content is null or blank");
