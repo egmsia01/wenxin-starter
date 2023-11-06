@@ -1,6 +1,5 @@
 package com.gearwenxin.client.base;
 
-import com.gearwenxin.client.ernie.ErnieBotClient;
 import com.gearwenxin.common.*;
 import com.gearwenxin.entity.Message;
 import com.gearwenxin.entity.chatmodel.ChatBaseRequest;
@@ -98,14 +97,6 @@ public abstract class FullClient extends BaseClient implements ContBot<ChatBaseR
                     .build();
         }
         return targetRequest;
-    }
-
-    public <T extends ChatBaseRequest> void validRequest(T request) {
-        if (request.getClass() == ChatBaseRequest.class) {
-            BaseClient.validChatRequest(request);
-        } else if (request.getClass() == ChatErnieRequest.class) {
-            ErnieBotClient.validChatErnieRequest((ChatErnieRequest) request);
-        }
     }
 
     private Publisher<ChatResponse> chatContFunc(String content, String msgUid, BiFunction<ChatBaseRequest, String, Publisher<ChatResponse>> chatFunction) {
