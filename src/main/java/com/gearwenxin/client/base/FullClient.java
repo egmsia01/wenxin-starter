@@ -19,6 +19,7 @@ import java.util.Deque;
 import java.util.function.BiFunction;
 
 import static com.gearwenxin.common.WenXinUtils.assertNotBlankMono;
+import static com.gearwenxin.common.WenXinUtils.buildTargetRequest;
 
 /**
  * @author Ge Mingjia
@@ -81,22 +82,6 @@ public abstract class FullClient extends BaseClient implements ContBot<ChatBaseR
     public Publisher<ChatResponse> typeReturnWithHistory(boolean stream, Object request, Deque<Message> messagesHistory) {
         return stream ? ChatUtils.historyFlux(getURL(), getCustomAccessToken(), request, messagesHistory) :
                 ChatUtils.historyMono(getURL(), getCustomAccessToken(), request, messagesHistory);
-    }
-
-    public <T extends ChatBaseRequest> Object buildTargetRequest(Deque<Message> messagesHistory, boolean stream, T request) {
-        Object targetRequest = null;
-        if (request.getClass() == ChatBaseRequest.class) {
-            targetRequest = ConvertUtils.toBaseRequest(request)
-                    .messages(messagesHistory)
-                    .stream(stream)
-                    .build();
-        } else if (request.getClass() == ChatErnieRequest.class) {
-            targetRequest = ConvertUtils.toErnieRequest((ChatErnieRequest) request)
-                    .messages(messagesHistory)
-                    .stream(stream)
-                    .build();
-        }
-        return targetRequest;
     }
 
     private Publisher<ChatResponse> chatContFunc(String content, String msgUid, BiFunction<ChatBaseRequest, String, Publisher<ChatResponse>> chatFunction) {

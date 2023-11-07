@@ -20,6 +20,7 @@ import java.util.function.Function;
 
 import static com.gearwenxin.common.Constant.MAX_CONTENT_LENGTH;
 import static com.gearwenxin.common.WenXinUtils.assertNotBlankMono;
+import static com.gearwenxin.common.WenXinUtils.buildTargetRequest;
 
 /**
  * @author Ge Mingjia
@@ -53,7 +54,7 @@ public abstract class BaseClient implements SingleBot, BaseBot {
                 .switchIfEmpty(Mono.error(() -> new WenXinException(ErrorCode.PARAMS_ERROR)))
                 .doOnNext(reqT -> validRequest(requestT))
                 .flatMapMany(reqT -> {
-                    Object targetRequest = buildTargetRequest(stream, reqT);
+                    Object targetRequest = buildTargetRequest(null, stream, reqT);
 
                     String logMessage = stream ? "{}-singleRequest-stream => {}" : "{}-singleRequest => {}";
                     log.info(logMessage, getTag(), targetRequest);
@@ -65,20 +66,6 @@ public abstract class BaseClient implements SingleBot, BaseBot {
     public Publisher<ChatResponse> typeReturn(boolean stream, Object request) {
         return stream ? ChatUtils.fluxChatPost(getURL(), getCustomAccessToken(), request, ChatResponse.class) :
                 ChatUtils.monoChatPost(getURL(), getCustomAccessToken(), request, ChatResponse.class);
-    }
-
-    public <T extends ChatBaseRequest> Object buildTargetRequest(boolean stream, T request) {
-        Object targetRequest = null;
-        if (request.getClass() == ChatBaseRequest.class) {
-            targetRequest = ConvertUtils.toBaseRequest(request)
-                    .stream(stream)
-                    .build();
-        } else if (request.getClass() == ChatErnieRequest.class) {
-            targetRequest = ConvertUtils.toErnieRequest((ChatErnieRequest) request)
-                    .stream(stream)
-                    .build();
-        }
-        return targetRequest;
     }
 
     public <T extends ChatBaseRequest> void validRequest(T request) {

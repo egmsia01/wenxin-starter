@@ -1,7 +1,11 @@
 package com.gearwenxin.common;
 
+import com.gearwenxin.entity.BaseRequest;
 import com.gearwenxin.entity.FunctionCall;
+import com.gearwenxin.entity.chatmodel.ChatBaseRequest;
+import com.gearwenxin.entity.chatmodel.ChatErnieRequest;
 import com.gearwenxin.entity.enums.Role;
+import com.gearwenxin.entity.request.ErnieRequest;
 import com.gearwenxin.exception.WenXinException;
 import com.gearwenxin.entity.Message;
 import org.apache.commons.lang3.StringUtils;
@@ -61,6 +65,24 @@ public class WenXinUtils {
 
     public static Message buildAssistantMessage(String content) {
         return buildAssistantMessage(content, null, null);
+    }
+
+    public static <T extends ChatBaseRequest> Object buildTargetRequest(Deque<Message> messagesHistory, boolean stream, T request) {
+        Object targetRequest = null;
+        if (request.getClass() == ChatBaseRequest.class) {
+            BaseRequest.BaseRequestBuilder requestBuilder = ConvertUtils.toBaseRequest(request)
+                    .stream(stream);
+            if (messagesHistory != null)
+                requestBuilder.messages(messagesHistory);
+            targetRequest = requestBuilder.build();
+        } else if (request.getClass() == ChatErnieRequest.class) {
+            ErnieRequest.ErnieRequestBuilder requestBuilder = ConvertUtils.toErnieRequest((ChatErnieRequest) request)
+                    .stream(stream);
+            if (messagesHistory != null)
+                requestBuilder.messages(messagesHistory);
+            targetRequest = requestBuilder.build();
+        }
+        return targetRequest;
     }
 
     /**
