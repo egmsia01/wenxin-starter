@@ -10,8 +10,8 @@ import com.gearwenxin.exception.WenXinException;
 import com.gearwenxin.entity.Message;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.LinkedList;
 import java.util.Deque;
+import java.util.concurrent.ConcurrentLinkedDeque;
 
 import static com.gearwenxin.common.Constant.MAX_TOTAL_LENGTH;
 
@@ -21,6 +21,8 @@ import static com.gearwenxin.common.Constant.MAX_TOTAL_LENGTH;
  */
 public class WenXinUtils {
 
+    private static final Object offerLock = new Object();
+
     public static Deque<Message> buildUserMessageDeque(String content) {
         return buildUserMessageDeque(content, null, null);
     }
@@ -29,14 +31,14 @@ public class WenXinUtils {
     public static Deque<Message> buildUserMessageDeque(String content, String name, FunctionCall functionCall) {
         assertNotNull(content, "content is null");
 
-        Deque<Message> messageDeque = new LinkedList<>();
+        Deque<Message> messageDeque = new ConcurrentLinkedDeque<>();
         Message message = buildUserMessage(content, name, functionCall);
         messageDeque.offer(message);
         return messageDeque;
     }
 
     public static Deque<Message> buildMessageDeque(Message userMessage, Message assistantMessage) {
-        Deque<Message> messageDeque = new LinkedList<>();
+        Deque<Message> messageDeque = new ConcurrentLinkedDeque<>();
         offerMessage(messageDeque, userMessage);
         offerMessage(messageDeque, assistantMessage);
         return messageDeque;
@@ -96,35 +98,37 @@ public class WenXinUtils {
         assertNotNull(message, "message is null");
         assertNotBlank(message.getContent(), "message.content is null or blank");
 
-        Message lastMessage = messagesHistory.peekLast();
-        if (lastMessage != null && lastMessage.getRole() == Role.user &&
-                message.getRole() == Role.user) {
-            messagesHistory.pollLast();
-        }
-        messagesHistory.offer(message);
+        synchronized (offerLock) {
+            Message lastMessage = messagesHistory.peekLast();
+            if (lastMessage != null && lastMessage.getRole() == Role.user &&
+                    message.getRole() == Role.user) {
+                messagesHistory.pollLast();
+            }
+            messagesHistory.offer(message);
 
-        if (message.getRole() == Role.assistant) {
-            return;
-        }
+            if (message.getRole() == Role.assistant) {
+                return;
+            }
 
-        // 统计用户消息总长度
-        int totalLength = 0;
-        for (Message msg : messagesHistory) {
-            if (msg.getRole() == Role.user) {
-                totalLength += msg.getContent().length();
+            // 统计用户消息总长度
+            int totalLength = 0;
+            for (Message msg : messagesHistory) {
+                if (msg.getRole() == Role.user) {
+                    totalLength += msg.getContent().length();
+                }
+            }
+
+            // 大于最大长度后删除最前面的对话
+            while (totalLength > MAX_TOTAL_LENGTH && messagesHistory.size() >= 2) {
+                Message firstMessage = messagesHistory.poll();
+                Message secondMessage = messagesHistory.poll();
+                if (firstMessage != null && secondMessage != null) {
+                    totalLength -= (firstMessage.getContent().length() + secondMessage.getContent().length());
+                }
             }
         }
-
-        // 大于最大长度后删除最前面的对话
-        while (totalLength > MAX_TOTAL_LENGTH) {
-            Message firstMessage = messagesHistory.poll();
-            Message secondMessage = messagesHistory.poll();
-            if (firstMessage != null && secondMessage != null) {
-                totalLength -= (firstMessage.getContent().length() + secondMessage.getContent().length());
-            }
-        }
-
     }
+
 
     public static void assertNotBlank(String str, String message) {
         if (StringUtils.isBlank(str)) {

@@ -3,7 +3,6 @@ package com.gearwenxin.client.base;
 import com.gearwenxin.common.*;
 import com.gearwenxin.entity.Message;
 import com.gearwenxin.entity.chatmodel.ChatBaseRequest;
-import com.gearwenxin.entity.chatmodel.ChatErnieRequest;
 import com.gearwenxin.entity.response.ChatResponse;
 import com.gearwenxin.exception.WenXinException;
 import com.gearwenxin.model.chat.ContBot;
@@ -13,9 +12,9 @@ import org.reactivestreams.Publisher;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.util.LinkedList;
 import java.util.Map;
 import java.util.Deque;
+import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.function.BiFunction;
 
 import static com.gearwenxin.common.WenXinUtils.assertNotBlankMono;
@@ -65,7 +64,7 @@ public abstract class FullClient extends BaseClient implements ContBot<ChatBaseR
                 .doOnNext(reqT -> validRequest(requestT))
                 .flatMapMany(reqT -> {
                     Deque<Message> messagesHistory = getMessageHistoryMap().computeIfAbsent(
-                            msgUid, key -> new LinkedList<>()
+                            msgUid, key -> new ConcurrentLinkedDeque<>()
                     );
                     Message message = WenXinUtils.buildUserMessage(reqT.getContent());
                     WenXinUtils.offerMessage(messagesHistory, message);

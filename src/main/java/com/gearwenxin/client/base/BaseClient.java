@@ -2,7 +2,6 @@ package com.gearwenxin.client.base;
 
 import com.gearwenxin.client.ernie.ErnieBotClient;
 import com.gearwenxin.common.ChatUtils;
-import com.gearwenxin.common.ConvertUtils;
 import com.gearwenxin.common.ErrorCode;
 import com.gearwenxin.entity.chatmodel.ChatBaseRequest;
 import com.gearwenxin.entity.chatmodel.ChatErnieRequest;
