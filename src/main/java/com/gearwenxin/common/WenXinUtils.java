@@ -21,7 +21,7 @@ import static com.gearwenxin.common.Constant.MAX_TOTAL_LENGTH;
  */
 public class WenXinUtils {
 
-    private static final Object offerLock = new Object();
+    private static final Object pollLock = new Object();
 
     public static Deque<Message> buildUserMessageDeque(String content) {
         return buildUserMessageDeque(content, null, null);
@@ -98,7 +98,7 @@ public class WenXinUtils {
         assertNotNull(message, "message is null");
         assertNotBlank(message.getContent(), "message.content is null or blank");
 
-        synchronized (offerLock) {
+        synchronized (messagesHistory) {
             Message lastMessage = messagesHistory.peekLast();
             if (lastMessage != null && lastMessage.getRole() == Role.user &&
                     message.getRole() == Role.user) {
@@ -123,10 +123,23 @@ public class WenXinUtils {
                 Message firstMessage = messagesHistory.poll();
                 Message secondMessage = messagesHistory.poll();
                 if (firstMessage != null && secondMessage != null) {
-                    totalLength -= (firstMessage.getContent().length() + secondMessage.getContent().length());
+                    if (firstMessage.getRole() == Role.user && secondMessage.getRole() == Role.assistant){
+                        totalLength -= (firstMessage.getContent().length() + secondMessage.getContent().length());
+                    }
+                } else {
+                    // 处理失败，将消息重新放回队列
+                    synchronized (pollLock) {
+                        if (firstMessage != null) {
+                            messagesHistory.addFirst(firstMessage);
+                        }
+                        if (secondMessage != null) {
+                            messagesHistory.addFirst(secondMessage);
+                        }
+                    }
                 }
             }
         }
+
     }
 
 
