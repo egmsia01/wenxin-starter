@@ -23,21 +23,36 @@ public class WenXinUtils {
 
     private static final Object pollLock = new Object();
 
+    @Deprecated
     public static Deque<Message> buildUserMessageDeque(String content) {
-        return buildUserMessageDeque(content, null, null);
+        return buildUserMessageHistory(content);
+    }
+
+    @Deprecated
+    public static Deque<Message> buildUserMessageDeque(String content, String name, FunctionCall functionCall) {
+        return buildUserMessageHistory(content, name, functionCall);
+    }
+
+    @Deprecated
+    public static Deque<Message> buildMessageDeque(Message userMessage, Message assistantMessage) {
+        return buildMessageHistory(userMessage, assistantMessage);
+    }
+
+    public static Deque<Message> buildUserMessageHistory(String content) {
+        return buildUserMessageHistory(content, null, null);
     }
 
     // TODO:全局适配
-    public static Deque<Message> buildUserMessageDeque(String content, String name, FunctionCall functionCall) {
+    public static Deque<Message> buildUserMessageHistory(String content, String name, FunctionCall functionCall) {
         assertNotNull(content, "content is null");
 
-        Deque<Message> messageDeque = new ConcurrentLinkedDeque<>();
+        Deque<Message> messageHistory = new ConcurrentLinkedDeque<>();
         Message message = buildUserMessage(content, name, functionCall);
-        messageDeque.offer(message);
-        return messageDeque;
+        messageHistory.offer(message);
+        return messageHistory;
     }
 
-    public static Deque<Message> buildMessageDeque(Message userMessage, Message assistantMessage) {
+    public static Deque<Message> buildMessageHistory(Message userMessage, Message assistantMessage) {
         Deque<Message> messageDeque = new ConcurrentLinkedDeque<>();
         offerMessage(messageDeque, userMessage);
         offerMessage(messageDeque, assistantMessage);
@@ -63,6 +78,13 @@ public class WenXinUtils {
     public static Message buildAssistantMessage(String content, String name, FunctionCall functionCall) {
         assertNotNull(content, "content is null");
         return new Message(Role.assistant, content, name, functionCall);
+    }
+
+    public static Message buildFunctionMessage(String name, String content) {
+        assertNotNull(name, "name is null");
+        assertNotNull(content, "content is null");
+
+        return new Message(Role.function, content, name, null);
     }
 
     public static Message buildAssistantMessage(String content) {
@@ -123,7 +145,7 @@ public class WenXinUtils {
                 Message firstMessage = messagesHistory.poll();
                 Message secondMessage = messagesHistory.poll();
                 if (firstMessage != null && secondMessage != null) {
-                    if (firstMessage.getRole() == Role.user && secondMessage.getRole() == Role.assistant){
+                    if (firstMessage.getRole() == Role.user && secondMessage.getRole() == Role.assistant) {
                         totalLength -= (firstMessage.getContent().length() + secondMessage.getContent().length());
                     }
                 } else {

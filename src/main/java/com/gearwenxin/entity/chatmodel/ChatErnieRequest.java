@@ -1,6 +1,8 @@
 package com.gearwenxin.entity.chatmodel;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.gearwenxin.common.ErrorCode;
+import com.gearwenxin.entity.FunctionCall;
 import com.gearwenxin.entity.FunctionInfo;
 import com.gearwenxin.exception.WenXinException;
 import lombok.*;
@@ -51,6 +53,17 @@ public class ChatErnieRequest extends ChatBaseRequest {
      * （2）如果使用functions参数，不支持设定人设system
      */
     private String system;
+
+    /**
+     * message作者；当role=function时，必填，且是响应内容中function_call中的name
+     */
+    private String name;
+
+    /**
+     * 函数调用，function call场景下第一轮对话的返回，第二轮对话作为历史信息在message中传入
+     */
+    @JsonProperty("function_call")
+    private FunctionCall functionCall;
 
 //    public void validSelf() {
 //

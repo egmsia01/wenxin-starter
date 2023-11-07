@@ -4,9 +4,6 @@ import com.gearwenxin.entity.BaseRequest;
 import com.gearwenxin.entity.chatmodel.*;
 import com.gearwenxin.entity.request.ErnieRequest;
 import com.gearwenxin.entity.request.PromptRequest;
-import com.gearwenxin.exception.WenXinException;
-
-import java.util.Objects;
 
 import static com.gearwenxin.common.WenXinUtils.assertNotBlank;
 import static com.gearwenxin.common.WenXinUtils.assertNotNull;
@@ -26,7 +23,7 @@ public class ConvertUtils {
 
         return ErnieRequest.builder()
                 .userId(chatRequest.getUserId())
-                .messages(WenXinUtils.buildUserMessageDeque(chatRequest.getContent()))
+                .messages(WenXinUtils.buildUserMessageHistory(chatRequest.getContent(), chatRequest.getName(), chatRequest.getFunctionCall()))
                 .temperature(chatRequest.getTemperature())
                 .topP(chatRequest.getTopP())
                 .penaltyScore(chatRequest.getPenaltyScore())
@@ -41,7 +38,7 @@ public class ConvertUtils {
 
         return BaseRequest.builder()
                 .userId(chatRequest.getUserId())
-                .messages(WenXinUtils.buildUserMessageDeque(chatRequest.getContent()));
+                .messages(WenXinUtils.buildUserMessageHistory(chatRequest.getContent()));
     }
 
     public static PromptRequest toPromptRequest(ChatPromptRequest chatRequest) {
