@@ -141,7 +141,7 @@ public class WenXinUtils {
             }
 
             // 大于最大长度后删除最前面的对话
-            while (totalLength > MAX_TOTAL_LENGTH && messagesHistory.size() >= 2) {
+            while (totalLength > MAX_TOTAL_LENGTH && messagesHistory.size() > 2) {
                 Message firstMessage = messagesHistory.poll();
                 Message secondMessage = messagesHistory.poll();
                 if (firstMessage != null && secondMessage != null) {
