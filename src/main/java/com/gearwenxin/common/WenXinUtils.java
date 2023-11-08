@@ -150,13 +150,11 @@ public class WenXinUtils {
                     }
                 } else {
                     // 处理失败，将消息重新放回队列
-                    synchronized (pollLock) {
-                        if (firstMessage != null) {
-                            messagesHistory.addFirst(firstMessage);
-                        }
-                        if (secondMessage != null) {
-                            messagesHistory.addFirst(secondMessage);
-                        }
+                    if (firstMessage != null) {
+                        messagesHistory.addFirst(firstMessage);
+                    }
+                    if (secondMessage != null) {
+                        messagesHistory.addFirst(secondMessage);
                     }
                 }
             }
