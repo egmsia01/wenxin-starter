@@ -145,7 +145,7 @@ public class WenXinUtils {
                 Message firstMessage = messagesHistory.poll();
                 Message secondMessage = messagesHistory.poll();
                 if (firstMessage != null && secondMessage != null) {
-                    if (firstMessage.getRole() == Role.user && secondMessage.getRole() == Role.assistant) {
+                    if ((firstMessage.getRole() == Role.user || firstMessage.getRole() == Role.function) && secondMessage.getRole() == Role.assistant) {
                         totalLength -= (firstMessage.getContent().length() + secondMessage.getContent().length());
                     }
                 } else {
