@@ -21,7 +21,7 @@ import static com.gearwenxin.common.Constant.MAX_TOTAL_LENGTH;
  */
 public class WenXinUtils {
 
-    private static final Object pollLock = new Object();
+    private static final Object offerLock = new Object();
 
     @Deprecated
     public static Deque<Message> buildUserMessageDeque(String content) {
@@ -120,7 +120,7 @@ public class WenXinUtils {
         assertNotNull(message, "message is null");
         assertNotBlank(message.getContent(), "message.content is null or blank");
 
-        synchronized (messagesHistory) {
+        synchronized (offerLock) {
             Message lastMessage = messagesHistory.peekLast();
             if (lastMessage != null && lastMessage.getRole() == Role.user &&
                     message.getRole() == Role.user) {
