@@ -61,13 +61,13 @@ PromptBotClient -> ChatPromptRequest -> PromptResponse
 <dependency>
   <groupId>io.github.gemingjia</groupId>
   <artifactId>gear-wenxinworkshop-starter</artifactId>
-  <version>0.0.9.9</version>
+  <version>1.0.0</version>
 </dependency>
 ```
 - Gradle
 ```gradle
 dependencies {
-  implementation 'io.github.gemingjia:gear-wenxinworkshop-starter:0.0.9.9' 
+  implementation 'io.github.gemingjia:gear-wenxinworkshop-starter:1.0.0' 
 }
 ```
 
