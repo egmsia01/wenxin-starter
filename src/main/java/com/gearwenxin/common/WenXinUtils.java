@@ -189,4 +189,10 @@ public class WenXinUtils {
         }
     }
 
+    public static void assertNotNullMono(Object obj, String message) {
+        if (obj == null) {
+            throw new WenXinException(ErrorCode.PARAMS_ERROR, message);
+        }
+    }
+
 }
