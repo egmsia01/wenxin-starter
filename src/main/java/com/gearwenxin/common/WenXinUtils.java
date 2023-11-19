@@ -9,6 +9,7 @@ import com.gearwenxin.entity.request.ErnieRequest;
 import com.gearwenxin.exception.WenXinException;
 import com.gearwenxin.entity.Message;
 import org.apache.commons.lang3.StringUtils;
+import reactor.core.publisher.Mono;
 
 import java.util.Deque;
 import java.util.concurrent.ConcurrentLinkedDeque;
@@ -183,16 +184,20 @@ public class WenXinUtils {
         }
     }
 
-    public static void assertNotNull(Object obj, String message) {
+    public static Mono<Void> assertNotNullMono(Object obj, String message) {
         if (obj == null) {
-            throw new WenXinException(ErrorCode.PARAMS_ERROR, message);
+            return Mono.error(() -> new WenXinException(ErrorCode.PARAMS_ERROR, message));
         }
+        return Mono.empty();
     }
 
-    public static void assertNotNullMono(Object obj, String message) {
-        if (obj == null) {
-            throw new WenXinException(ErrorCode.PARAMS_ERROR, message);
+    public static Mono<Void> assertNotBlankMono(String message, String... strings) {
+        for (String str : strings) {
+            if (StringUtils.isBlank(str)) {
+                return Mono.error(() -> new WenXinException(ErrorCode.PARAMS_ERROR, message));
+            }
         }
+        return Mono.empty();
     }
 
 }
