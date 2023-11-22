@@ -184,6 +184,12 @@ public class WenXinUtils {
         }
     }
 
+    public static void assertNotNull(Object obj, String message) {
+        if (obj == null) {
+            throw new WenXinException(ErrorCode.PARAMS_ERROR, message);
+        }
+    }
+
     public static Mono<Void> assertNotNullMono(Object obj, String message) {
         if (obj == null) {
             return Mono.error(() -> new WenXinException(ErrorCode.PARAMS_ERROR, message));

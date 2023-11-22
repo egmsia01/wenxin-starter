@@ -98,7 +98,6 @@ public abstract class BaseClient implements SingleBot, BaseBot {
     }
 
     public static void validChatRequest(ChatBaseRequest chatBaseRequest) {
-
         // 检查content不为空
         if (StringUtils.isBlank(chatBaseRequest.getContent())) {
             throw new WenXinException(ErrorCode.PARAMS_ERROR, "content cannot be empty");
