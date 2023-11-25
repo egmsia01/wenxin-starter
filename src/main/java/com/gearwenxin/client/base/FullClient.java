@@ -71,7 +71,7 @@ public abstract class FullClient extends BaseClient implements ContBot<ChatBaseR
 
                     Object targetRequest = buildTargetRequest(messagesHistory, stream, reqT);
 
-                    String logMessage = stream ? "{}-contRequest-stream => {}" : "{}-contRequest => {}";
+                    String logMessage = stream ? "{}-cont-request-stream => {}" : "{}-cont-request => {}";
                     log.info(logMessage, getTag(), targetRequest);
 
                     return typeReturnWithHistory(stream, targetRequest, messagesHistory);

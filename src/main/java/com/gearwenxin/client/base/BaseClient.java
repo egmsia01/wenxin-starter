@@ -55,7 +55,7 @@ public abstract class BaseClient implements SingleBot, BaseBot {
                 .flatMapMany(reqT -> {
                     Object targetRequest = buildTargetRequest(null, stream, reqT);
 
-                    String logMessage = stream ? "{}-singleRequest-stream => {}" : "{}-singleRequest => {}";
+                    String logMessage = stream ? "{}-single-request-stream => {}" : "{}-single-request => {}";
                     log.info(logMessage, getTag(), targetRequest);
 
                     return typeReturn(stream, targetRequest);

@@ -140,7 +140,6 @@ public class WenXinUtils {
                     totalLength += msg.getContent().length();
                 }
             }
-
             // 大于最大长度后删除最前面的对话
             while (totalLength > MAX_TOTAL_LENGTH && messagesHistory.size() > 2) {
                 Message firstMessage = messagesHistory.poll();
