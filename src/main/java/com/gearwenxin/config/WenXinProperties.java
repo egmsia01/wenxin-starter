@@ -6,7 +6,6 @@ import org.springframework.stereotype.Component;
 
 /**
  * @author Ge Mingjia
- * @date 2023/11/1
  */
 @Data
 @Component

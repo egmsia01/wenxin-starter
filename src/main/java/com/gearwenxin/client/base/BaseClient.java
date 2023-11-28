@@ -23,7 +23,6 @@ import static com.gearwenxin.common.WenXinUtils.buildTargetRequest;
 
 /**
  * @author Ge Mingjia
- * @date 2023/8/4
  */
 @Slf4j
 public abstract class BaseClient implements SingleBot, BaseBot {

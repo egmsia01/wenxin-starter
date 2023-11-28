@@ -22,7 +22,6 @@ import static com.gearwenxin.common.WenXinUtils.buildTargetRequest;
 
 /**
  * @author Ge Mingjia
-
  */
 @Slf4j
 public abstract class FullClient extends BaseClient implements ContBot<ChatBaseRequest> {

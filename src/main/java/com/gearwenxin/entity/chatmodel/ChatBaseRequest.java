@@ -1,17 +1,11 @@
 package com.gearwenxin.entity.chatmodel;
 
-import com.gearwenxin.common.ErrorCode;
-import com.gearwenxin.entity.enums.SamplerType;
-import com.gearwenxin.exception.WenXinException;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.apache.commons.lang3.StringUtils;
 
 import java.io.Serializable;
-
-import static com.gearwenxin.common.Constant.MAX_CONTENT_LENGTH;
 
 /**
  * @author Ge Mingjia
