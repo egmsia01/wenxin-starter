@@ -12,6 +12,7 @@ import org.apache.commons.lang3.StringUtils;
 import reactor.core.publisher.Mono;
 
 import java.util.Deque;
+import java.util.LinkedList;
 import java.util.concurrent.ConcurrentLinkedDeque;
 
 import static com.gearwenxin.common.Constant.MAX_TOTAL_LENGTH;
@@ -121,45 +122,48 @@ public class WenXinUtils {
         assertNotNull(message, "message is null");
         assertNotBlank(message.getContent(), "message.content is null or blank");
 
-        synchronized (offerLock) {
-            Message lastMessage = messagesHistory.peekLast();
-            if (lastMessage != null && lastMessage.getRole() == Role.user &&
-                    message.getRole() == Role.user) {
-                messagesHistory.pollLast();
-            }
-            messagesHistory.offer(message);
+        Deque<Message> updatedHistory = new LinkedList<>(messagesHistory);
 
-            if (message.getRole() == Role.assistant) {
-                return;
-            }
+        // 在副本上进行修改
+        Message lastMessage = updatedHistory.peekLast();
+        if (lastMessage != null && lastMessage.getRole() == Role.user &&
+                message.getRole() == Role.user) {
+            updatedHistory.pollLast();
+        }
+        updatedHistory.offer(message);
 
-            // 统计用户消息总长度
-            int totalLength = 0;
-            for (Message msg : messagesHistory) {
-                if (msg.getRole() == Role.user) {
-                    totalLength += msg.getContent().length();
+        if (message.getRole() == Role.assistant) {
+            return;
+        }
+
+        // 统计用户消息总长度
+        int totalLength = 0;
+        for (Message msg : updatedHistory) {
+            if (msg.getRole() == Role.user) {
+                totalLength += msg.getContent().length();
+            }
+        }
+        // 大于最大长度后删除最前面的对话
+        while (totalLength > MAX_TOTAL_LENGTH && updatedHistory.size() > 2) {
+            Message firstMessage = updatedHistory.poll();
+            Message secondMessage = updatedHistory.poll();
+            if (firstMessage != null && secondMessage != null) {
+                if ((firstMessage.getRole() == Role.user || firstMessage.getRole() == Role.function) && secondMessage.getRole() == Role.assistant) {
+                    totalLength -= (firstMessage.getContent().length() + secondMessage.getContent().length());
                 }
-            }
-            // 大于最大长度后删除最前面的对话
-            while (totalLength > MAX_TOTAL_LENGTH && messagesHistory.size() > 2) {
-                Message firstMessage = messagesHistory.poll();
-                Message secondMessage = messagesHistory.poll();
-                if (firstMessage != null && secondMessage != null) {
-                    if ((firstMessage.getRole() == Role.user || firstMessage.getRole() == Role.function) && secondMessage.getRole() == Role.assistant) {
-                        totalLength -= (firstMessage.getContent().length() + secondMessage.getContent().length());
-                    }
-                } else {
-                    // 处理失败，将消息重新放回队列
-                    if (firstMessage != null) {
-                        messagesHistory.addFirst(firstMessage);
-                    }
-                    if (secondMessage != null) {
-                        messagesHistory.addFirst(secondMessage);
-                    }
+            } else {
+                // 处理失败，将消息重新放回队列
+                if (firstMessage != null) {
+                    updatedHistory.addFirst(firstMessage);
+                }
+                if (secondMessage != null) {
+                    updatedHistory.addFirst(secondMessage);
                 }
             }
         }
 
+        messagesHistory.clear();
+        messagesHistory.addAll(updatedHistory);
     }
 
 
