@@ -38,6 +38,8 @@
 
 [使用demo](https://github.com/gemingjia/springboot-wenxin-demo)
 
+代码中jdk1.8不兼容的部分已全部处理完成，但是切换到jdk1.8后， 我的文档这类注释`@date 2023/11/1`在打包时，Java doc会乱码，导致无法过检测，我尝试切换编码UTF-8、UTF-16、GBK等，但均无法解决，如有知道原因或者解决方案的可以提issue或者邮件联系我，谢谢！
+
 ```text
 SpringBoot 3.x中，如遇到`A component required a bean of type xxx that could not be found.`报错，请在启动类添加注解：
 `@ComponentScan(basePackages = {"com.gearwenxin", "你的启动类所在包名"})`
@@ -171,6 +173,14 @@ public class ChatController {
 [![Star History Chart](https://api.star-history.com/svg?repos=gemingjia/gear-wenxinworkshop-starter&type=Date)](https://star-history.com/#gemingjia/gear-wenxinworkshop-starter)
 
 ## 更新日志
+
+v1.0.1  - jdk8 专版
+- 同步 master 分支的修改
+
+v1.0.0
+- 重构 Bean注入方式与配置读取，可能引起路径兼容问题。
+- 优化 大量代码精简
+- 修复 并发安全问题
 
 v0.0.9.7 - pre release
 - 新增 对function call的简单支持 
