@@ -14,6 +14,8 @@ import reactor.core.publisher.Mono;
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.concurrent.ConcurrentLinkedDeque;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import static com.gearwenxin.common.Constant.MAX_TOTAL_LENGTH;
 
@@ -23,7 +25,7 @@ import static com.gearwenxin.common.Constant.MAX_TOTAL_LENGTH;
  */
 public class WenXinUtils {
 
-    private static final Object offerLock = new Object();
+    private static final Lock locker = new ReentrantLock();
 
     @Deprecated
     public static Deque<Message> buildUserMessageDeque(String content) {
@@ -161,9 +163,17 @@ public class WenXinUtils {
                 }
             }
         }
-
-        messagesHistory.clear();
-        messagesHistory.addAll(updatedHistory);
+        locker.lock();
+        try {
+            /*
+              TODO: 可能存在消息不一致问题
+              在A线程clear messagesHistory，B线程在其他地方获取到了刚刚clear但还没有赋值的messagesHistory
+             */
+            messagesHistory.clear();
+            messagesHistory.addAll(updatedHistory);
+        } finally {
+            locker.unlock();
+        }
     }
 
 
