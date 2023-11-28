@@ -1,37 +1,40 @@
 package com.gearwenxin.client.ernie;
 
-import com.gearwenxin.client.base.BaseClient;
+import com.gearwenxin.client.base.FullClient;
 import com.gearwenxin.common.*;
+import com.gearwenxin.config.WenXinProperties;
+import com.gearwenxin.entity.chatmodel.ChatBaseRequest;
 import com.gearwenxin.exception.WenXinException;
 import com.gearwenxin.entity.chatmodel.ChatErnieRequest;
 import com.gearwenxin.entity.response.ChatResponse;
 import com.gearwenxin.entity.Message;
-import com.gearwenxin.entity.request.ErnieRequest;
-import com.gearwenxin.common.ChatUtils;
-import com.gearwenxin.model.BaseBot;
-import com.gearwenxin.model.chat.ContBot;
+import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.reactivestreams.Publisher;
+import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-import reactor.util.function.Tuples;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.BiFunction;
+import java.util.function.Function;
 
 import static com.gearwenxin.common.Constant.MAX_CONTENT_LENGTH;
 import static com.gearwenxin.common.Constant.MAX_SYSTEM_LENGTH;
-import static com.gearwenxin.common.WenXinUtils.*;
+import static com.gearwenxin.common.WenXinUtils.assertNotBlankMono;
 
 /**
  * @author Ge Mingjia
 
  */
 @Slf4j
-public abstract class ErnieBotClient extends BaseClient implements ContBot<ChatErnieRequest>, BaseBot {
+@Service
+public class ErnieBotClient extends FullClient {
 
-    protected ErnieBotClient() {
-    }
+    @Resource
+    private WenXinProperties wenXinProperties;
 
     private String accessToken = null;
     private static final String TAG = "ErnieBotClient";
@@ -40,7 +43,9 @@ public abstract class ErnieBotClient extends BaseClient implements ContBot<ChatE
 
     private static final String URL = Constant.ERNIE_BOT_URL;
 
-    protected abstract String getAccessToken();
+    private String getAccessToken() {
+        return wenXinProperties.getAccessToken();
+    }
 
     @Override
     public String getTag() {
@@ -71,103 +76,46 @@ public abstract class ErnieBotClient extends BaseClient implements ContBot<ChatE
     }
 
     @Override
+    public Mono<ChatResponse> chatSingle(String content) {
+        return Mono.from(this.chatSingleFunc(content, this::chatSingle));
+    }
+
+    @Override
+    public Flux<ChatResponse> chatSingleOfStream(String content) {
+        return Flux.from(this.chatSingleFunc(content, this::chatSingleOfStream));
+    }
+
+    @Override
     public Mono<ChatResponse> chatCont(String content, String msgUid) {
-        return Mono.justOrEmpty(Tuples.of(content, msgUid))
-                .filter(tuple -> StringUtils.isNotBlank(tuple.getT1()) && StringUtils.isNotBlank(tuple.getT2()))
-                .switchIfEmpty(Mono.error(new WenXinException(ErrorCode.PARAMS_ERROR)))
-                .flatMap(tuple -> {
-                    Map<String, Deque<Message>> messageHistoryMap = getMessageHistoryMap();
-                    Deque<Message> messagesHistory = messageHistoryMap.computeIfAbsent(
-                            tuple.getT2(), k -> new LinkedList<>()
-                    );
-                    Message message = buildUserMessage(tuple.getT1());
-                    WenXinUtils.offerMessage(messagesHistory, message);
-
-                    ErnieRequest ernieRequest = ErnieRequest.builder()
-                            .messages(messagesHistory)
-                            .build();
-
-                    log.info("{}-content_contRequest => {}", getTag(), ernieRequest.toString());
-
-                    return ChatUtils.historyMono(getURL(), getAccessToken(), ernieRequest, messagesHistory);
-                });
+        return Mono.from(this.chatContFunc(content, msgUid, super::chatCont));
     }
 
     @Override
     public Flux<ChatResponse> chatContOfStream(String content, String msgUid) {
-        return Mono.justOrEmpty(Tuples.of(content, msgUid))
-                .filter(tuple -> StringUtils.isNotBlank(tuple.getT1()) && StringUtils.isNotBlank(tuple.getT2()))
-                .switchIfEmpty(Mono.error(new WenXinException(ErrorCode.PARAMS_ERROR)))
-                .flatMapMany(tuple -> {
-                    Map<String, Deque<Message>> messageHistoryMap = getMessageHistoryMap();
-                    Deque<Message> messagesHistory = messageHistoryMap.computeIfAbsent(
-                            tuple.getT2(), k -> new LinkedList<>()
-                    );
-                    Message message = buildUserMessage(tuple.getT1());
-                    WenXinUtils.offerMessage(messagesHistory, message);
-
-                    ErnieRequest ernieRequest = ErnieRequest.builder()
-                            .messages(messagesHistory)
-                            .stream(true)
-                            .build();
-
-                    log.info("{}-content_contRequest_stream => {}", getTag(), ernieRequest.toString());
-
-                    return ChatUtils.historyFlux(getURL(), getAccessToken(), ernieRequest, messagesHistory);
-                });
+        log.info("chatContOfStream(String content, String msgUid)");
+        return Flux.from(this.chatContFunc(content, msgUid, super::chatContOfStream));
     }
 
-    @Override
-    public Mono<ChatResponse> chatCont(ChatErnieRequest chatErnieRequest, String msgUid) {
-        return Mono.justOrEmpty(Tuples.of(chatErnieRequest, msgUid))
-                .filter(tuple -> StringUtils.isNotBlank(tuple.getT2()))
-                .doOnNext(tuple -> validChatErnieRequest(tuple.getT1()))
-                .flatMap(tuple -> {
-                    Map<String, Deque<Message>> messageHistoryMap = getMessageHistoryMap();
-                    Deque<Message> messagesHistory = messageHistoryMap.computeIfAbsent(
-                            tuple.getT2(), key -> new LinkedList<>()
-                    );
-
-                    Message message = buildUserMessage(tuple.getT1().getContent());
-                    WenXinUtils.offerMessage(messagesHistory, message);
-
-                    ErnieRequest ernieRequest = ConvertUtils.toErnieRequest(tuple.getT1())
-                            .messages(messagesHistory)
-                            .build();
-
-                    log.info("{}-contRequest => {}", getTag(), ernieRequest.toString());
-
-                    return ChatUtils.historyMono(getURL(), getAccessToken(), ernieRequest, messagesHistory);
-                });
+    public Publisher<ChatResponse> chatContFunc(String content, String msgUid, BiFunction<ChatErnieRequest, String, Publisher<ChatResponse>> chatFunction) {
+        assertNotBlankMono(content, "content is null or blank");
+        assertNotBlankMono(msgUid, "msgUid is null or blank");
+        log.info("=====ernie=====");
+        return chatFunction.apply(buildRequest(content), msgUid);
     }
 
-    @Override
-    public Flux<ChatResponse> chatContOfStream(ChatErnieRequest chatErnieRequest, String msgUid) {
-        return Mono.justOrEmpty(Tuples.of(chatErnieRequest, msgUid))
-                .filter(tuple -> StringUtils.isNotBlank(tuple.getT2()))
-                .doOnNext(tuple -> validChatErnieRequest(tuple.getT1()))
-                .flatMapMany(tuple -> {
-                    Map<String, Deque<Message>> messageHistoryMap = getMessageHistoryMap();
-                    Deque<Message> messagesHistory = messageHistoryMap.computeIfAbsent(
-                            tuple.getT2(), key -> new LinkedList<>()
-                    );
+    private Publisher<ChatResponse> chatSingleFunc(String content, Function<ChatBaseRequest, Publisher<ChatResponse>> chatFunction) {
+        assertNotBlankMono(content, "content is null or blank");
 
-                    Message message = buildUserMessage(tuple.getT1().getContent());
-                    WenXinUtils.offerMessage(messagesHistory, message);
+        return chatFunction.apply(this.buildRequest(content));
+    }
 
-                    ErnieRequest ernieRequest = ConvertUtils.toErnieRequest(tuple.getT1())
-                            .messages(messagesHistory)
-                            .stream(true)
-                            .build();
-
-                    log.info("{}-contRequest_stream => {}", getTag(), ernieRequest.toString());
-
-                    return ChatUtils.historyFlux(getURL(), getAccessToken(), ernieRequest, messagesHistory);
-                });
+    public ChatErnieRequest buildRequest(String content) {
+        ChatErnieRequest chatErnieRequest = new ChatErnieRequest();
+        chatErnieRequest.setContent(content);
+        return chatErnieRequest;
     }
 
     public static void validChatErnieRequest(ChatErnieRequest request) {
-
         // 检查content不为空
         if (StringUtils.isBlank(request.getContent())) {
             throw new WenXinException(ErrorCode.PARAMS_ERROR, "content cannot be empty");
@@ -200,6 +148,6 @@ public abstract class ErnieBotClient extends BaseClient implements ContBot<ChatE
         if (request.getSystem() != null && request.getSystem().length() > MAX_SYSTEM_LENGTH) {
             throw new WenXinException(ErrorCode.PARAMS_ERROR, "system's length cannot be more than 1024");
         }
-
     }
+
 }

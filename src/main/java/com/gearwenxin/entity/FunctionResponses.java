@@ -15,5 +15,5 @@ import java.util.Map;
 @NoArgsConstructor
 public class FunctionResponses {
     private String type;
-    private Map<String, Map<String, Object>> properties;
+    private Map<String, Map<String, String>> properties;
 }

@@ -1,25 +1,32 @@
 package com.gearwenxin.client;
 
 import com.gearwenxin.common.Constant;
+import com.gearwenxin.config.WenXinProperties;
 import com.gearwenxin.model.BaseBot;
+import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.stereotype.Service;
 
 /**
  * @author Ge Mingjia
 
  */
 @Slf4j
-public abstract class EmbeddingV1Client implements BaseBot {
+@Service
+public class EmbeddingV1Client implements BaseBot {
 
-    protected EmbeddingV1Client() {
-    }
+    @Resource
+    private WenXinProperties wenXinProperties;
 
     private String accessToken = null;
-    private static final String TAG = "PromptBotClient";
+    private static final String TAG = "EmbeddingV1Client";
 
     private static final String URL = Constant.PROMPT_URL;
 
-    protected abstract String getAccessToken();
+    private String getAccessToken() {
+        return wenXinProperties.getAccessToken();
+    }
 
     @Override
     public String getCustomAccessToken() {
@@ -34,6 +41,11 @@ public abstract class EmbeddingV1Client implements BaseBot {
     @Override
     public String getURL() {
         return URL;
+    }
+
+    @Override
+    public String getTag() {
+        return TAG;
     }
 
 }

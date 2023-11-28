@@ -2,7 +2,12 @@ package com.gearwenxin.client.llama2;
 
 import com.gearwenxin.client.base.FullClient;
 import com.gearwenxin.common.Constant;
+import com.gearwenxin.config.WenXinProperties;
 import com.gearwenxin.entity.Message;
+import jakarta.annotation.Resource;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.stereotype.Service;
 
 import java.util.Map;
 import java.util.Deque;
@@ -12,10 +17,13 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author Ge Mingjia
 
  */
-public abstract class Llama270BClient extends FullClient {
+@Slf4j
+@Lazy
+@Service
+public class Llama270BClient extends FullClient {
 
-    protected Llama270BClient() {
-    }
+    @Resource
+    private WenXinProperties wenXinProperties;
 
     private String accessToken = null;
     private static final String TAG = "Llama2-70B-Client";
@@ -23,7 +31,9 @@ public abstract class Llama270BClient extends FullClient {
     private static final String URL = Constant.LLAMA2_70B_URL;
     private static Map<String, Deque<Message>> LLAMA2_70B_MESSAGES_HISTORY_MAP = new ConcurrentHashMap<>();
 
-    protected abstract String getAccessToken();
+    private String getAccessToken() {
+        return wenXinProperties.getAccessToken();
+    }
 
     @Override
     public String getCustomAccessToken() {

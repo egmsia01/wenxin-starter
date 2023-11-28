@@ -1,11 +1,11 @@
 package com.gearwenxin.client.ernie;
 
 import com.gearwenxin.common.*;
+import com.gearwenxin.config.WenXinProperties;
 import com.gearwenxin.entity.Message;
-import com.gearwenxin.entity.chatmodel.ChatErnieRequest;
-import com.gearwenxin.model.BaseBot;
-import com.gearwenxin.model.chat.ContBot;
+import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
 
 import java.util.Deque;
 import java.util.Map;
@@ -16,10 +16,11 @@ import java.util.concurrent.ConcurrentHashMap;
 
  */
 @Slf4j
-public abstract class ErnieBot4Client extends ErnieBotClient implements ContBot<ChatErnieRequest>, BaseBot {
+@Service
+public class ErnieBot4Client extends ErnieBotClient {
 
-    protected ErnieBot4Client() {
-    }
+    @Resource
+    private WenXinProperties wenXinProperties;
 
     private String accessToken = null;
     private static final String TAG = "ErnieBot4Client";
@@ -28,7 +29,9 @@ public abstract class ErnieBot4Client extends ErnieBotClient implements ContBot<
 
     private static final String URL = Constant.ERNIE_BOT_4_URL;
 
-    protected abstract String getAccessToken();
+    public String getAccessToken() {
+        return wenXinProperties.getAccessToken();
+    }
 
     @Override
     public String getTag() {

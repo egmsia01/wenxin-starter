@@ -1,6 +1,7 @@
 package com.gearwenxin.entity.chatmodel;
 
 import com.gearwenxin.common.ErrorCode;
+import com.gearwenxin.entity.enums.SamplerType;
 import com.gearwenxin.exception.WenXinException;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -30,17 +31,5 @@ public class ChatBaseRequest implements Serializable {
      * 聊天信息,不能为空
      */
     private String content;
-
-    public void validSelf() {
-
-        // 检查content不为空
-        if (StringUtils.isBlank(content)) {
-            throw new WenXinException(ErrorCode.PARAMS_ERROR, "content cannot be empty");
-        }
-        // 检查单个content长度
-        if (content.length() > MAX_CONTENT_LENGTH) {
-            throw new WenXinException(ErrorCode.PARAMS_ERROR, "content's length cannot be more than 2000");
-        }
-    }
 
 }

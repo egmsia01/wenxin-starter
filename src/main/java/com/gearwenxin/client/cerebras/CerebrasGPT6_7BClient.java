@@ -1,22 +1,34 @@
 package com.gearwenxin.client.cerebras;
 
 import com.gearwenxin.client.base.BaseClient;
+import com.gearwenxin.config.WenXinProperties;
+import jakarta.annotation.Resource;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.stereotype.Service;
 
 /**
  * @author Ge Mingjia
 
  */
-public abstract class CerebrasGPT6_7BClient extends BaseClient {
+@Slf4j
+@Lazy
+@Service
+public class CerebrasGPT6_7BClient extends BaseClient {
 
-    protected CerebrasGPT6_7BClient() {
-    }
+    @Resource
+    private WenXinProperties wenXinProperties;
 
     private String accessToken = null;
     private static final String TAG = "Cerebras-GPT-6.7B-Client";
 
-    protected abstract String getAccessToken();
+    private String getAccessToken() {
+        return wenXinProperties.getAccessToken();
+    }
 
-    protected abstract String getCustomURL();
+    private String getCustomURL() {
+        return wenXinProperties.getCustom_Model_URL();
+    }
 
     @Override
     public String getCustomAccessToken() {

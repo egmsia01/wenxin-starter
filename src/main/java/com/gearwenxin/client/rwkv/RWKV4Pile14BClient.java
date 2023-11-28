@@ -1,7 +1,12 @@
 package com.gearwenxin.client.rwkv;
 
 import com.gearwenxin.client.base.FullClient;
+import com.gearwenxin.config.WenXinProperties;
 import com.gearwenxin.entity.Message;
+import jakarta.annotation.Resource;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.stereotype.Service;
 
 import java.util.Map;
 import java.util.Deque;
@@ -11,19 +16,25 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author Ge Mingjia
 
  */
-public abstract class RWKV4Pile14BClient extends FullClient {
+@Slf4j
+@Lazy
+@Service
+public class RWKV4Pile14BClient extends FullClient {
 
-    protected RWKV4Pile14BClient() {
-    }
+    @Resource
+    private WenXinProperties wenXinProperties;
 
     private String accessToken = null;
     private static final String TAG = "RWKV-4-Pile-14B-Client";
     private static Map<String, Deque<Message>> RWKV_4_PILE_14B_MESSAGES_HISTORY_MAP = new ConcurrentHashMap<>();
 
-    protected abstract String getAccessToken();
+    private String getAccessToken() {
+        return wenXinProperties.getAccessToken();
+    }
 
-    // 获取不固定的模型URL
-    protected abstract String getCustomURL();
+    private String getCustomURL() {
+        return wenXinProperties.getRWKV4_pile_URL();
+    }
 
     @Override
     public String getCustomAccessToken() {

@@ -1,32 +1,33 @@
 package com.gearwenxin.client.ernie;
 
 import com.gearwenxin.client.ImageClient;
-import com.gearwenxin.entity.Message;
-import java.util.Collections;
+import com.gearwenxin.config.WenXinProperties;
 
+import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
-
-import java.util.Map;
-import java.util.Deque;
+import org.springframework.stereotype.Service;
 
 /**
  * @author Ge Mingjia
 
  */
 @Slf4j
-public abstract class ErnieBotVilGClient extends ImageClient {
+@Service
+public class ErnieBotVilGClient extends ImageClient {
 
-    protected ErnieBotVilGClient() {
-    }
+    @Resource
+    private WenXinProperties wenXinProperties;
 
     private String accessToken = null;
     private static final String TAG = "ErnieBotVilGClient";
 
-    // 获取access-token
-    protected abstract String getAccessToken();
+    private String getAccessToken() {
+        return wenXinProperties.getAccessToken();
+    }
 
-    // 获取不固定的模型URL
-    protected abstract String getCustomURL();
+    private String getCustomURL() {
+        return wenXinProperties.getVilg_URL();
+    }
 
     @Override
     public String getCustomAccessToken() {

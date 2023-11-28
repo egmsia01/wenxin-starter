@@ -2,7 +2,12 @@ package com.gearwenxin.client;
 
 import com.gearwenxin.client.base.FullClient;
 import com.gearwenxin.common.Constant;
+import com.gearwenxin.config.WenXinProperties;
 import com.gearwenxin.entity.Message;
+import jakarta.annotation.Resource;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.stereotype.Service;
 
 import java.util.Map;
 import java.util.Deque;
@@ -12,9 +17,14 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author Ge Mingjia
 
  */
-public abstract class BloomZ7BClient extends FullClient {
+@Slf4j
+@Service
+public class BloomZ7BClient extends FullClient {
 
-    protected BloomZ7BClient() {
+    @Resource
+    private WenXinProperties wenXinProperties;
+
+    public BloomZ7BClient() {
     }
 
     private String accessToken = null;
@@ -22,7 +32,9 @@ public abstract class BloomZ7BClient extends FullClient {
     private static Map<String, Deque<Message>> BLOOMZ_MESSAGES_HISTORY_MAP = new ConcurrentHashMap<>();
     private static final String URL = Constant.BLOOMZ_7B_URL;
 
-    protected abstract String getAccessToken();
+    private String getAccessToken() {
+        return wenXinProperties.getAccessToken();
+    }
 
     @Override
     public String getCustomAccessToken() {

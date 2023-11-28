@@ -1,4 +1,4 @@
-package com.gearwenxin.client.pythia;
+package com.gearwenxin.client.completions;
 
 import com.gearwenxin.client.base.BaseClient;
 import com.gearwenxin.config.WenXinProperties;
@@ -9,25 +9,26 @@ import org.springframework.stereotype.Service;
 
 /**
  * @author Ge Mingjia
-
+ * @date 2023/11/1
  */
 @Slf4j
 @Lazy
 @Service
-public class Pythia12BClient extends BaseClient {
+public class SQLCoder7BClient extends BaseClient {
 
     @Resource
     private WenXinProperties wenXinProperties;
 
     private String accessToken = null;
-    private static final String TAG = "Pythia-12B-Client";
+
+    private static final String TAG = "SQLCoder-7B-Client";
 
     private String getAccessToken() {
         return wenXinProperties.getAccessToken();
     }
 
     private String getCustomURL() {
-        return wenXinProperties.getOA_Pythia_12B_SFT4_URL();
+        return wenXinProperties.getSQLCoder_7B();
     }
 
     @Override
@@ -36,17 +37,18 @@ public class Pythia12BClient extends BaseClient {
     }
 
     @Override
-    public String getURL() {
-        return getCustomURL();
+    public void setCustomAccessToken(String accessToken) {
+        this.accessToken = accessToken;
     }
 
     @Override
-    public void setCustomAccessToken(String accessToken) {
-        this.accessToken = accessToken;
+    public String getURL() {
+        return getCustomURL();
     }
 
     @Override
     public String getTag() {
         return TAG;
     }
+
 }

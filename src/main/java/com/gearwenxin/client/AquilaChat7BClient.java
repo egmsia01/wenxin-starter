@@ -2,7 +2,12 @@ package com.gearwenxin.client;
 
 import com.gearwenxin.client.base.FullClient;
 import com.gearwenxin.common.Constant;
+import com.gearwenxin.config.WenXinProperties;
 import com.gearwenxin.entity.Message;
+import jakarta.annotation.Resource;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.stereotype.Service;
 
 import java.util.Map;
 import java.util.Deque;
@@ -11,17 +16,22 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * @author Leon2young
  */
-public abstract class AquilaChat7BClient extends FullClient {
+@Slf4j
+@Lazy
+@Service
+public class AquilaChat7BClient extends FullClient {
 
-    protected AquilaChat7BClient() {
-    }
+    @Resource
+    private WenXinProperties wenXinProperties;
 
     private String accessToken = null;
     private static final String TAG = "Aquila-Chat-7B-Client";
     private static final String URL = Constant.AQUILA_CHAT_7B_URL;
     private static Map<String, Deque<Message>> AQUILA_7B_MESSAGES_HISTORY_MAP = new ConcurrentHashMap<>();
 
-    protected abstract String getAccessToken();
+    private String getAccessToken() {
+        return wenXinProperties.getAccessToken();
+    }
 
     @Override
     public String getCustomAccessToken() {

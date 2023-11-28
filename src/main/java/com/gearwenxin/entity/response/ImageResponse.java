@@ -1,6 +1,7 @@
 package com.gearwenxin.entity.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.gearwenxin.entity.Usage;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -16,9 +17,29 @@ import java.util.List;
 public class ImageResponse {
 
     /**
-     * base64编码的图片
+     * 请求的ID。
      */
-    private List<String> images;
+    private String id;
+
+    /**
+     * 回包类型。固定值为 "image"，表示图像生成返回。
+     */
+    private String object;
+
+    /**
+     * 时间戳，表示生成响应的时间。
+     */
+    private int created;
+
+    /**
+     * 生成图片结果列表。
+     */
+    private List<ImageData> data;
+
+    /**
+     * token统计信息，token数 = 汉字数 + 单词数 * 1.3 （仅为估算逻辑）。
+     */
+    private Usage usage;
 
     /**
      * 错误代码，正常为 null

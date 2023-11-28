@@ -16,5 +16,5 @@ import java.util.Map;
 public class FunctionParameters {
     private String name;
     private String description;
-    private Map<String, Map<String, Object>> properties;
+    private Map<String, Map<String, String>> properties;
 }

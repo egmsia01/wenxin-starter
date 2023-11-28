@@ -1,10 +1,8 @@
 package com.gearwenxin.subscriber;
 
-import com.gearwenxin.common.ErrorCode;
 import com.gearwenxin.common.WenXinUtils;
 import com.gearwenxin.entity.Message;
 import com.gearwenxin.entity.response.ChatResponse;
-import com.gearwenxin.exception.WenXinException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.reactivestreams.Subscriber;
@@ -15,6 +13,7 @@ import reactor.core.publisher.FluxSink;
 import java.util.Deque;
 import java.util.StringJoiner;
 
+import static com.gearwenxin.common.WenXinUtils.assertNotNull;
 import static com.gearwenxin.common.WenXinUtils.buildAssistantMessage;
 
 /**
@@ -38,7 +37,7 @@ public class CommonSubscriber implements Subscriber<ChatResponse>, Disposable {
     @Override
     public void onSubscribe(Subscription subscription) {
         this.subscription = subscription;
-        subscription.request(1);
+        subscription.request(15);
         log.debug("onSubscribe");
     }
 
@@ -48,14 +47,14 @@ public class CommonSubscriber implements Subscriber<ChatResponse>, Disposable {
             return;
         }
 
-        log.debug("onNext");
-        if (response == null) {
-            throw new WenXinException(ErrorCode.PARAMS_ERROR, "ChatResponse is null !");
-        }
+        assertNotNull(response, "ChatResponse is null");
+
+        log.debug("CommonSubscriber.onNext");
+
         if (response.getResult() != null) {
             joiner.add(response.getResult());
         }
-        subscription.request(1);
+        subscription.request(15);
         emitter.next(response);
     }
 
@@ -65,7 +64,7 @@ public class CommonSubscriber implements Subscriber<ChatResponse>, Disposable {
             return;
         }
 
-        log.debug("onError");
+        log.error("onError");
         emitter.error(throwable);
     }
 
@@ -79,6 +78,7 @@ public class CommonSubscriber implements Subscriber<ChatResponse>, Disposable {
         if (StringUtils.isNotBlank(result)) {
             Message message = buildAssistantMessage(result);
             WenXinUtils.offerMessage(messagesHistory, message);
+            log.debug("offerMessage onComplete");
         }
         emitter.complete();
     }

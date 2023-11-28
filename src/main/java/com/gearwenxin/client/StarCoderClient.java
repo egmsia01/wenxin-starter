@@ -1,22 +1,34 @@
 package com.gearwenxin.client;
 
 import com.gearwenxin.client.base.BaseClient;
+import com.gearwenxin.config.WenXinProperties;
+import jakarta.annotation.Resource;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.stereotype.Service;
 
 /**
  * @author Ge Mingjia
 
  */
-public abstract class StarCoderClient extends BaseClient {
+@Slf4j
+@Lazy
+@Service
+public class StarCoderClient extends BaseClient {
 
-    protected StarCoderClient() {
-    }
+    @Resource
+    private WenXinProperties wenXinProperties;
 
     private String accessToken = null;
     private static final String TAG = "StarCoder-Client";
 
-    protected abstract String getAccessToken();
+    private String getAccessToken() {
+        return wenXinProperties.getAccessToken();
+    }
 
-    protected abstract String getCustomURL();
+    private String getCustomURL() {
+        return wenXinProperties.getStarCoder_URL();
+    }
 
     @Override
     public String getCustomAccessToken() {

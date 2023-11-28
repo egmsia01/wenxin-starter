@@ -1,31 +1,36 @@
 package com.gearwenxin.client.glm;
 
 import com.gearwenxin.client.ImageClient;
-import com.gearwenxin.entity.Message;
+import com.gearwenxin.config.WenXinProperties;
 
+import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
-
-import java.util.Collections;
-import java.util.Map;
-import java.util.Deque;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.stereotype.Service;
 
 /**
  * @author Ge Mingjia
 
  */
 @Slf4j
-public abstract class VisualGLM6BClient extends ImageClient {
+@Lazy
+@Service
+public class VisualGLM6BClient extends ImageClient {
 
-    protected VisualGLM6BClient() {
-    }
+    @Resource
+    private WenXinProperties wenXinProperties;
 
     private String accessToken = null;
 
     private static final String TAG = "VisualGLM-6B-Client";
 
-    protected abstract String getAccessToken();
+    private String getAccessToken() {
+        return wenXinProperties.getAccessToken();
+    }
 
-    protected abstract String getCustomURL();
+    private String getCustomURL() {
+        return wenXinProperties.getVisual_GLM_6B_URL();
+    }
 
     @Override
     public String getCustomAccessToken() {

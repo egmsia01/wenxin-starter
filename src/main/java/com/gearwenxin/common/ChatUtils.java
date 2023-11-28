@@ -159,7 +159,7 @@ public class ChatUtils {
     }
 
     public static Mono<TokenResponse> getAccessTokenByAKSK(String apiKey, String secretKey) {
-        assertNotBlank("api-key或secret-key错误", apiKey, secretKey);
+        assertNotBlank("api-key或secret-key为空", apiKey, secretKey);
 
         final String url = String.format(GET_ACCESS_TOKEN_URL, apiKey, secretKey);
 

@@ -7,7 +7,7 @@
 
 ![gear-wenxinworkshop-starter](https://socialify.git.ci/gemingjia/gear-wenxinworkshop-starter/image?font=Inter&forks=1&issues=1&language=1&name=1&owner=1&pattern=Floating%20Cogs&pulls=1&stargazers=1&theme=Light)
 
-![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.1.0-brightgreen.svg)
+![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.1.2-brightgreen.svg)
 ![JDK](https://img.shields.io/badge/JDK-17.0.5-orange.svg)
 ![Maven](https://img.shields.io/badge/Maven-3.9-blue.svg)
 
@@ -39,11 +39,19 @@
 [使用demo](https://github.com/gemingjia/springboot-wenxin-demo)
 
 ```text
-0.0.9.1版本更改了历史消息的数据结构，由Queue更换为Deque，如有使用消息导入导出功能请注意修改，Deque兼容Queue的方法，您只需全局替换“Queue”为“Deque”即可，其余无需做任何修改，很抱歉给您带来不便。
+SpringBoot 3.x中，如遇到`A component required a bean of type xxx that could not be found.`报错，请在启动类添加注解：
+`@ComponentScan(basePackages = {"com.gearwenxin", "你的启动类所在包名"})`
+```
 
+```text
+Client类型 -> 参数类 -> 响应类：
 
-除"ErnieBot"与"Prompt"外，其余的对话型模型接收参数类统一为 ChatBaseRequest，响应类为 ChatResponse
-图片生成型模型接收参数类统一为 ChatImageRequest，响应类为 ImageResponse，内容为base64编码的图片。
+ErnieBotClient、ErnieBot4Client、ErnieBotTurboClient -> ChatErnieRequest -> ChatResponse
+其他对话Client -> ChatBaseRequest -> ChatResponse
+PromptBotClient -> ChatPromptRequest -> PromptResponse
+文生图类Client -> ImageBaseRequest -> ImageResponse
+
+详见文档或文心一言官方文档。
 ```
 
 ### 1、添加依赖
@@ -53,13 +61,13 @@
 <dependency>
   <groupId>io.github.gemingjia</groupId>
   <artifactId>gear-wenxinworkshop-starter</artifactId>
-  <version>0.0.9.7</version>
+  <version>1.0.0</version>
 </dependency>
 ```
 - Gradle
 ```gradle
 dependencies {
-  implementation 'io.github.gemingjia:gear-wenxinworkshop-starter:0.0.9.7' 
+  implementation 'io.github.gemingjia:gear-wenxinworkshop-starter:1.0.0' 
 }
 ```
 
@@ -90,7 +98,9 @@ public class ChatController {
   // 要调用的模型的客户端（示例为文心4.0）
   @Resource
   private ErnieBot4Client ernieBot4Client;
-  
+  @Resource
+  private StableDiffusionXLClient stableDiffusionXLClient;
+
   // 单次对话
   @PostMapping("/chat")
   public Mono<ChatResponse> chatSingle(String msg) {
@@ -107,17 +117,15 @@ public class ChatController {
   // 流式返回，单次对话
   @GetMapping(value = "/stream/chat", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
   public Flux<String> chatSingleStream(@RequestParam String msg) {
-    Flux<ChatResponse> chatResponse = ernieBot4Client.chatSingleOfStream(msg);
-
-    return chatResponse.map(response -> "data: " + response.getResult() + "\n\n");
+    return ernieBot4Client.chatSingleOfStream(msg)
+            .map(response -> "data: " + response.getResult() + "\n\n");
   }
 
   // 流式返回，连续对话
   @GetMapping(value = "/stream/chats", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
   public Flux<String> chatContStream(@RequestParam String msg, @RequestParam String msgUid) {
-    Flux<ChatResponse> chatResponse = ernieBot4Client.chatContOfStream(msg, msgUid);
-
-    return chatResponse.map(response -> "data: " + response.getResult() + "\n\n");
+    return ernieBot4Client.chatContOfStream(msg, msgUid)
+            .map(response -> "data: " + response.getResult() + "\n\n");
   }
 
   // Prompt模板
@@ -131,6 +139,28 @@ public class ChatController {
     promptRequest.setParamMap(map);
     
     return promptBotClient.chatPrompt(promptRequest);
+  }
+
+  // 文生图
+  @PostMapping("/image")
+  public Mono<ImageResponse> chatImage() {
+    ImageBaseRequest imageBaseRequest = ImageBaseRequest.builder()
+            // 提示词
+            .prompt("一个头发中分并且穿着背带裤的人")
+            // 大小
+            .size("1024x1024")
+            // 反向提示词（不包含什么）
+            .negativePrompt("鸡")
+            // 生成图片数量（1-4）
+            .n(1)
+            // 迭代轮次（10-50）
+            .steps(20)
+            // 采样方式
+            .samplerIndex(SamplerType.Euler_A.getValue())
+            .userId("1001")
+            .build();
+
+    return stableDiffusionXLClient.chatImage(imageBaseRequest);
   }
   
 }
@@ -150,12 +180,16 @@ v0.0.9.7 - pre release
 - 修复 system字段包含敏感词导致的npe问题 
 - 修复 概率出现的The connection observed an error错误
 
+v0.0.9.6
+- [new]  支持JDK1.8  JDK1.8专版
+
 v0.0.9.5 - Canary
 - 支持文心4.0
 - 同步官网响应字段（2023-10-20）。
 
 v0.0.9.1
 - 完全的响应式风格。
+- 更改历史消息的数据结构，Queue -> Deque，如有使用消息导入导出功能请注意修改。
 - 修复 快速连续请求导致的npe问题 ( #8 )。
 - 修复 响应前再次请求导致的消息格式错误( #10 )。
 - 修复 api_key配置错误导致的异常。
