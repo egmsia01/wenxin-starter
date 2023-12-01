@@ -135,7 +135,7 @@ public class WenXinUtils {
           那么一定满足 updatedHistory.size() < messagesHistory.size()
           此时重新同步两个队列的消息
          */
-        if (updatedHistory.size() < messagesHistory.size()) {
+        if (updatedHistory.size() <= messagesHistory.size()) {
             updatedHistory.clear();
             updatedHistory.addAll(messagesHistory);
             updatedHistory.offer(message);
