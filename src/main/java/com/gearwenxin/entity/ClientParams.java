@@ -6,7 +6,7 @@ import lombok.NoArgsConstructor;
 
 /**
  * @author Ge Mingjia
- * @date 2023/10/3
+ * {@code @date} 2023/10/3
  */
 @Data
 @NoArgsConstructor

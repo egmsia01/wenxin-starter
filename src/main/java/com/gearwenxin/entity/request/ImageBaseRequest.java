@@ -12,7 +12,7 @@ import org.apache.commons.lang3.StringUtils;
 
 /**
  * @author Ge Mingjia
- * @date 2023/8/3
+ * {@code @date} 2023/8/3
  */
 @Data
 @Builder

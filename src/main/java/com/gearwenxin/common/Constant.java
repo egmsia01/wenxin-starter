@@ -4,7 +4,7 @@ package com.gearwenxin.common;
  * 模型URL
  *
  * @author Ge Mingjia
- * @date 2023/7/20
+ * {@code @date} 2023/7/20
  */
 public interface Constant {
 

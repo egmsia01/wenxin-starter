@@ -14,7 +14,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author Ge Mingjia
- * @date 2023/8/5
+ * {@code @date} 2023/8/5
  */
 @Slf4j
 @Lazy

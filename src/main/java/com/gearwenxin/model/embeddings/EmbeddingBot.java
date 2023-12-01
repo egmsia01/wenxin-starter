@@ -2,7 +2,7 @@ package com.gearwenxin.model.embeddings;
 
 /**
  * @author Ge Mingjia
- * @date 2023/10/5
+ * {@code @date} 2023/10/5
  */
 public interface EmbeddingBot {
 }

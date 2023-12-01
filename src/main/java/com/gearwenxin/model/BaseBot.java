@@ -2,7 +2,7 @@ package com.gearwenxin.model;
 
 /**
  * @author Ge Mingjia
- * @date 2023/7/20
+ * {@code @date} 2023/7/20
  */
 public interface BaseBot {
 

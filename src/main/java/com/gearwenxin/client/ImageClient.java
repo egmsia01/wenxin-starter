@@ -16,7 +16,7 @@ import static com.gearwenxin.common.WenXinUtils.assertNotNull;
 
 /**
  * @author Ge Mingjia
- * @date 2023/7/20
+ * {@code @date} 2023/7/20
  */
 @Slf4j
 public abstract class ImageClient implements ImageBot<ImageBaseRequest>, BaseBot {

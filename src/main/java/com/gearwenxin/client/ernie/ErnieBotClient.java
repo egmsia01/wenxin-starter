@@ -27,7 +27,7 @@ import static com.gearwenxin.common.WenXinUtils.assertNotBlankMono;
 
 /**
  * @author Ge Mingjia
- * @date 2023/7/20
+ * {@code @date} 2023/7/20
  */
 @Slf4j
 @Service

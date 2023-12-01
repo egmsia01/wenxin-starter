@@ -4,7 +4,7 @@ package com.gearwenxin.common;
  * 错误码
  *
  * @author Ge Mingjia
- * @date 2023/7/22
+ * {@code @date} 2023/7/22
  */
 public enum ErrorCode {
 

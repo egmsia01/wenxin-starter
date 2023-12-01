@@ -4,7 +4,7 @@ import lombok.Getter;
 
 /**
  * @author Ge Mingjia
- * @date 2023/11/4
+ * {@code @date} 2023/11/4
  */
 @Getter
 public enum SamplerType {

@@ -12,7 +12,7 @@ import static com.gearwenxin.common.WenXinUtils.assertNotNull;
  * 类型转换工具类
  *
  * @author Ge Mingjia
- * @date 2023/5/27
+ * {@code @date} 2023/5/27
  */
 public class ConvertUtils {
 
