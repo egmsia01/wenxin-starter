@@ -9,6 +9,7 @@ import com.gearwenxin.entity.request.ErnieRequest;
 import com.gearwenxin.exception.WenXinException;
 import com.gearwenxin.entity.Message;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.util.CollectionUtils;
 import reactor.core.publisher.Mono;
 
 import java.util.Deque;
@@ -98,16 +99,12 @@ public class WenXinUtils {
     public static <T extends ChatBaseRequest> Object buildTargetRequest(Deque<Message> messagesHistory, boolean stream, T request) {
         Object targetRequest = null;
         if (request.getClass() == ChatBaseRequest.class) {
-            BaseRequest.BaseRequestBuilder requestBuilder = ConvertUtils.toBaseRequest(request)
-                    .stream(stream);
-            if (messagesHistory != null)
-                requestBuilder.messages(messagesHistory);
+            BaseRequest.BaseRequestBuilder requestBuilder = ConvertUtils.toBaseRequest(request).stream(stream);
+            if (messagesHistory != null) requestBuilder.messages(messagesHistory);
             targetRequest = requestBuilder.build();
         } else if (request.getClass() == ChatErnieRequest.class) {
-            ErnieRequest.ErnieRequestBuilder requestBuilder = ConvertUtils.toErnieRequest((ChatErnieRequest) request)
-                    .stream(stream);
-            if (messagesHistory != null)
-                requestBuilder.messages(messagesHistory);
+            ErnieRequest.ErnieRequestBuilder requestBuilder = ConvertUtils.toErnieRequest((ChatErnieRequest) request).stream(stream);
+            if (messagesHistory != null) requestBuilder.messages(messagesHistory);
             targetRequest = requestBuilder.build();
         }
         return targetRequest;
@@ -125,16 +122,27 @@ public class WenXinUtils {
         assertNotBlank(message.getContent(), "message.content is null or blank");
 
         Deque<Message> updatedHistory = new LinkedList<>(messagesHistory);
-
         // 在副本上进行修改
-        Message lastMessage = updatedHistory.peekLast();
-        if (lastMessage != null && lastMessage.getRole() == Role.user &&
-                message.getRole() == Role.user) {
-            updatedHistory.pollLast();
+        if (!updatedHistory.isEmpty()) {
+            Message lastMessage = updatedHistory.peekLast();
+            if (lastMessage.getRole() == Role.user && message.getRole() == Role.user) {
+                updatedHistory.pollLast();
+            }
         }
         updatedHistory.offer(message);
-
+        /*
+          如果创建的时候获取到了刚 clear() 但是还没有 addAll() 的 messageHistory
+          那么一定满足 updatedHistory.size() < messagesHistory.size()
+          此时重新同步两个队列的消息
+         */
+        if (updatedHistory.size() < messagesHistory.size()) {
+            updatedHistory.clear();
+            updatedHistory.addAll(messagesHistory);
+            updatedHistory.offer(message);
+        }
         if (message.getRole() == Role.assistant) {
+            messagesHistory.clear();
+            messagesHistory.addAll(updatedHistory);
             return;
         }
 
@@ -150,7 +158,8 @@ public class WenXinUtils {
             Message firstMessage = updatedHistory.poll();
             Message secondMessage = updatedHistory.poll();
             if (firstMessage != null && secondMessage != null) {
-                if ((firstMessage.getRole() == Role.user || firstMessage.getRole() == Role.function) && secondMessage.getRole() == Role.assistant) {
+                if ((firstMessage.getRole() == Role.user || firstMessage.getRole() == Role.function)
+                        && secondMessage.getRole() == Role.assistant) {
                     totalLength -= (firstMessage.getContent().length() + secondMessage.getContent().length());
                 }
             } else {
@@ -163,17 +172,8 @@ public class WenXinUtils {
                 }
             }
         }
-        locker.lock();
-        try {
-            /*
-              TODO: 可能存在消息不一致问题
-              在A线程clear messagesHistory，B线程在其他地方获取到了刚刚clear但还没有赋值的messagesHistory
-             */
-            messagesHistory.clear();
-            messagesHistory.addAll(updatedHistory);
-        } finally {
-            locker.unlock();
-        }
+        messagesHistory.clear();
+        messagesHistory.addAll(updatedHistory);
     }
 
 
