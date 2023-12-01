@@ -38,7 +38,7 @@
 
 [使用demo](https://github.com/gemingjia/springboot-wenxin-demo)
 
-代码中jdk1.8不兼容的部分已全部处理完成，但是切换到jdk1.8后， 我的文档这类注释`@date 2023/11/1`在打包时，Java doc会乱码，导致无法过检测，我尝试切换编码UTF-8、UTF-16、GBK等，但均无法解决，如有知道原因或者解决方案的可以提issue或者邮件联系我，谢谢！
+代码中jdk1.8不兼容的部分已全部处理完成，但是切换到jdk1.8后， 我的文档注释`@date 2023/11/1`在打包时，Java doc会乱码，导致无法过检测，我尝试切换编码UTF-8、UTF-16、GBK等，但均无法解决，如有知道原因或者解决方案的可以提issue或者邮件联系我，谢谢！
 
 ```text
 SpringBoot 3.x中，如遇到`A component required a bean of type xxx that could not be found.`报错，请在启动类添加注解：
