@@ -25,7 +25,7 @@ import static com.gearwenxin.common.WenXinUtils.buildTargetRequest;
  * {@code @date} 2023/8/4
  */
 @Slf4j
-public abstract class FullClient extends BaseClient implements ContBot<ChatBaseRequest> {
+public abstract class FullClient extends BaseClient implements ContBot {
 
     /**
      * 获取此模型的历史消息

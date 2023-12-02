@@ -9,7 +9,6 @@ import com.gearwenxin.entity.request.ErnieRequest;
 import com.gearwenxin.exception.WenXinException;
 import com.gearwenxin.entity.Message;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.util.CollectionUtils;
 import reactor.core.publisher.Mono;
 
 import java.util.Deque;

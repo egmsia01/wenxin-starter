@@ -47,4 +47,12 @@ public interface SingleBot {
      */
     <T extends ChatBaseRequest> Flux<ChatResponse> chatSingleOfStream(T chatRequest);
 
+    /**
+     * 单轮对话，无上下文记忆，WebSocket
+     *
+     * @param chatRequest 请求实体类
+     * @return ChatResponse Flux<ChatResponse>
+     */
+    <T extends ChatBaseRequest> Flux<ChatResponse> chatViaWebSocket(T chatRequest);
+
 }
