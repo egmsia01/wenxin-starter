@@ -3,10 +3,13 @@ package com.gearwenxin.client.cerebras;
 import com.gearwenxin.client.base.FullClient;
 import com.gearwenxin.config.WenXinProperties;
 import com.gearwenxin.entity.Message;
+import com.gearwenxin.entity.chatmodel.ChatBaseRequest;
+import com.gearwenxin.entity.response.ChatResponse;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Flux;
 
 import java.util.Map;
 import java.util.Deque;
@@ -64,4 +67,5 @@ public class CerebrasGPT13BClient extends FullClient {
     public String getTag() {
         return TAG;
     }
+
 }
