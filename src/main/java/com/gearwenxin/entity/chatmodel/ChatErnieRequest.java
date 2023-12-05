@@ -1,18 +1,12 @@
 package com.gearwenxin.entity.chatmodel;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.gearwenxin.common.ErrorCode;
 import com.gearwenxin.entity.FunctionCall;
 import com.gearwenxin.entity.FunctionInfo;
-import com.gearwenxin.exception.WenXinException;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
-
-import static com.gearwenxin.common.Constant.MAX_CONTENT_LENGTH;
-import static com.gearwenxin.common.Constant.MAX_SYSTEM_LENGTH;
 
 /**
  * @author Ge Mingjia
