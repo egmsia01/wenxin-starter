@@ -90,8 +90,4 @@ public abstract class FullClient extends BaseClient implements ContBot {
         return chatFunction.apply(this.buildRequest(content), msgUid);
     }
 
-    private ChatBaseRequest buildRequest(String content) {
-        return ChatBaseRequest.builder().content(content).build();
-    }
-
 }

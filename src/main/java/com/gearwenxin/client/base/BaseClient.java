@@ -81,7 +81,7 @@ public abstract class BaseClient implements SingleBot, BaseBot {
         return chatFunction.apply(this.buildRequest(content));
     }
 
-    private ChatBaseRequest buildRequest(String content) {
+    public ChatBaseRequest buildRequest(String content) {
         return ChatBaseRequest.builder().content(content).build();
     }
 
