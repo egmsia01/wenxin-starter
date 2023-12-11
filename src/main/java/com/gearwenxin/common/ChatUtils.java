@@ -1,5 +1,6 @@
 package com.gearwenxin.common;
 
+import com.gearwenxin.core.ChatCore;
 import com.gearwenxin.entity.Message;
 import com.gearwenxin.entity.response.ChatResponse;
 import com.gearwenxin.entity.response.ErrorResponse;
@@ -152,7 +153,7 @@ public class ChatUtils {
 //                return Mono.just(chatResponse);
 //            }
             Message messageResult = WenXinUtils.buildAssistantMessage(chatResponse.getResult());
-            WenXinUtils.offerMessage(messagesHistory, messageResult);
+            ChatCore.offerMessage(messagesHistory, messageResult);
 
             return Mono.just(chatResponse);
         });

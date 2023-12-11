@@ -1,6 +1,7 @@
 package com.gearwenxin.client.base;
 
 import com.gearwenxin.common.*;
+import com.gearwenxin.core.ChatCore;
 import com.gearwenxin.entity.Message;
 import com.gearwenxin.entity.chatmodel.ChatBaseRequest;
 import com.gearwenxin.entity.response.ChatResponse;
@@ -18,7 +19,6 @@ import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.function.BiFunction;
 
 import static com.gearwenxin.common.WenXinUtils.assertNotBlankMono;
-import static com.gearwenxin.common.WenXinUtils.buildTargetRequest;
 
 /**
  * @author Ge Mingjia
@@ -67,9 +67,9 @@ public abstract class FullClient extends BaseClient implements ContBot {
                             msgUid, key -> new ConcurrentLinkedDeque<>()
                     );
                     Message message = WenXinUtils.buildUserMessage(reqT.getContent());
-                    WenXinUtils.offerMessage(messagesHistory, message);
+                    ChatCore.offerMessage(messagesHistory, message);
 
-                    Object targetRequest = buildTargetRequest(messagesHistory, stream, reqT);
+                    Object targetRequest = ChatCore.buildTargetRequest(messagesHistory, stream, reqT);
 
                     String logMessage = stream ? "{}-cont-request-stream => {}" : "{}-cont-request => {}";
                     log.info(logMessage, getTag(), targetRequest);

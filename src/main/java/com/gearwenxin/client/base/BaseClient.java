@@ -2,6 +2,7 @@ package com.gearwenxin.client.base;
 
 import com.gearwenxin.common.ChatUtils;
 import com.gearwenxin.common.ErrorCode;
+import com.gearwenxin.core.ChatCore;
 import com.gearwenxin.entity.chatmodel.ChatBaseRequest;
 import com.gearwenxin.entity.response.ChatResponse;
 import com.gearwenxin.exception.WenXinException;
@@ -17,7 +18,6 @@ import reactor.core.publisher.Mono;
 import java.util.function.Function;
 
 import static com.gearwenxin.common.WenXinUtils.assertNotBlankMono;
-import static com.gearwenxin.common.WenXinUtils.buildTargetRequest;
 
 /**
  * @author Ge Mingjia
@@ -56,7 +56,7 @@ public abstract class BaseClient implements SingleBot, BaseBot {
                 .switchIfEmpty(Mono.error(() -> new WenXinException(ErrorCode.PARAMS_ERROR)))
                 .doOnNext(reqT -> validRequest(requestT))
                 .flatMapMany(reqT -> {
-                    Object targetRequest = buildTargetRequest(null, stream, reqT);
+                    Object targetRequest = ChatCore.buildTargetRequest(null, stream, reqT);
 
                     String logMessage = stream ? "{}-single-request-stream => {}" : "{}-single-request => {}";
                     log.info(logMessage, getTag(), targetRequest);
