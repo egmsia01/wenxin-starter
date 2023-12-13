@@ -29,59 +29,67 @@ public class ChatCore {
         assertNotBlank(message.getContent(), "message.content is null or blank");
 
         Deque<Message> updatedHistory = new LinkedList<>(messagesHistory);
-        // 在副本上进行修改
-        if (!updatedHistory.isEmpty()) {
-            Message lastMessage = updatedHistory.peekLast();
-            if (lastMessage.getRole() == Role.user && message.getRole() == Role.user) {
-                updatedHistory.pollLast();
-            }
-        }
+
+        removeConsecutiveUserMessages(updatedHistory, message);
         updatedHistory.offer(message);
-        /*
-          如果创建的时候获取到了刚 clear() 但是还没有 addAll() 的 messageHistory
-          那么一定满足 updatedHistory.size() < messagesHistory.size()
-          此时重新同步两个队列的消息
-         */
-        if (updatedHistory.size() <= messagesHistory.size()) {
-            updatedHistory.clear();
-            updatedHistory.addAll(messagesHistory);
-            updatedHistory.offer(message);
-        }
+
+        synchronizeHistories(messagesHistory, updatedHistory, message);
+
         if (message.getRole() == Role.assistant) {
             messagesHistory.clear();
             messagesHistory.addAll(updatedHistory);
             return;
         }
 
-        // 统计用户消息总长度
-        int totalLength = 0;
-        for (Message msg : updatedHistory) {
-            if (msg.getRole() == Role.user) {
-                totalLength += msg.getContent().length();
+        handleExceedingLength(messagesHistory, updatedHistory);
+    }
+
+    private static void removeConsecutiveUserMessages(Deque<Message> history, Message message) {
+        if (!history.isEmpty()) {
+            Message lastMessage = history.peekLast();
+            if (lastMessage != null && lastMessage.getRole() == Role.user && message.getRole() == Role.user) {
+                history.pollLast();
             }
         }
-        // 大于最大长度后删除最前面的对话
+    }
+
+    private static void synchronizeHistories(Deque<Message> original, Deque<Message> updated, Message message) {
+        if (updated.size() <= original.size()) {
+            updated.clear();
+            updated.addAll(original);
+        }
+        updated.offer(message);
+    }
+
+    private static void handleExceedingLength(Deque<Message> messagesHistory, Deque<Message> updatedHistory) {
+        int totalLength = updatedHistory.stream()
+                .filter(msg -> msg.getRole() == Role.user)
+                .mapToInt(msg -> msg.getContent().length())
+                .sum();
+
         while (totalLength > MAX_TOTAL_LENGTH && updatedHistory.size() > 2) {
             Message firstMessage = updatedHistory.poll();
             Message secondMessage = updatedHistory.poll();
-            if (firstMessage != null && secondMessage != null) {
-                if ((firstMessage.getRole() == Role.user || firstMessage.getRole() == Role.function)
-                        && secondMessage.getRole() == Role.assistant) {
-                    totalLength -= (firstMessage.getContent().length() + secondMessage.getContent().length());
-                }
+
+            if (firstMessage != null && secondMessage != null &&
+                    (firstMessage.getRole() == Role.user || firstMessage.getRole() == Role.function) &&
+                    secondMessage.getRole() == Role.assistant) {
+                totalLength -= (firstMessage.getContent().length() + secondMessage.getContent().length());
             } else {
-                // 处理失败，将消息重新放回队列
                 if (firstMessage != null) {
                     updatedHistory.addFirst(firstMessage);
                 }
                 if (secondMessage != null) {
                     updatedHistory.addFirst(secondMessage);
                 }
+                break;
             }
         }
+
         messagesHistory.clear();
         messagesHistory.addAll(updatedHistory);
     }
+
 
     public static <T extends ChatBaseRequest> Object buildTargetRequest(Deque<Message> messagesHistory, boolean stream, T request) {
         Object targetRequest = null;
