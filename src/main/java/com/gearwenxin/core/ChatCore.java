@@ -75,14 +75,9 @@ public class ChatCore {
                     (firstMessage.getRole() == Role.user || firstMessage.getRole() == Role.function) &&
                     secondMessage.getRole() == Role.assistant) {
                 totalLength -= (firstMessage.getContent().length() + secondMessage.getContent().length());
-            } else {
-                if (firstMessage != null) {
-                    updatedHistory.addFirst(firstMessage);
-                }
-                if (secondMessage != null) {
-                    updatedHistory.addFirst(secondMessage);
-                }
-                break;
+            } else if (secondMessage != null) {
+                updatedHistory.addFirst(secondMessage);
+                totalLength -= secondMessage.getContent().length();
             }
         }
 
