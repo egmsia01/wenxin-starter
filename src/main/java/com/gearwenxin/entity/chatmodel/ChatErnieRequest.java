@@ -1,6 +1,5 @@
 package com.gearwenxin.entity.chatmodel;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.gearwenxin.entity.FunctionCall;
 import com.gearwenxin.entity.FunctionInfo;
 import lombok.*;
@@ -56,43 +55,25 @@ public class ChatErnieRequest extends ChatBaseRequest {
     /**
      * 函数调用，function call场景下第一轮对话的返回，第二轮对话作为历史信息在message中传入
      */
-    @JsonProperty("function_call")
     private FunctionCall functionCall;
 
-//    public void validSelf() {
-//
-//        // 检查content不为空
-//        if (StringUtils.isBlank(getContent())) {
-//            throw new WenXinException(ErrorCode.PARAMS_ERROR, "content cannot be empty");
-//        }
-//        // 检查单个content长度
-//        if (getContent().length() > MAX_CONTENT_LENGTH) {
-//            throw new WenXinException(ErrorCode.PARAMS_ERROR, "content's length cannot be more than 2000");
-//        }
-//        // 检查temperature和topP不都有值
-//        if (getTemperature() != null && this.getTopP() != null) {
-//            log.warn("Temperature and topP cannot both have value");
-//        }
-//        // 检查temperature范围
-//        if (getTemperature() != null && (getTemperature() <= 0 || getTemperature() > 1.0)) {
-//            throw new WenXinException(ErrorCode.PARAMS_ERROR, "temperature should be in (0, 1]");
-//        }
-//        // 检查topP范围
-//        if (getTopP() != null && (getTopP() < 0 || getTopP() > 1.0)) {
-//            throw new WenXinException(ErrorCode.PARAMS_ERROR, "topP should be in [0, 1]");
-//        }
-//        // 检查penaltyScore范围
-//        if (getTemperature() != null && (getPenaltyScore() < 1.0 || getPenaltyScore() > 2.0)) {
-//            throw new WenXinException(ErrorCode.PARAMS_ERROR, "penaltyScore should be in [1, 2]");
-//        }
-//        // 检查system与function call
-//        if (StringUtils.isBlank(getSystem()) && getFunctions() != null) {
-//            throw new WenXinException(ErrorCode.PARAMS_ERROR, "if 'function' not null, the 'system' must be null");
-//        }
-//        // 检查system长度
-//        if (getSystem().length() > MAX_SYSTEM_LENGTH) {
-//            throw new WenXinException(ErrorCode.PARAMS_ERROR, "system's length cannot be more than 1024");
-//        }
-//
-//    }
+    /**
+     * 生成停止标识，当模型生成结果以stop中某个元素结尾时，停止文本生成。说明：
+     * （1）每个元素长度不超过20字符
+     * （2）最多4个元素
+     */
+    private List<String> stop;
+
+    /**
+     * 是否强制关闭实时搜索功能，默认false，表示不关闭
+     */
+    private Boolean disableSearch;
+
+    /**
+     * 是否开启上角标返回，说明：
+     * （1）开启后，有概率触发搜索溯源信息search_info，search_info内容见响应参数介绍
+     * （2）默认false，不开启
+     */
+    private Boolean enableCitation;
+
 }

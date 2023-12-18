@@ -28,7 +28,10 @@ public class ConvertUtils {
                 .topP(chatRequest.getTopP())
                 .penaltyScore(chatRequest.getPenaltyScore())
                 .functions(chatRequest.getFunctions())
-                .system(chatRequest.getSystem());
+                .system(chatRequest.getSystem())
+                .stop(chatRequest.getStop())
+                .disableSearch(chatRequest.getDisableSearch())
+                .enableCitation(chatRequest.getEnableCitation());
     }
 
     public static BaseRequest.BaseRequestBuilder toBaseRequest(ChatBaseRequest chatRequest) {
