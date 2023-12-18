@@ -70,7 +70,6 @@ public class ChatCore {
         while (totalLength > MAX_TOTAL_LENGTH && updatedHistory.size() > 2) {
             Message firstMessage = updatedHistory.poll();
             Message secondMessage = updatedHistory.poll();
-
             if (firstMessage != null && secondMessage != null &&
                     (firstMessage.getRole() == Role.user || firstMessage.getRole() == Role.function) &&
                     secondMessage.getRole() == Role.assistant) {
