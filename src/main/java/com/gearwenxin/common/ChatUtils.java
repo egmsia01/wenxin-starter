@@ -21,6 +21,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.Deque;
+import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -95,7 +96,6 @@ public class ChatUtils {
      * @return Mono<T>
      */
     public static <T> Mono<T> monoChatGet(String url, String accessToken, Map<String, String> paramsMap, Class<T> type) {
-
         validateParams(url, accessToken, paramsMap, type);
         log.info("monoURL => {}", url);
 
@@ -148,10 +148,7 @@ public class ChatUtils {
             if (chatResponse == null || chatResponse.getResult() == null) {
                 return Mono.error(new WenXinException(ErrorCode.SYSTEM_ERROR, "响应错误！"));
             }
-//            if (chatResponse.getNeedClearHistory()) {
-//                messagesHistory.clear();
-//                return Mono.just(chatResponse);
-//            }
+
             Message messageResult = WenXinUtils.buildAssistantMessage(chatResponse.getResult());
             ChatCore.offerMessage(messagesHistory, messageResult);
 
@@ -191,8 +188,7 @@ public class ChatUtils {
     private static Consumer<Throwable> handleWebClientError() {
         return err -> {
             log.error("请求错误 => {} {}", err instanceof WebClientResponseException
-                    ? ((WebClientResponseException) err).getStatusCode()
-                    : "Unknown", err.getMessage());
+                    ? ((WebClientResponseException) err).getStatusCode() : "Unknown", err.getMessage());
             throw new WenXinException(ErrorCode.SYSTEM_NET_ERROR);
         };
     }
@@ -200,8 +196,7 @@ public class ChatUtils {
     private static <T> void handleErrResponse(T response) {
         assertNotNull(response, "响应异常");
         if (response instanceof ChatResponse chatResponse) {
-            if (chatResponse.getErrorCode() != null) {
-
+            Optional.ofNullable(chatResponse.getErrorMsg()).ifPresent(errMsg -> {
                 ErrorResponse errorResponse = ErrorResponse.builder()
                         .id(chatResponse.getId())
                         .logId(chatResponse.getLogId())
@@ -209,9 +204,8 @@ public class ChatUtils {
                         .errorMsg(chatResponse.getErrorMsg())
                         .errorCode(chatResponse.getErrorCode())
                         .build();
-
-                throw new WenXinException(ErrorCode.WENXIN_ERROR, errorResponse.getErrorMsg());
-            }
+                throw new WenXinException(ErrorCode.WENXIN_ERROR, errorResponse.toString());
+            });
         }
     }
 

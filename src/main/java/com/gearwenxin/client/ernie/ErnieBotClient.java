@@ -4,13 +4,11 @@ import com.gearwenxin.client.base.FullClient;
 import com.gearwenxin.common.*;
 import com.gearwenxin.config.WenXinProperties;
 import com.gearwenxin.entity.chatmodel.ChatBaseRequest;
-import com.gearwenxin.exception.WenXinException;
 import com.gearwenxin.entity.chatmodel.ChatErnieRequest;
 import com.gearwenxin.entity.response.ChatResponse;
 import com.gearwenxin.entity.Message;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.reactivestreams.Publisher;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
@@ -21,8 +19,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
-import static com.gearwenxin.common.Constant.MAX_CONTENT_LENGTH;
-import static com.gearwenxin.common.Constant.MAX_SYSTEM_LENGTH;
 import static com.gearwenxin.common.WenXinUtils.assertNotBlankMono;
 
 /**
