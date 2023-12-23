@@ -1,6 +1,7 @@
 package com.gearwenxin.client.base;
 
 import com.gearwenxin.common.*;
+import com.gearwenxin.core.ChatUtils;
 import com.gearwenxin.core.ChatCore;
 import com.gearwenxin.entity.Message;
 import com.gearwenxin.entity.chatmodel.ChatBaseRequest;
@@ -67,9 +68,9 @@ public abstract class FullClient extends BaseClient implements ContBot {
                             msgUid, key -> new ConcurrentLinkedDeque<>()
                     );
                     Message message = WenXinUtils.buildUserMessage(reqT.getContent());
-                    ChatCore.offerMessage(messagesHistory, message);
+                    ChatUtils.offerMessage(messagesHistory, message);
 
-                    Object targetRequest = ChatCore.buildTargetRequest(messagesHistory, stream, reqT);
+                    Object targetRequest = ChatUtils.buildTargetRequest(messagesHistory, stream, reqT);
 
                     String logMessage = stream ? "{}-cont-request-stream => {}" : "{}-cont-request => {}";
                     log.info(logMessage, getTag(), targetRequest);
@@ -79,8 +80,8 @@ public abstract class FullClient extends BaseClient implements ContBot {
     }
 
     public Publisher<ChatResponse> typeReturnWithHistory(boolean stream, Object request, Deque<Message> messagesHistory) {
-        return stream ? ChatUtils.historyFlux(getURL(), getCustomAccessToken(), request, messagesHistory) :
-                ChatUtils.historyMono(getURL(), getCustomAccessToken(), request, messagesHistory);
+        return stream ? ChatCore.historyFlux(getURL(), getCustomAccessToken(), request, messagesHistory) :
+                ChatCore.historyMono(getURL(), getCustomAccessToken(), request, messagesHistory);
     }
 
     private Publisher<ChatResponse> chatContFunc(String content, String msgUid, BiFunction<ChatBaseRequest, String, Publisher<ChatResponse>> chatFunction) {

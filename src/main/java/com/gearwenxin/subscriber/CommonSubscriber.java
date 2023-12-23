@@ -1,6 +1,6 @@
 package com.gearwenxin.subscriber;
 
-import com.gearwenxin.core.ChatCore;
+import com.gearwenxin.core.ChatUtils;
 import com.gearwenxin.entity.Message;
 import com.gearwenxin.entity.response.ChatResponse;
 import lombok.extern.slf4j.Slf4j;
@@ -75,7 +75,7 @@ public class CommonSubscriber implements Subscriber<ChatResponse>, Disposable {
         String result = joiner.toString();
         Optional.ofNullable(result).filter(StringUtils::isNotBlank).ifPresent(r -> {
             Message message = buildAssistantMessage(r);
-            ChatCore.offerMessage(messagesHistory, message);
+            ChatUtils.offerMessage(messagesHistory, message);
             log.debug("offerMessage onComplete");
         });
         emitter.complete();

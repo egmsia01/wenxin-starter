@@ -1,11 +1,8 @@
 package com.gearwenxin.client;
 
-import com.gearwenxin.common.ChatUtils;
-import com.gearwenxin.common.ErrorCode;
-import com.gearwenxin.entity.enums.SamplerType;
+import com.gearwenxin.core.ChatCore;
 import com.gearwenxin.entity.request.ImageBaseRequest;
 import com.gearwenxin.entity.response.ImageResponse;
-import com.gearwenxin.exception.WenXinException;
 import com.gearwenxin.model.BaseBot;
 import com.gearwenxin.model.images.ImageBot;
 import lombok.extern.slf4j.Slf4j;
@@ -27,7 +24,7 @@ public abstract class ImageClient implements ImageBot<ImageBaseRequest>, BaseBot
         imageBaseRequest.validSelf();
         log.info(getTag() + "imageRequest => {}", imageBaseRequest);
 
-        return ChatUtils.monoChatPost(
+        return ChatCore.monoChatPost(
                 getURL(), getCustomAccessToken(), imageBaseRequest, ImageResponse.class
         );
     }

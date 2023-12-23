@@ -1,8 +1,8 @@
 package com.gearwenxin.client.base;
 
-import com.gearwenxin.common.ChatUtils;
-import com.gearwenxin.common.ErrorCode;
 import com.gearwenxin.core.ChatCore;
+import com.gearwenxin.common.ErrorCode;
+import com.gearwenxin.core.ChatUtils;
 import com.gearwenxin.entity.chatmodel.ChatBaseRequest;
 import com.gearwenxin.entity.response.ChatResponse;
 import com.gearwenxin.exception.WenXinException;
@@ -56,7 +56,7 @@ public abstract class BaseClient implements SingleBot, BaseBot {
                 .switchIfEmpty(Mono.error(() -> new WenXinException(ErrorCode.PARAMS_ERROR)))
                 .doOnNext(reqT -> validRequest(requestT))
                 .flatMapMany(reqT -> {
-                    Object targetRequest = ChatCore.buildTargetRequest(null, stream, reqT);
+                    Object targetRequest = ChatUtils.buildTargetRequest(null, stream, reqT);
 
                     String logMessage = stream ? "{}-single-request-stream => {}" : "{}-single-request => {}";
                     log.info(logMessage, getTag(), targetRequest);
@@ -66,8 +66,8 @@ public abstract class BaseClient implements SingleBot, BaseBot {
     }
 
     public Publisher<ChatResponse> typeReturn(boolean stream, Object request) {
-        return stream ? ChatUtils.fluxChatPost(getURL(), getCustomAccessToken(), request, ChatResponse.class) :
-                ChatUtils.monoChatPost(getURL(), getCustomAccessToken(), request, ChatResponse.class);
+        return stream ? ChatCore.fluxChatPost(getURL(), getCustomAccessToken(), request, ChatResponse.class) :
+                ChatCore.monoChatPost(getURL(), getCustomAccessToken(), request, ChatResponse.class);
     }
 
     public <T extends ChatBaseRequest> void validRequest(T request) {

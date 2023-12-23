@@ -1,13 +1,12 @@
 package com.gearwenxin.client;
 
 import com.gearwenxin.client.base.BaseClient;
-import com.gearwenxin.common.ChatUtils;
+import com.gearwenxin.core.ChatCore;
 import com.gearwenxin.common.ConvertUtils;
 import com.gearwenxin.common.ErrorCode;
 import com.gearwenxin.common.Constant;
 import com.gearwenxin.config.WenXinProperties;
 import com.gearwenxin.entity.chatmodel.ChatBaseRequest;
-import com.gearwenxin.entity.chatmodel.ChatErnieRequest;
 import com.gearwenxin.entity.response.ChatResponse;
 import com.gearwenxin.exception.WenXinException;
 
@@ -83,7 +82,7 @@ public class PromptBotClient implements PromptBot, BaseBot {
         Map<String, String> paramMap = promptRequest.getParamMap();
         paramMap.put("id", promptRequest.getId());
 
-        return ChatUtils.monoChatGet(
+        return ChatCore.monoChatGet(
                 URL, getCustomAccessToken(), paramMap, PromptResponse.class
         );
     }

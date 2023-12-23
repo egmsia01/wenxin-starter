@@ -1,6 +1,6 @@
 package com.gearwenxin.config;
 
-import com.gearwenxin.common.ChatUtils;
+import com.gearwenxin.core.ChatCore;
 import com.gearwenxin.common.ErrorCode;
 import com.gearwenxin.entity.response.TokenResponse;
 import com.gearwenxin.exception.WenXinException;
@@ -35,7 +35,7 @@ public class GearWenXinConfig implements CommandLineRunner {
         if (apiKey == null || secretKey == null) {
             return;
         }
-        ChatUtils.getAccessTokenByAKSK(apiKey, secretKey)
+        ChatCore.getAccessTokenByAKSK(apiKey, secretKey)
                 .filter(Objects::nonNull)
                 .doOnNext(tokenResponse -> {
                     if (tokenResponse.getAccessToken() == null && accessToken == null) {

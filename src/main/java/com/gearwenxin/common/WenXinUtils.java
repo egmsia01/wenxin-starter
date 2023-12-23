@@ -1,6 +1,6 @@
 package com.gearwenxin.common;
 
-import com.gearwenxin.core.ChatCore;
+import com.gearwenxin.core.ChatUtils;
 import com.gearwenxin.entity.FunctionCall;
 import com.gearwenxin.entity.enums.Role;
 import com.gearwenxin.exception.WenXinException;
@@ -9,12 +9,9 @@ import org.apache.commons.lang3.StringUtils;
 import reactor.core.publisher.Mono;
 
 import java.util.Deque;
-import java.util.LinkedList;
 import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
-
-import static com.gearwenxin.common.Constant.MAX_TOTAL_LENGTH;
 
 /**
  * @author Ge Mingjia
@@ -55,8 +52,8 @@ public class WenXinUtils {
 
     public static Deque<Message> buildMessageHistory(Message userMessage, Message assistantMessage) {
         Deque<Message> messageDeque = new ConcurrentLinkedDeque<>();
-        ChatCore.offerMessage(messageDeque, userMessage);
-        ChatCore.offerMessage(messageDeque, assistantMessage);
+        ChatUtils.offerMessage(messageDeque, userMessage);
+        ChatUtils.offerMessage(messageDeque, assistantMessage);
         return messageDeque;
     }
 
