@@ -10,16 +10,12 @@ import reactor.core.publisher.Mono;
 
 import java.util.Deque;
 import java.util.concurrent.ConcurrentLinkedDeque;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * @author Ge Mingjia
  * {@code @date} 2023/7/23
  */
 public class WenXinUtils {
-
-    private static final Lock locker = new ReentrantLock();
 
     @Deprecated
     public static Deque<Message> buildUserMessageDeque(String content) {

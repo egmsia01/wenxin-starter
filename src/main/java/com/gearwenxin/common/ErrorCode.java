@@ -1,11 +1,14 @@
 package com.gearwenxin.common;
 
+import lombok.Getter;
+
 /**
  * 错误码
  *
  * @author Ge Mingjia
  * {@code @date} 2023/7/22
  */
+@Getter
 public enum ErrorCode {
 
     PARAMS_ERROR(40000, "参数错误"),
@@ -30,14 +33,6 @@ public enum ErrorCode {
     ErrorCode(int code, String message) {
         this.code = code;
         this.message = message;
-    }
-
-    public int getCode() {
-        return code;
-    }
-
-    public String getMessage() {
-        return message;
     }
 
 }
