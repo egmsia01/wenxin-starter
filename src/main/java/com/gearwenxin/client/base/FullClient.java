@@ -58,6 +58,11 @@ public abstract class FullClient extends BaseClient implements ContBot {
         return Flux.from(chatContProcess(chatRequest, msgUid, true));
     }
 
+    @Override
+    public <T extends ChatBaseRequest> Flux<ChatResponse> chatsViaWebSocket(T chatRequest, String msgUid) {
+        return null;
+    }
+
     public <T extends ChatBaseRequest> Publisher<ChatResponse> chatContProcess(T requestT, String msgUid, boolean stream) {
         return Mono.justOrEmpty(requestT)
                 .filter(reqT -> StringUtils.isNotBlank(msgUid))
