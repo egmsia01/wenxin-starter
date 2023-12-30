@@ -100,14 +100,12 @@ public class ChatCore {
         validateParams(url, accessToken, paramsMap, type);
         log.info("monoURL => {}", url);
 
-        WebClient client = buildWebClient(url);
-
         paramsMap.put("access_token", accessToken);
         String queryParams = paramsMap.entrySet().stream()
                 .map(entry -> entry.getKey() + "=" + encodeURL(entry.getValue()))
                 .collect(Collectors.joining("&"));
 
-        client = client.mutate()
+        WebClient client = buildWebClient(url).mutate()
                 .filter((request, next) -> {
                     String uriWithQueryParams = request.url() + "?" + queryParams;
                     ClientRequest filteredRequest = ClientRequest.from(request)
@@ -119,10 +117,9 @@ public class ChatCore {
         log.info("monoGet => {}", queryParams);
 
         return client.get()
-                .uri("")
                 .retrieve()
                 .bodyToMono(type)
-                .doOnSuccess(ChatCore::handleErrResponse)
+//                .doOnSuccess(ChatCore::handleErrResponse)
                 .doOnError(WebClientResponseException.class, handleWebClientError());
     }
 
