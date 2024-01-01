@@ -85,6 +85,16 @@ public class ErnieRequest extends BaseRequest {
     @JsonProperty("enable_citation")
     private Boolean enableCitation;
 
+    /**
+     * 指定响应内容的格式，说明：
+     * （1）可选值：
+     * · json_object：以json格式返回，可能出现不满足效果情况
+     * · text：以文本格式返回
+     * （2）如果不填写参数response_format值，默认为text
+     */
+    @JsonProperty("response_format")
+    private String responseFormat;
+
     public static ErnieRequestBuilder builder() {
         return new ErnieRequestBuilder();
     }
@@ -101,6 +111,7 @@ public class ErnieRequest extends BaseRequest {
         private List<String> stop;
         private Boolean disableSearch;
         private Boolean enableCitation;
+        private String responseFormat;
 
         public ErnieRequestBuilder temperature(Float temperature) {
             this.temperature = temperature;
@@ -160,6 +171,11 @@ public class ErnieRequest extends BaseRequest {
             return this;
         }
 
+        public ErnieRequestBuilder responseFormat(String responseFormat) {
+            this.responseFormat = responseFormat;
+            return this;
+        }
+
         @Override
         public ErnieRequest build() {
             ErnieRequest ernieRequest = new ErnieRequest();
@@ -174,6 +190,7 @@ public class ErnieRequest extends BaseRequest {
             ernieRequest.setStop(stop);
             ernieRequest.setDisableSearch(disableSearch);
             ernieRequest.setEnableCitation(enableCitation);
+            ernieRequest.setResponseFormat(responseFormat);
 
             return ernieRequest;
         }

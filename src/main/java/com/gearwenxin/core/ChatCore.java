@@ -3,6 +3,8 @@ package com.gearwenxin.core;
 import com.gearwenxin.common.ErrorCode;
 import com.gearwenxin.common.WenXinUtils;
 import com.gearwenxin.entity.Message;
+import com.gearwenxin.entity.enums.ResponseFormatType;
+import com.gearwenxin.entity.request.ErnieRequest;
 import com.gearwenxin.entity.response.ChatResponse;
 import com.gearwenxin.entity.response.ErrorResponse;
 import com.gearwenxin.entity.response.TokenResponse;
@@ -23,6 +25,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.Deque;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -79,6 +82,14 @@ public class ChatCore {
 
         String completeUrl = url + ACCESS_TOKEN_PRE + accessToken;
 
+        AtomicBoolean isJson = new AtomicBoolean(false);
+        if (request instanceof ErnieRequest ernieRequest) {
+            ResponseFormatType.fromString(ernieRequest.getResponseFormat()).ifPresent(requestType -> {
+                if (requestType == ResponseFormatType.json_object) {
+                    isJson.set(true);
+                }
+            });
+        }
         return buildWebClient(completeUrl).post()
                 .body(BodyInserters.fromValue(request))
                 .accept(MediaType.TEXT_EVENT_STREAM)
@@ -119,7 +130,7 @@ public class ChatCore {
         return client.get()
                 .retrieve()
                 .bodyToMono(type)
-//                .doOnSuccess(ChatCore::handleErrResponse)
+                .doOnSuccess(ChatCore::handleErrResponse)
                 .doOnError(WebClientResponseException.class, handleWebClientError());
     }
 
@@ -129,10 +140,9 @@ public class ChatCore {
     public static <T> Flux<ChatResponse> historyFlux(String url, String token, T request, Deque<Message> messagesHistory) {
         return Flux.create(emitter -> {
             CommonSubscriber subscriber = new CommonSubscriber(emitter, messagesHistory);
-            Flux<ChatResponse> chatResponse = ChatCore.fluxChatPost(
+            ChatCore.fluxChatPost(
                     url, token, request, ChatResponse.class
-            );
-            chatResponse.subscribe(subscriber);
+            ).subscribe(subscriber);
             emitter.onDispose(subscriber);
         });
     }
