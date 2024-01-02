@@ -152,10 +152,7 @@ public class ChatCore {
         ).subscribeOn(Schedulers.boundedElastic());
 
         return response.flatMap(chatResponse -> {
-            if (chatResponse == null || chatResponse.getResult() == null) {
-                return Mono.error(new WenXinException(ErrorCode.SYSTEM_ERROR, "响应错误！"));
-            }
-            assertNotNullMono("响应错误！", chatResponse.getResult(), chatResponse);
+            assertNotNullMono(ErrorCode.SYSTEM_ERROR, "响应错误！", chatResponse.getResult(), chatResponse);
 
             Message messageResult = WenXinUtils.buildAssistantMessage(chatResponse.getResult());
             ChatUtils.offerMessage(messagesHistory, messageResult);
