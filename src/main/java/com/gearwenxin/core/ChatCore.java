@@ -30,8 +30,7 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import static com.gearwenxin.common.Constant.GET_ACCESS_TOKEN_URL;
-import static com.gearwenxin.common.WenXinUtils.assertNotBlank;
-import static com.gearwenxin.common.WenXinUtils.assertNotNull;
+import static com.gearwenxin.common.WenXinUtils.*;
 
 /**
  * @author Ge Mingjia
@@ -156,6 +155,7 @@ public class ChatCore {
             if (chatResponse == null || chatResponse.getResult() == null) {
                 return Mono.error(new WenXinException(ErrorCode.SYSTEM_ERROR, "响应错误！"));
             }
+            assertNotNullMono("响应错误！", chatResponse.getResult(), chatResponse);
 
             Message messageResult = WenXinUtils.buildAssistantMessage(chatResponse.getResult());
             ChatUtils.offerMessage(messagesHistory, messageResult);

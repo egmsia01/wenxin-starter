@@ -111,9 +111,16 @@ public class WenXinUtils {
         }
     }
 
-    public static Mono<Void> assertNotNullMono(Object obj, String message) {
-        if (obj == null) {
-            return Mono.error(() -> new WenXinException(ErrorCode.PARAMS_ERROR, message));
+    public static Mono<Void> assertNotNullMono(String message, Object... obj) {
+        for (Object o : obj) {
+            if (o == null) {
+                return Mono.error(() -> new WenXinException(ErrorCode.PARAMS_ERROR, message));
+            }
+            if (o instanceof String) {
+                if (StringUtils.isBlank((String) o)) {
+                    return Mono.error(() -> new WenXinException(ErrorCode.PARAMS_ERROR, message));
+                }
+            }
         }
         return Mono.empty();
     }
