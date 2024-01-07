@@ -11,6 +11,7 @@ import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 
 import java.util.Objects;
+import java.util.Optional;
 
 /**
  * @author Ge Mingjia
@@ -37,14 +38,20 @@ public class GearWenXinConfig implements CommandLineRunner {
         }
         ChatCore.getAccessTokenByAKSK(apiKey, secretKey)
                 .filter(Objects::nonNull)
-                .doOnNext(tokenResponse -> {
-                    if (tokenResponse.getAccessToken() == null && accessToken == null) {
-                        throw new WenXinException(ErrorCode.SYSTEM_ERROR, "api_key or secret_key error！");
-                    }
-                })
+                .doOnNext(tokenResponse -> Optional.ofNullable(tokenResponse.getAccessToken())
+                        .ifPresentOrElse(token -> {
+                            wenXinProperties.setAccessToken(token);
+                            log.info("accessToken => {}", token);
+                        }, () -> {
+                            if (accessToken == null) {
+                                throw new WenXinException(ErrorCode.SYSTEM_ERROR, "api_key or secret_key error！");
+                            }
+                        }))
                 .map(TokenResponse::getAccessToken)
-                .doOnNext(wenXinProperties::setAccessToken)
-                .subscribe();
+                .block();
+        // 再次检测wenXinProperties是否被正确赋值
+        Optional.ofNullable(wenXinProperties.getAccessToken())
+                .orElseThrow(() -> new WenXinException(ErrorCode.SYSTEM_ERROR, "accessToken 未被正确赋值！"));
     }
 
 }
