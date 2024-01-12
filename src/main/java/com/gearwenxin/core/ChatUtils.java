@@ -57,8 +57,8 @@ public class ChatUtils {
         if (updated.size() <= original.size()) {
             updated.clear();
             updated.addAll(original);
+            updated.offer(message);
         }
-        updated.offer(message);
     }
 
     private static void handleExceedingLength(Deque<Message> messagesHistory, Deque<Message> updatedHistory) {
