@@ -61,7 +61,7 @@ PromptBotClient -> ChatPromptRequest -> PromptResponse
 <dependency>
   <groupId>io.github.gemingjia</groupId>
   <artifactId>gear-wenxinworkshop-starter</artifactId>
-  <version>1.0.0</version>
+  <version>1.1.1</version>
 </dependency>
 ```
 - Gradle
