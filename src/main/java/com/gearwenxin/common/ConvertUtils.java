@@ -12,6 +12,7 @@ import static com.gearwenxin.common.WenXinUtils.assertNotNull;
  * 类型转换工具类
  *
  * @author Ge Mingjia
+ * {@code @date} 2023/5/27
  */
 public class ConvertUtils {
 
@@ -27,7 +28,10 @@ public class ConvertUtils {
                 .topP(chatRequest.getTopP())
                 .penaltyScore(chatRequest.getPenaltyScore())
                 .functions(chatRequest.getFunctions())
-                .system(chatRequest.getSystem());
+                .system(chatRequest.getSystem())
+                .stop(chatRequest.getStop())
+                .disableSearch(chatRequest.getDisableSearch())
+                .enableCitation(chatRequest.getEnableCitation());
     }
 
     public static BaseRequest.BaseRequestBuilder toBaseRequest(ChatBaseRequest chatRequest) {

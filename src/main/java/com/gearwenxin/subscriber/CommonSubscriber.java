@@ -1,6 +1,6 @@
 package com.gearwenxin.subscriber;
 
-import com.gearwenxin.common.WenXinUtils;
+import com.gearwenxin.core.ChatUtils;
 import com.gearwenxin.entity.Message;
 import com.gearwenxin.entity.response.ChatResponse;
 import lombok.extern.slf4j.Slf4j;
@@ -11,6 +11,7 @@ import reactor.core.Disposable;
 import reactor.core.publisher.FluxSink;
 
 import java.util.Deque;
+import java.util.Optional;
 import java.util.StringJoiner;
 
 import static com.gearwenxin.common.WenXinUtils.assertNotNull;
@@ -18,7 +19,7 @@ import static com.gearwenxin.common.WenXinUtils.buildAssistantMessage;
 
 /**
  * @author Ge Mingjia
-
+ * {@code @date} 2023/7/20
  */
 @Slf4j
 public class CommonSubscriber implements Subscriber<ChatResponse>, Disposable {
@@ -26,7 +27,6 @@ public class CommonSubscriber implements Subscriber<ChatResponse>, Disposable {
     private final FluxSink<ChatResponse> emitter;
     private Subscription subscription;
     private final Deque<Message> messagesHistory;
-
     private final StringJoiner joiner = new StringJoiner("");
 
     public CommonSubscriber(FluxSink<ChatResponse> emitter, Deque<Message> messagesHistory) {
@@ -51,9 +51,7 @@ public class CommonSubscriber implements Subscriber<ChatResponse>, Disposable {
 
         log.debug("CommonSubscriber.onNext");
 
-        if (response.getResult() != null) {
-            joiner.add(response.getResult());
-        }
+        Optional.ofNullable(response.getResult()).ifPresent(joiner::add);
         subscription.request(15);
         emitter.next(response);
     }
@@ -75,11 +73,11 @@ public class CommonSubscriber implements Subscriber<ChatResponse>, Disposable {
         }
         log.debug("onComplete");
         String result = joiner.toString();
-        if (StringUtils.isNotBlank(result)) {
-            Message message = buildAssistantMessage(result);
-            WenXinUtils.offerMessage(messagesHistory, message);
+        Optional.ofNullable(result).filter(StringUtils::isNotBlank).ifPresent(r -> {
+            Message message = buildAssistantMessage(r);
+            ChatUtils.offerMessage(messagesHistory, message);
             log.debug("offerMessage onComplete");
-        }
+        });
         emitter.complete();
     }
 

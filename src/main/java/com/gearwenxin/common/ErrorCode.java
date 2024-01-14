@@ -1,13 +1,18 @@
 package com.gearwenxin.common;
 
+import lombok.Getter;
+
 /**
  * 错误码
  *
  * @author Ge Mingjia
+ * {@code @date} 2023/7/22
  */
+@Getter
 public enum ErrorCode {
 
     PARAMS_ERROR(40000, "参数错误"),
+    REQUEST_TYPE_ERROR(40001, "不受支持的请求类"),
     NO_AUTH_ERROR(40101, "无权限"),
     SYSTEM_ERROR(50000, "系统内部异常"),
     OPERATION_ERROR(50001, "操作失败"),
@@ -28,14 +33,6 @@ public enum ErrorCode {
     ErrorCode(int code, String message) {
         this.code = code;
         this.message = message;
-    }
-
-    public int getCode() {
-        return code;
-    }
-
-    public String getMessage() {
-        return message;
     }
 
 }

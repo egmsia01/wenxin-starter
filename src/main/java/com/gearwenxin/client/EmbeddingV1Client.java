@@ -3,14 +3,14 @@ package com.gearwenxin.client;
 import com.gearwenxin.common.Constant;
 import com.gearwenxin.config.WenXinProperties;
 import com.gearwenxin.model.BaseBot;
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 /**
  * @author Ge Mingjia
-
+ * {@code @date} 2023/7/20
  */
 @Slf4j
 @Service

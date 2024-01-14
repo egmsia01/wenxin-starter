@@ -1,10 +1,13 @@
 package com.gearwenxin.client;
 
-import com.gearwenxin.common.ChatUtils;
+import com.gearwenxin.client.base.BaseClient;
+import com.gearwenxin.core.ChatCore;
 import com.gearwenxin.common.ConvertUtils;
 import com.gearwenxin.common.ErrorCode;
 import com.gearwenxin.common.Constant;
 import com.gearwenxin.config.WenXinProperties;
+import com.gearwenxin.entity.chatmodel.ChatBaseRequest;
+import com.gearwenxin.entity.response.ChatResponse;
 import com.gearwenxin.exception.WenXinException;
 
 import com.gearwenxin.entity.chatmodel.ChatPromptRequest;
@@ -12,20 +15,20 @@ import com.gearwenxin.entity.request.PromptRequest;
 import com.gearwenxin.entity.response.PromptResponse;
 import com.gearwenxin.model.BaseBot;
 import com.gearwenxin.model.PromptBot;
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.Map;
 
 /**
  * @author Ge Mingjia
-
+ * {@code @date} 2023/7/20
  */
 @Slf4j
 @Lazy
@@ -34,6 +37,9 @@ public class PromptBotClient implements PromptBot, BaseBot {
 
     @Resource
     private WenXinProperties wenXinProperties;
+
+    @Resource
+    private PromptBotClient promptBotClient;
 
     private String accessToken = null;
     private static final String TAG = "Prompt-Bot-Client";
@@ -70,16 +76,25 @@ public class PromptBotClient implements PromptBot, BaseBot {
                 chatPromptRequest.getId() <= 0 ||
                 CollectionUtils.isEmpty(chatPromptRequest.getParamMap())
         ) {
-            throw new WenXinException(ErrorCode.PARAMS_ERROR);
+            throw new WenXinException(ErrorCode.PARAMS_ERROR, "chatPromptRequest is null or id is null or paramMap is null");
         }
         PromptRequest promptRequest = ConvertUtils.toPromptRequest(chatPromptRequest);
-        String id = promptRequest.getId();
         Map<String, String> paramMap = promptRequest.getParamMap();
-        paramMap.put("id", id);
+        paramMap.put("id", promptRequest.getId());
 
-        return ChatUtils.monoChatGet(
+        return ChatCore.monoChatGet(
                 URL, getCustomAccessToken(), paramMap, PromptResponse.class
         );
+    }
+
+    @Override
+    public <U extends BaseClient, T extends ChatBaseRequest> Flux<ChatResponse> chatUsePrompt(ChatPromptRequest request, T chatRequest, U chatClient) {
+        return promptBotClient.chatPrompt(request).flatMapMany(response -> {
+            log.debug("PromptResponse => {}", response);
+            chatRequest.setContent(response.getResult().getContent());
+
+            return chatClient.chatSingleOfStream(chatRequest);
+        });
     }
 
 }

@@ -61,13 +61,13 @@ PromptBotClient -> ChatPromptRequest -> PromptResponse
 <dependency>
   <groupId>io.github.gemingjia</groupId>
   <artifactId>gear-wenxinworkshop-starter</artifactId>
-  <version>1.0.0</version>
+  <version>1.1.1</version>
 </dependency>
 ```
 - Gradle
 ```gradle
 dependencies {
-  implementation 'io.github.gemingjia:gear-wenxinworkshop-starter:1.0.0' 
+  implementation 'io.github.gemingjia:gear-wenxinworkshop-starter:1.1.1' 
 }
 ```
 
@@ -78,6 +78,7 @@ dependencies {
     wenxin:
       access-token: xx.xxxxxxxxxx.xxxxxx.xxxxxxx.xxxxx-xxxx
   -------------或-----------------
+  # 推荐
   gear:
     wenxin:
       api-key: xxxxxxxxxxxxxxxxxxx
@@ -171,6 +172,20 @@ public class ChatController {
 [![Star History Chart](https://api.star-history.com/svg?repos=gemingjia/gear-wenxinworkshop-starter&type=Date)](https://star-history.com/#gemingjia/gear-wenxinworkshop-starter)
 
 ## 更新日志
+
+v1.1.1
+- 修复 部分场景下无法获取access-token的问题
+- 修复 并发场景下会造成消息错乱的问题
+- 优化 场景下的性能
+- 优化 同步官方文档新版请求参数与响应参数
+
+v1.0.1  - jdk8 专版
+- 同步 master 分支的修改
+
+v1.0.0
+- 重构 Bean注入方式与配置读取，可能引起路径兼容问题。
+- 优化 大量代码精简
+- 修复 并发安全问题
 
 v0.0.9.7 - pre release
 - 新增 对function call的简单支持 

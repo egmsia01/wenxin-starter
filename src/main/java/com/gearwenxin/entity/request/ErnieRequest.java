@@ -12,7 +12,7 @@ import java.util.List;
 
 /**
  * @author Ge Mingjia
-
+ * {@code @date} 2023/7/20
  * <p>
  * ContBot 模型
  */
@@ -63,6 +63,42 @@ public class ErnieRequest extends BaseRequest {
     @JsonProperty("system")
     private String system;
 
+    /**
+     * 生成停止标识，当模型生成结果以stop中某个元素结尾时，停止文本生成。说明：
+     * （1）每个元素长度不超过20字符
+     * （2）最多4个元素
+     */
+    @JsonProperty("stop")
+    private List<String> stop;
+
+    /**
+     * 是否强制关闭实时搜索功能，默认false，表示不关闭
+     */
+    @JsonProperty("disable_search")
+    private Boolean disableSearch;
+
+    /**
+     * 是否开启上角标返回，说明：
+     * （1）开启后，有概率触发搜索溯源信息search_info，search_info内容见响应参数介绍
+     * （2）默认false，不开启
+     */
+    @JsonProperty("enable_citation")
+    private Boolean enableCitation;
+
+    /**
+     * 指定响应内容的格式，说明：
+     * （1）可选值：
+     * · json_object：以json格式返回，可能出现不满足效果情况
+     * · text：以文本格式返回
+     * （2）如果不填写参数response_format值，默认为text
+     */
+    @JsonProperty("response_format")
+    private String responseFormat;
+
+    public static ErnieRequestBuilder builder() {
+        return new ErnieRequestBuilder();
+    }
+
     public static class ErnieRequestBuilder extends BaseRequestBuilder {
         private Float temperature;
         private Float topP;
@@ -72,6 +108,10 @@ public class ErnieRequest extends BaseRequest {
         private Boolean stream;
         private List<FunctionInfo> functions;
         private String system;
+        private List<String> stop;
+        private Boolean disableSearch;
+        private Boolean enableCitation;
+        private String responseFormat;
 
         public ErnieRequestBuilder temperature(Float temperature) {
             this.temperature = temperature;
@@ -116,6 +156,26 @@ public class ErnieRequest extends BaseRequest {
             return this;
         }
 
+        public ErnieRequestBuilder stop(List<String> stop) {
+            this.stop = stop;
+            return this;
+        }
+
+        public ErnieRequestBuilder disableSearch(Boolean disableSearch) {
+            this.disableSearch = disableSearch;
+            return this;
+        }
+
+        public ErnieRequestBuilder enableCitation(Boolean enableCitation) {
+            this.enableCitation = enableCitation;
+            return this;
+        }
+
+        public ErnieRequestBuilder responseFormat(String responseFormat) {
+            this.responseFormat = responseFormat;
+            return this;
+        }
+
         @Override
         public ErnieRequest build() {
             ErnieRequest ernieRequest = new ErnieRequest();
@@ -127,12 +187,13 @@ public class ErnieRequest extends BaseRequest {
             ernieRequest.setStream(stream);
             ernieRequest.setFunctions(functions);
             ernieRequest.setSystem(system);
+            ernieRequest.setStop(stop);
+            ernieRequest.setDisableSearch(disableSearch);
+            ernieRequest.setEnableCitation(enableCitation);
+            ernieRequest.setResponseFormat(responseFormat);
+
             return ernieRequest;
         }
-    }
-
-    public static ErnieRequestBuilder builder() {
-        return new ErnieRequestBuilder();
     }
 
 }
