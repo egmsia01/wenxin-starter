@@ -141,7 +141,7 @@ public class ChatController {
   public Mono<ImageResponse> chatImage() {
       ImageBaseRequest imageBaseRequest = ImageBaseRequest.builder()
             // 提示词
-            .prompt("一个头发中分并且穿着背带裤的人")
+            .prompt("一个头发中分背带裤的人")
             // 大小
             .size("1024x1024")
             // 反向提示词（不包含什么）
