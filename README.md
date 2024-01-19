@@ -105,7 +105,7 @@ public class ChatController {
   // 单次对话
   @PostMapping("/chat")
   public Mono<ChatResponse> chatSingle(String msg) {
-    return ernieBot4Client.chatSingle(msg);
+      return ernieBot4Client.chatSingle(msg);
   }
 
   // 流式返回，连续对话（SSE形式）
@@ -126,20 +126,20 @@ public class ChatController {
   // Prompt模板
   @PostMapping("/prompt")
   public Mono<PromptResponse> chatSingle() {
-    Map<String, String> map = new HashMap<>();
-    map.put("article", "我看见过波澜壮阔的大海，玩赏过水平如镜的西湖，却从没看见过漓江这样的水。漓江的水真静啊，静得让你感觉不到它在流动。");
-    map.put("number", "20");
-    PromptRequest promptRequest = new PromptRequest();
-    promptRequest.setId(1234);
-    promptRequest.setParamMap(map);
+      Map<String, String> map = new HashMap<>();
+      map.put("article", "我看见过波澜壮阔的大海，玩赏过水平如镜的西湖，却从没看见过漓江这样的水。漓江的水真静啊，静得让你感觉不到它在流动。");
+      map.put("number", "20");
+      PromptRequest promptRequest = new PromptRequest();
+      promptRequest.setId(1234);
+      promptRequest.setParamMap(map);
     
-    return promptBotClient.chatPrompt(promptRequest);
+      return promptBotClient.chatPrompt(promptRequest);
   }
 
   // 文生图
   @PostMapping("/image")
   public Mono<ImageResponse> chatImage() {
-    ImageBaseRequest imageBaseRequest = ImageBaseRequest.builder()
+      ImageBaseRequest imageBaseRequest = ImageBaseRequest.builder()
             // 提示词
             .prompt("一个头发中分并且穿着背带裤的人")
             // 大小
@@ -155,7 +155,7 @@ public class ChatController {
             .userId("1001")
             .build();
 
-    return stableDiffusionXLClient.chatImage(imageBaseRequest);
+      return stableDiffusionXLClient.chatImage(imageBaseRequest);
   }
   
 }
