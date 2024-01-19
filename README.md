@@ -108,25 +108,19 @@ public class ChatController {
     return ernieBot4Client.chatSingle(msg);
   }
 
-  // 连续对话
-  @PostMapping("/chats")
-  public Mono<ChatResponse> chatCont(String msg) {
-    String chatUID = "test-user-1001";
-    return ernieBot4Client.chatCont(msg, chatUID);
-  }
-
-  // 流式返回，单次对话
-  @GetMapping(value = "/stream/chat", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-  public Flux<String> chatSingleStream(@RequestParam String msg) {
-    return ernieBot4Client.chatSingleOfStream(msg)
-            .map(response -> "data: " + response.getResult() + "\n\n");
-  }
-
-  // 流式返回，连续对话
+  // 流式返回，连续对话（SSE形式）
   @GetMapping(value = "/stream/chats", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-  public Flux<String> chatContStream(@RequestParam String msg, @RequestParam String msgUid) {
-    return ernieBot4Client.chatContOfStream(msg, msgUid)
-            .map(response -> "data: " + response.getResult() + "\n\n");
+  public SseEmitter chatSingleSSE(@RequestParam String msg) {
+      String chatUID = "test-user-1001";
+      SseEmitter emitter = new SseEmitter();
+      ernieBot4Client.chatContOfStream(msg, chatUID).subscribe(response -> {
+          try {
+              emitter.send(SseEmitter.event().data(response.getResult()));
+          } catch (Exception e) {
+              emitter.completeWithError(e);
+          }
+      }, emitter::completeWithError, emitter::complete);
+      return emitter;
   }
 
   // Prompt模板
