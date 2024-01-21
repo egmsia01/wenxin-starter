@@ -105,49 +105,43 @@ public class ChatController {
   // 单次对话
   @PostMapping("/chat")
   public Mono<ChatResponse> chatSingle(String msg) {
-    return ernieBot4Client.chatSingle(msg);
+      return ernieBot4Client.chatSingle(msg);
   }
 
-  // 连续对话
-  @PostMapping("/chats")
-  public Mono<ChatResponse> chatCont(String msg) {
-    String chatUID = "test-user-1001";
-    return ernieBot4Client.chatCont(msg, chatUID);
-  }
-
-  // 流式返回，单次对话
-  @GetMapping(value = "/stream/chat", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-  public Flux<String> chatSingleStream(@RequestParam String msg) {
-    return ernieBot4Client.chatSingleOfStream(msg)
-            .map(response -> "data: " + response.getResult() + "\n\n");
-  }
-
-  // 流式返回，连续对话
+  // 流式返回，连续对话（SSE形式）
   @GetMapping(value = "/stream/chats", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-  public Flux<String> chatContStream(@RequestParam String msg, @RequestParam String msgUid) {
-    return ernieBot4Client.chatContOfStream(msg, msgUid)
-            .map(response -> "data: " + response.getResult() + "\n\n");
+  public SseEmitter chatSingleSSE(@RequestParam String msg) {
+      String chatUID = "test-user-1001";
+      SseEmitter emitter = new SseEmitter();
+      ernieBot4Client.chatContOfStream(msg, chatUID).subscribe(response -> {
+          try {
+              emitter.send(SseEmitter.event().data(response.getResult()));
+          } catch (Exception e) {
+              emitter.completeWithError(e);
+          }
+      }, emitter::completeWithError, emitter::complete);
+      return emitter;
   }
 
   // Prompt模板
   @PostMapping("/prompt")
   public Mono<PromptResponse> chatSingle() {
-    Map<String, String> map = new HashMap<>();
-    map.put("article", "我看见过波澜壮阔的大海，玩赏过水平如镜的西湖，却从没看见过漓江这样的水。漓江的水真静啊，静得让你感觉不到它在流动。");
-    map.put("number", "20");
-    PromptRequest promptRequest = new PromptRequest();
-    promptRequest.setId(1234);
-    promptRequest.setParamMap(map);
+      Map<String, String> map = new HashMap<>();
+      map.put("article", "我看见过波澜壮阔的大海，玩赏过水平如镜的西湖，却从没看见过漓江这样的水。漓江的水真静啊，静得让你感觉不到它在流动。");
+      map.put("number", "20");
+      PromptRequest promptRequest = new PromptRequest();
+      promptRequest.setId(1234);
+      promptRequest.setParamMap(map);
     
-    return promptBotClient.chatPrompt(promptRequest);
+      return promptBotClient.chatPrompt(promptRequest);
   }
 
   // 文生图
   @PostMapping("/image")
   public Mono<ImageResponse> chatImage() {
-    ImageBaseRequest imageBaseRequest = ImageBaseRequest.builder()
+      ImageBaseRequest imageBaseRequest = ImageBaseRequest.builder()
             // 提示词
-            .prompt("一个头发中分并且穿着背带裤的人")
+            .prompt("一个头发中分背带裤的人")
             // 大小
             .size("1024x1024")
             // 反向提示词（不包含什么）
@@ -161,7 +155,7 @@ public class ChatController {
             .userId("1001")
             .build();
 
-    return stableDiffusionXLClient.chatImage(imageBaseRequest);
+      return stableDiffusionXLClient.chatImage(imageBaseRequest);
   }
   
 }
