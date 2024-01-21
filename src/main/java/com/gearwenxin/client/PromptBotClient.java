@@ -38,9 +38,6 @@ public class PromptBotClient implements PromptBot, BaseBot {
     @Resource
     private WenXinProperties wenXinProperties;
 
-    @Resource
-    private PromptBotClient promptBotClient;
-
     private String accessToken = null;
     private static final String TAG = "Prompt-Bot-Client";
 
@@ -89,7 +86,7 @@ public class PromptBotClient implements PromptBot, BaseBot {
 
     @Override
     public <U extends BaseClient, T extends ChatBaseRequest> Flux<ChatResponse> chatUsePrompt(ChatPromptRequest request, T chatRequest, U chatClient) {
-        return promptBotClient.chatPrompt(request).flatMapMany(response -> {
+        return this.chatPrompt(request).flatMapMany(response -> {
             log.debug("PromptResponse => {}", response);
             chatRequest.setContent(response.getResult().getContent());
 

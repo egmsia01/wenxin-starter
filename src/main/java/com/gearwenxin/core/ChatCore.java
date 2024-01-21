@@ -81,14 +81,6 @@ public class ChatCore {
 
         String completeUrl = url + ACCESS_TOKEN_PRE + accessToken;
 
-        AtomicBoolean isJson = new AtomicBoolean(false);
-        if (request instanceof ErnieRequest ernieRequest) {
-            ResponseFormatType.fromString(ernieRequest.getResponseFormat()).ifPresent(requestType -> {
-                if (requestType == ResponseFormatType.json_object) {
-                    isJson.set(true);
-                }
-            });
-        }
         return buildWebClient(completeUrl).post()
                 .body(BodyInserters.fromValue(request))
                 .accept(MediaType.TEXT_EVENT_STREAM)
