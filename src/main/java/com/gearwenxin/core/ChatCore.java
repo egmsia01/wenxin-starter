@@ -3,8 +3,6 @@ package com.gearwenxin.core;
 import com.gearwenxin.common.ErrorCode;
 import com.gearwenxin.common.WenXinUtils;
 import com.gearwenxin.entity.Message;
-import com.gearwenxin.entity.enums.ResponseFormatType;
-import com.gearwenxin.entity.request.ErnieRequest;
 import com.gearwenxin.entity.response.ChatResponse;
 import com.gearwenxin.entity.response.ErrorResponse;
 import com.gearwenxin.entity.response.TokenResponse;
@@ -25,7 +23,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.Deque;
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 

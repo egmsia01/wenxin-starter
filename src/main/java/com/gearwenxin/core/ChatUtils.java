@@ -30,7 +30,7 @@ public class ChatUtils {
 
         Deque<Message> updatedHistory = new LinkedList<>(messagesHistory);
 
-        removeConsecutiveUserMessages(updatedHistory, message);
+        validateMessageRule(updatedHistory, message);
         updatedHistory.offer(message);
 
         synchronizeHistories(messagesHistory, updatedHistory, message);
@@ -44,14 +44,41 @@ public class ChatUtils {
         handleExceedingLength(messagesHistory, updatedHistory);
     }
 
-    private static void removeConsecutiveUserMessages(Deque<Message> history, Message message) {
+    private static void validateMessageRule(Deque<Message> history, Message message) {
         if (!history.isEmpty()) {
             Message lastMessage = history.peekLast();
-            if (lastMessage != null && lastMessage.getRole() == Role.user && message.getRole() == Role.user) {
-                history.pollLast();
+            if (lastMessage != null) {
+                // 如果当前是奇数位message，要求role值为user或function
+                if (history.size() % 2 != 0) {
+                    if (message.getRole() != Role.user && message.getRole() != Role.function) {
+                        // 删除最后一条消息
+                        history.pollLast();
+                        validateMessageRule(history, message);
+                    }
+                } else {
+                    // 如果当前是偶数位message，要求role值为assistant
+                    if (message.getRole() != Role.assistant) {
+                        // 删除最后一条消息
+                        history.pollLast();
+                        validateMessageRule(history, message);
+                    }
+                }
+
+                // 第一个message的role不能是function
+                if (history.size() == 1 && message.getRole() == Role.function) {
+                    // 删除最后一条消息
+                    history.pollLast();
+                    validateMessageRule(history, message);
+                }
+
+                // 移除连续的相同role的user messages
+                if (lastMessage.getRole() == Role.user && message.getRole() == Role.user) {
+                    history.pollLast();
+                }
             }
         }
     }
+
 
     private static void synchronizeHistories(Deque<Message> original, Deque<Message> updated, Message message) {
         if (updated.size() <= original.size()) {
@@ -70,10 +97,14 @@ public class ChatUtils {
         while (totalLength > MAX_TOTAL_LENGTH && updatedHistory.size() > 2) {
             Message firstMessage = updatedHistory.poll();
             Message secondMessage = updatedHistory.poll();
-            if (firstMessage != null && secondMessage != null &&
-                    (firstMessage.getRole() == Role.user || firstMessage.getRole() == Role.function) &&
-                    secondMessage.getRole() == Role.assistant) {
-                totalLength -= (firstMessage.getContent().length() + secondMessage.getContent().length());
+            /**
+             * 奇数位messsage的role值必须为user或function，偶数位message的role值为assistant，第一个message的role不能是function。
+             */
+            if (firstMessage != null && secondMessage != null) {
+                boolean b = (firstMessage.getRole() == Role.user || firstMessage.getRole() == Role.function) && secondMessage.getRole() == Role.assistant;
+                if (b) {
+                    totalLength -= (firstMessage.getContent().length() + secondMessage.getContent().length());
+                }
             } else if (secondMessage != null) {
                 updatedHistory.addFirst(secondMessage);
                 totalLength -= secondMessage.getContent().length();
