@@ -74,6 +74,7 @@ public class ChatUtils {
                 // 移除连续的相同role的user messages
                 if (lastMessage.getRole() == Role.user && message.getRole() == Role.user) {
                     history.pollLast();
+                    validateMessageRule(history, message);
                 }
             }
         }
@@ -97,9 +98,6 @@ public class ChatUtils {
         while (totalLength > MAX_TOTAL_LENGTH && updatedHistory.size() > 2) {
             Message firstMessage = updatedHistory.poll();
             Message secondMessage = updatedHistory.poll();
-            /**
-             * 奇数位messsage的role值必须为user或function，偶数位message的role值为assistant，第一个message的role不能是function。
-             */
             if (firstMessage != null && secondMessage != null) {
                 boolean b = (firstMessage.getRole() == Role.user || firstMessage.getRole() == Role.function) && secondMessage.getRole() == Role.assistant;
                 if (b) {
