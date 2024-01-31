@@ -167,6 +167,9 @@ public class ChatController {
 
 ## 更新日志
 
+v1.1.3 [JDK1.8 专版]
+- 合并master分支1.1.2
+
 v1.1.1
 - 修复 部分场景下无法获取access-token的问题
 - 修复 并发场景下会造成消息错乱的问题
