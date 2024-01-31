@@ -48,33 +48,9 @@ public class ChatUtils {
         if (!history.isEmpty()) {
             Message lastMessage = history.peekLast();
             if (lastMessage != null) {
-                // 如果当前是奇数位message，要求role值为user或function
-                if (history.size() % 2 != 0) {
-                    if (message.getRole() != Role.user && message.getRole() != Role.function) {
-                        // 删除最后一条消息
-                        history.pollLast();
-                        validateMessageRule(history, message);
-                    }
-                } else {
-                    // 如果当前是偶数位message，要求role值为assistant
-                    if (message.getRole() != Role.assistant) {
-                        // 删除最后一条消息
-                        history.pollLast();
-                        validateMessageRule(history, message);
-                    }
-                }
-
-                // 第一个message的role不能是function
-                if (history.size() == 1 && message.getRole() == Role.function) {
-                    // 删除最后一条消息
-                    history.pollLast();
-                    validateMessageRule(history, message);
-                }
-
                 // 移除连续的相同role的user messages
                 if (lastMessage.getRole() == Role.user && message.getRole() == Role.user) {
                     history.pollLast();
-                    validateMessageRule(history, message);
                 }
             }
         }
