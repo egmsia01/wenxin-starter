@@ -189,7 +189,8 @@ public class ChatCore {
 
     private static <T> void handleErrResponse(T response) {
         assertNotNull(response, "响应异常");
-        if (response instanceof ChatResponse chatResponse) {
+        if (response instanceof ChatResponse) {
+            ChatResponse chatResponse = (ChatResponse) response;
             Optional.ofNullable(chatResponse.getErrorMsg()).ifPresent(errMsg -> {
                 ErrorResponse errorResponse = ErrorResponse.builder()
                         .id(chatResponse.getId())

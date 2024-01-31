@@ -3,7 +3,7 @@ package com.gearwenxin.client.llama2;
 import com.gearwenxin.client.base.FullClient;
 import com.gearwenxin.config.WenXinProperties;
 import com.gearwenxin.entity.Message;
-import jakarta.annotation.Resource;
+import javax.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;

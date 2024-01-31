@@ -15,7 +15,7 @@ import com.gearwenxin.entity.request.PromptRequest;
 import com.gearwenxin.entity.response.PromptResponse;
 import com.gearwenxin.model.BaseBot;
 import com.gearwenxin.model.PromptBot;
-import jakarta.annotation.Resource;
+import javax.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.context.annotation.Lazy;
