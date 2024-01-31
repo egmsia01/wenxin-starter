@@ -1,11 +1,8 @@
 package com.gearwenxin.common;
 
-import com.gearwenxin.entity.BaseRequest;
+import com.gearwenxin.core.ChatUtils;
 import com.gearwenxin.entity.FunctionCall;
-import com.gearwenxin.entity.chatmodel.ChatBaseRequest;
-import com.gearwenxin.entity.chatmodel.ChatErnieRequest;
 import com.gearwenxin.entity.enums.Role;
-import com.gearwenxin.entity.request.ErnieRequest;
 import com.gearwenxin.exception.WenXinException;
 import com.gearwenxin.entity.Message;
 import org.apache.commons.lang3.StringUtils;
@@ -14,14 +11,11 @@ import reactor.core.publisher.Mono;
 import java.util.Deque;
 import java.util.concurrent.ConcurrentLinkedDeque;
 
-import static com.gearwenxin.common.Constant.MAX_TOTAL_LENGTH;
-
 /**
  * @author Ge Mingjia
+ * {@code @date} 2023/7/23
  */
 public class WenXinUtils {
-
-    private static final Object offerLock = new Object();
 
     @Deprecated
     public static Deque<Message> buildUserMessageDeque(String content) {
@@ -54,8 +48,8 @@ public class WenXinUtils {
 
     public static Deque<Message> buildMessageHistory(Message userMessage, Message assistantMessage) {
         Deque<Message> messageDeque = new ConcurrentLinkedDeque<>();
-        offerMessage(messageDeque, userMessage);
-        offerMessage(messageDeque, assistantMessage);
+        ChatUtils.offerMessage(messageDeque, userMessage);
+        ChatUtils.offerMessage(messageDeque, assistantMessage);
         return messageDeque;
     }
 
@@ -91,77 +85,6 @@ public class WenXinUtils {
         return buildAssistantMessage(content, null, null);
     }
 
-    public static <T extends ChatBaseRequest> Object buildTargetRequest(Deque<Message> messagesHistory, boolean stream, T request) {
-        Object targetRequest = null;
-        if (request.getClass() == ChatBaseRequest.class) {
-            BaseRequest.BaseRequestBuilder requestBuilder = ConvertUtils.toBaseRequest(request)
-                    .stream(stream);
-            if (messagesHistory != null)
-                requestBuilder.messages(messagesHistory);
-            targetRequest = requestBuilder.build();
-        } else if (request.getClass() == ChatErnieRequest.class) {
-            ErnieRequest.ErnieRequestBuilder requestBuilder = ConvertUtils.toErnieRequest((ChatErnieRequest) request)
-                    .stream(stream);
-            if (messagesHistory != null)
-                requestBuilder.messages(messagesHistory);
-            targetRequest = requestBuilder.build();
-        }
-        return targetRequest;
-    }
-
-    /**
-     * 向历史消息中添加消息
-     *
-     * @param messagesHistory 历史消息队列
-     * @param message         需添加的Message
-     */
-    public static void offerMessage(Deque<Message> messagesHistory, Message message) {
-        assertNotNull(messagesHistory, "messagesHistory is null");
-        assertNotNull(message, "message is null");
-        assertNotBlank(message.getContent(), "message.content is null or blank");
-
-        synchronized (offerLock) {
-            Message lastMessage = messagesHistory.peekLast();
-            if (lastMessage != null && lastMessage.getRole() == Role.user &&
-                    message.getRole() == Role.user) {
-                messagesHistory.pollLast();
-            }
-            messagesHistory.offer(message);
-
-            if (message.getRole() == Role.assistant) {
-                return;
-            }
-
-            // 统计用户消息总长度
-            int totalLength = 0;
-            for (Message msg : messagesHistory) {
-                if (msg.getRole() == Role.user) {
-                    totalLength += msg.getContent().length();
-                }
-            }
-            // 大于最大长度后删除最前面的对话
-            while (totalLength > MAX_TOTAL_LENGTH && messagesHistory.size() > 2) {
-                Message firstMessage = messagesHistory.poll();
-                Message secondMessage = messagesHistory.poll();
-                if (firstMessage != null && secondMessage != null) {
-                    if ((firstMessage.getRole() == Role.user || firstMessage.getRole() == Role.function) && secondMessage.getRole() == Role.assistant) {
-                        totalLength -= (firstMessage.getContent().length() + secondMessage.getContent().length());
-                    }
-                } else {
-                    // 处理失败，将消息重新放回队列
-                    if (firstMessage != null) {
-                        messagesHistory.addFirst(firstMessage);
-                    }
-                    if (secondMessage != null) {
-                        messagesHistory.addFirst(secondMessage);
-                    }
-                }
-            }
-        }
-
-    }
-
-
     public static void assertNotBlank(String str, String message) {
         if (StringUtils.isBlank(str)) {
             throw new WenXinException(ErrorCode.PARAMS_ERROR, message);
@@ -188,9 +111,16 @@ public class WenXinUtils {
         }
     }
 
-    public static Mono<Void> assertNotNullMono(Object obj, String message) {
-        if (obj == null) {
-            return Mono.error(() -> new WenXinException(ErrorCode.PARAMS_ERROR, message));
+    public static Mono<Void> assertNotNullMono(ErrorCode errorCode, String message, Object... obj) {
+        for (Object o : obj) {
+            if (o == null) {
+                return Mono.error(() -> new WenXinException(errorCode, message));
+            }
+            if (o instanceof String) {
+                if (StringUtils.isBlank((String) o)) {
+                    return Mono.error(() -> new WenXinException(errorCode, message));
+                }
+            }
         }
         return Mono.empty();
     }

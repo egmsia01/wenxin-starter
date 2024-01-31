@@ -3,7 +3,7 @@ package com.gearwenxin.client.mpt;
 import com.gearwenxin.client.base.FullClient;
 import com.gearwenxin.config.WenXinProperties;
 import com.gearwenxin.entity.Message;
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -14,7 +14,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author Ge Mingjia
-
+ * {@code @date} 2023/7/24
  */
 @Slf4j
 @Lazy

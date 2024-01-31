@@ -4,6 +4,7 @@ import lombok.Getter;
 
 /**
  * @author Ge Mingjia
+ * {@code @date} 2023/10/15
  */
 @Getter
 public enum ChatType {

@@ -3,13 +3,13 @@ package com.gearwenxin.client.ernie;
 import com.gearwenxin.client.ImageClient;
 import com.gearwenxin.config.WenXinProperties;
 
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 /**
  * @author Ge Mingjia
-
+ * {@code @date} 2023/7/20
  */
 @Slf4j
 @Service

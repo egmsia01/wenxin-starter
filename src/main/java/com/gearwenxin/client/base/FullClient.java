@@ -1,6 +1,8 @@
 package com.gearwenxin.client.base;
 
 import com.gearwenxin.common.*;
+import com.gearwenxin.core.ChatUtils;
+import com.gearwenxin.core.ChatCore;
 import com.gearwenxin.entity.Message;
 import com.gearwenxin.entity.chatmodel.ChatBaseRequest;
 import com.gearwenxin.entity.response.ChatResponse;
@@ -18,13 +20,13 @@ import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.function.BiFunction;
 
 import static com.gearwenxin.common.WenXinUtils.assertNotBlankMono;
-import static com.gearwenxin.common.WenXinUtils.buildTargetRequest;
 
 /**
  * @author Ge Mingjia
+ * {@code @date} 2023/8/4
  */
 @Slf4j
-public abstract class FullClient extends BaseClient implements ContBot<ChatBaseRequest> {
+public abstract class FullClient extends BaseClient implements ContBot {
 
     /**
      * 获取此模型的历史消息
@@ -56,6 +58,11 @@ public abstract class FullClient extends BaseClient implements ContBot<ChatBaseR
         return Flux.from(chatContProcess(chatRequest, msgUid, true));
     }
 
+    @Override
+    public <T extends ChatBaseRequest> Flux<ChatResponse> chatsViaWebSocket(T chatRequest, String msgUid) {
+        return null;
+    }
+
     public <T extends ChatBaseRequest> Publisher<ChatResponse> chatContProcess(T requestT, String msgUid, boolean stream) {
         return Mono.justOrEmpty(requestT)
                 .filter(reqT -> StringUtils.isNotBlank(msgUid))
@@ -66,9 +73,9 @@ public abstract class FullClient extends BaseClient implements ContBot<ChatBaseR
                             msgUid, key -> new ConcurrentLinkedDeque<>()
                     );
                     Message message = WenXinUtils.buildUserMessage(reqT.getContent());
-                    WenXinUtils.offerMessage(messagesHistory, message);
+                    ChatUtils.offerMessage(messagesHistory, message);
 
-                    Object targetRequest = buildTargetRequest(messagesHistory, stream, reqT);
+                    Object targetRequest = ChatUtils.buildTargetRequest(messagesHistory, stream, reqT);
 
                     String logMessage = stream ? "{}-cont-request-stream => {}" : "{}-cont-request => {}";
                     log.info(logMessage, getTag(), targetRequest);
@@ -78,8 +85,8 @@ public abstract class FullClient extends BaseClient implements ContBot<ChatBaseR
     }
 
     public Publisher<ChatResponse> typeReturnWithHistory(boolean stream, Object request, Deque<Message> messagesHistory) {
-        return stream ? ChatUtils.historyFlux(getURL(), getCustomAccessToken(), request, messagesHistory) :
-                ChatUtils.historyMono(getURL(), getCustomAccessToken(), request, messagesHistory);
+        return stream ? ChatCore.historyFlux(getURL(), getCustomAccessToken(), request, messagesHistory) :
+                ChatCore.historyMono(getURL(), getCustomAccessToken(), request, messagesHistory);
     }
 
     private Publisher<ChatResponse> chatContFunc(String content, String msgUid, BiFunction<ChatBaseRequest, String, Publisher<ChatResponse>> chatFunction) {
@@ -87,10 +94,6 @@ public abstract class FullClient extends BaseClient implements ContBot<ChatBaseR
         assertNotBlankMono(msgUid, "msgUid is null or blank");
 
         return chatFunction.apply(this.buildRequest(content), msgUid);
-    }
-
-    private ChatBaseRequest buildRequest(String content) {
-        return ChatBaseRequest.builder().content(content).build();
     }
 
 }

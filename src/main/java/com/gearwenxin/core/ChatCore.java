@@ -1,5 +1,7 @@
-package com.gearwenxin.common;
+package com.gearwenxin.core;
 
+import com.gearwenxin.common.ErrorCode;
+import com.gearwenxin.common.WenXinUtils;
 import com.gearwenxin.entity.Message;
 import com.gearwenxin.entity.response.ChatResponse;
 import com.gearwenxin.entity.response.ErrorResponse;
@@ -15,24 +17,24 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 
-import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.Deque;
+import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import static com.gearwenxin.common.Constant.GET_ACCESS_TOKEN_URL;
-import static com.gearwenxin.common.WenXinUtils.assertNotBlank;
-import static com.gearwenxin.common.WenXinUtils.assertNotNull;
+import static com.gearwenxin.common.WenXinUtils.*;
 
 /**
  * @author Ge Mingjia
+ * {@code @date} 2023/7/21
  */
 @Slf4j
-public class ChatUtils {
+public class ChatCore {
 
     private static final WebClient WEB_CLIENT = WebClient.builder()
             .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
@@ -58,7 +60,7 @@ public class ChatUtils {
                 .body(BodyInserters.fromValue(request))
                 .retrieve()
                 .bodyToMono(type)
-                .doOnSuccess(ChatUtils::handleErrResponse)
+                .doOnSuccess(ChatCore::handleErrResponse)
                 .doOnError(WebClientResponseException.class, handleWebClientError());
     }
 
@@ -81,7 +83,7 @@ public class ChatUtils {
                 .accept(MediaType.TEXT_EVENT_STREAM)
                 .retrieve()
                 .bodyToFlux(type)
-                .doOnNext(ChatUtils::handleErrResponse)
+                .doOnNext(ChatCore::handleErrResponse)
                 .doOnError(WebClientResponseException.class, handleWebClientError());
     }
 
@@ -94,18 +96,15 @@ public class ChatUtils {
      * @return Mono<T>
      */
     public static <T> Mono<T> monoChatGet(String url, String accessToken, Map<String, String> paramsMap, Class<T> type) {
-
         validateParams(url, accessToken, paramsMap, type);
         log.info("monoURL => {}", url);
-
-        WebClient client = buildWebClient(url);
 
         paramsMap.put("access_token", accessToken);
         String queryParams = paramsMap.entrySet().stream()
                 .map(entry -> entry.getKey() + "=" + encodeURL(entry.getValue()))
                 .collect(Collectors.joining("&"));
 
-        client = client.mutate()
+        WebClient client = buildWebClient(url).mutate()
                 .filter((request, next) -> {
                     String uriWithQueryParams = request.url() + "?" + queryParams;
                     ClientRequest filteredRequest = ClientRequest.from(request)
@@ -117,10 +116,9 @@ public class ChatUtils {
         log.info("monoGet => {}", queryParams);
 
         return client.get()
-                .uri("")
                 .retrieve()
                 .bodyToMono(type)
-                .doOnSuccess(ChatUtils::handleErrResponse)
+                .doOnSuccess(ChatCore::handleErrResponse)
                 .doOnError(WebClientResponseException.class, handleWebClientError());
     }
 
@@ -130,29 +128,23 @@ public class ChatUtils {
     public static <T> Flux<ChatResponse> historyFlux(String url, String token, T request, Deque<Message> messagesHistory) {
         return Flux.create(emitter -> {
             CommonSubscriber subscriber = new CommonSubscriber(emitter, messagesHistory);
-            Flux<ChatResponse> chatResponse = ChatUtils.fluxChatPost(
+            ChatCore.fluxChatPost(
                     url, token, request, ChatResponse.class
-            );
-            chatResponse.subscribe(subscriber);
+            ).subscribe(subscriber);
             emitter.onDispose(subscriber);
         });
     }
 
     public static <T> Mono<ChatResponse> historyMono(String url, String token, T request, Deque<Message> messagesHistory) {
-        Mono<ChatResponse> response = ChatUtils.monoChatPost(
+        Mono<ChatResponse> response = ChatCore.monoChatPost(
                 url, token, request, ChatResponse.class
         ).subscribeOn(Schedulers.boundedElastic());
 
         return response.flatMap(chatResponse -> {
-            if (chatResponse == null || chatResponse.getResult() == null) {
-                return Mono.error(new WenXinException(ErrorCode.SYSTEM_ERROR, "响应错误！"));
-            }
-//            if (chatResponse.getNeedClearHistory()) {
-//                messagesHistory.clear();
-//                return Mono.just(chatResponse);
-//            }
+            assertNotNullMono(ErrorCode.SYSTEM_ERROR, "响应错误！", chatResponse.getResult(), chatResponse);
+
             Message messageResult = WenXinUtils.buildAssistantMessage(chatResponse.getResult());
-            WenXinUtils.offerMessage(messagesHistory, messageResult);
+            ChatUtils.offerMessage(messagesHistory, messageResult);
 
             return Mono.just(chatResponse);
         });
@@ -171,11 +163,7 @@ public class ChatUtils {
 
     public static String encodeURL(String component) {
         assertNotBlank(component, "EncodeURL error!");
-        try {
-            return URLEncoder.encode(component, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            throw new WenXinException(ErrorCode.PARAMS_ERROR);
-        }
+        return URLEncoder.encode(component, StandardCharsets.UTF_8);
     }
 
     private static WebClient buildWebClient(String baseUrl) {
@@ -194,28 +182,24 @@ public class ChatUtils {
     private static Consumer<Throwable> handleWebClientError() {
         return err -> {
             log.error("请求错误 => {} {}", err instanceof WebClientResponseException
-                    ? ((WebClientResponseException) err).getStatusCode()
-                    : "Unknown", err.getMessage());
+                    ? ((WebClientResponseException) err).getStatusCode() : "Unknown", err.getMessage());
             throw new WenXinException(ErrorCode.SYSTEM_NET_ERROR);
         };
     }
 
     private static <T> void handleErrResponse(T response) {
         assertNotNull(response, "响应异常");
-        if (response instanceof ChatResponse) {
-            ChatResponse chatResponse = (ChatResponse) response;
-            if (chatResponse.getErrorCode() != null) {
-
+        if (response instanceof ChatResponse chatResponse) {
+            Optional.ofNullable(chatResponse.getErrorMsg()).ifPresent(errMsg -> {
                 ErrorResponse errorResponse = ErrorResponse.builder()
                         .id(chatResponse.getId())
-//                        .logId(chatResponse.getLogId())
+                        .logId(chatResponse.getLogId())
                         .ebCode(chatResponse.getEbCode())
                         .errorMsg(chatResponse.getErrorMsg())
                         .errorCode(chatResponse.getErrorCode())
                         .build();
-
-                throw new WenXinException(ErrorCode.WENXIN_ERROR, errorResponse.getErrorMsg());
-            }
+                throw new WenXinException(ErrorCode.WENXIN_ERROR, errorResponse.toString());
+            });
         }
     }
 

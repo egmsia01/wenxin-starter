@@ -11,7 +11,7 @@ import java.io.Serializable;
 
 /**
  * @author Ge Mingjia
-
+ * {@code @date} 2023/7/20
  * <p>
  * ContBot 模型
  */
@@ -25,6 +25,12 @@ public class ChatResponse implements Serializable {
      */
     @JsonProperty("id")
     private String id;
+
+    /**
+     * 用于定位的log_id
+     */
+    @JsonProperty("log_id")
+    private String logId;
 
     /**
      * 回包类型
@@ -58,6 +64,23 @@ public class ChatResponse implements Serializable {
     private Boolean isTruncated;
 
     /**
+     * 输出内容标识，说明：
+     * · normal：输出内容完全由大模型生成，未触发截断、替换
+     * · stop：输出结果命中入参stop中指定的字段后被截断
+     * · length：达到了最大的token数，根据EB返回结果is_truncated来截断
+     * · content_filter：输出内容被截断、兜底、替换为**等
+     * · function_call：调用了funtion call功能
+     */
+    @JsonProperty("finish_reason")
+    private String finishReason;
+
+    /**
+     * 搜索数据，当请求参数enable_citation为true并且触发搜索时，会返回该字段
+     */
+    @JsonProperty("search_info")
+    private SearchInfo searchInfo;
+
+    /**
      * 对话返回结果
      */
     @JsonProperty("result")
@@ -82,6 +105,14 @@ public class ChatResponse implements Serializable {
      */
     @JsonProperty("ban_round")
     private Integer banRound;
+
+    /**
+     * 说明：
+     * · 0：正常返回
+     * · 其他：非正常
+     */
+    @JsonProperty("flag")
+    private Integer flag;
 
     /**
      * 错误代码，正常为 null

@@ -7,6 +7,7 @@ import java.util.Map;
 
 /**
  * @author Ge Mingjia
+ * {@code @date} 2023/10/23
  */
 public interface SaveService {
     boolean save(Map<String, Deque<Message>> messageMap);

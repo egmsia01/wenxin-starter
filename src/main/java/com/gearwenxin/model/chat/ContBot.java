@@ -7,9 +7,9 @@ import reactor.core.publisher.Mono;
 
 /**
  * @author Ge Mingjia
-
+ * {@code @date} 2023/7/20
  */
-public interface ContBot<T> {
+public interface ContBot {
 
     /**
      * 多轮对话，有上下文记忆，默认参数
@@ -50,5 +50,13 @@ public interface ContBot<T> {
      * @return ChatResponse 响应实体类
      */
     <T extends ChatBaseRequest> Flux<ChatResponse> chatContOfStream(T chatRequest, String msgUid);
+
+    /**
+     * 单轮对话，有下文记忆，WebSocket
+     *
+     * @param chatRequest 请求实体类
+     * @return ChatResponse Flux<ChatResponse>
+     */
+    <T extends ChatBaseRequest> Flux<ChatResponse> chatsViaWebSocket(T chatRequest, String msgUid);
 
 }

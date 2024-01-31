@@ -6,7 +6,7 @@ import reactor.core.publisher.Mono;
 
 /**
  * @author Ge Mingjia
-
+ * {@code @date} 2023/7/20
  */
 public interface ImageBot<T extends ImageBaseRequest> {
 
