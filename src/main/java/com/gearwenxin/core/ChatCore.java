@@ -8,6 +8,7 @@ import com.gearwenxin.entity.response.ErrorResponse;
 import com.gearwenxin.entity.response.TokenResponse;
 import com.gearwenxin.exception.WenXinException;
 import com.gearwenxin.subscriber.CommonSubscriber;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -161,9 +162,10 @@ public class ChatCore {
                 .doOnError(WebClientResponseException.class, handleWebClientError());
     }
 
+    @SneakyThrows
     public static String encodeURL(String component) {
         assertNotBlank(component, "EncodeURL error!");
-        return URLEncoder.encode(component, StandardCharsets.UTF_8);
+        return URLEncoder.encode(component, "UTF-8");
     }
 
     private static WebClient buildWebClient(String baseUrl) {

@@ -38,17 +38,20 @@ public class GearWenXinConfig implements CommandLineRunner {
         }
         ChatCore.getAccessTokenByAKSK(apiKey, secretKey)
                 .filter(Objects::nonNull)
-                .doOnNext(tokenResponse -> Optional.ofNullable(tokenResponse.getAccessToken())
-                        .ifPresentOrElse(token -> {
-                            wenXinProperties.setAccessToken(token);
-                            log.info("accessToken => {}", token);
-                        }, () -> {
-                            if (accessToken == null) {
-                                throw new WenXinException(ErrorCode.SYSTEM_ERROR, "api_key or secret_key error！");
-                            }
-                        }))
+                .doOnNext(tokenResponse -> {
+                    String token = tokenResponse.getAccessToken();
+                    if (token != null) {
+                        wenXinProperties.setAccessToken(token);
+                        log.info("accessToken => {}", token);
+                    } else {
+                        if (accessToken == null) {
+                            throw new WenXinException(ErrorCode.SYSTEM_ERROR, "api_key or secret_key error！");
+                        }
+                    }
+                })
                 .map(TokenResponse::getAccessToken)
                 .block();
+
         // 再次检测wenXinProperties是否被正确赋值
         Optional.ofNullable(wenXinProperties.getAccessToken())
                 .orElseThrow(() -> new WenXinException(ErrorCode.SYSTEM_ERROR, "accessToken 未被正确赋值！"));
