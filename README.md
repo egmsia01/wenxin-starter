@@ -5,14 +5,14 @@
 
 <div align="center">
 
-![gear-wenxinworkshop-starter](https://socialify.git.ci/gemingjia/gear-wenxinworkshop-starter/image?font=Inter&forks=1&issues=1&language=1&name=1&owner=1&pattern=Floating%20Cogs&pulls=1&stargazers=1&theme=Light)
+![gear-wenxinworkshop-starter](https://socialify.git.ci/GMerge01/wenxin-starter/image?font=Inter&forks=1&issues=1&language=1&name=1&owner=1&pattern=Floating%20Cogs&pulls=1&stargazers=1&theme=Light)
 
 ![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.1.2-brightgreen.svg)
 ![JDK](https://img.shields.io/badge/JDK-17.0.5-orange.svg)
 ![Maven](https://img.shields.io/badge/Maven-3.9-blue.svg)
 
-![LICENSE](https://img.shields.io/github/license/gemingjia/gear-wenxinworkshop-starter?style=flat-square)
-![COMMIT](https://img.shields.io/github/last-commit/gemingjia/gear-wenxinworkshop-starter?style=flat-square)
+![LICENSE](https://img.shields.io/github/license/GMerge01/wenxin-starter?style=flat-square)
+![COMMIT](https://img.shields.io/github/last-commit/GMerge01/wenxin-starter?style=flat-square)
 ![LANG](https://img.shields.io/badge/language-Java-7F52FF?style=flat-square)
 
 </div>
