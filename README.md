@@ -16,14 +16,7 @@
 ![LANG](https://img.shields.io/badge/language-Java-7F52FF?style=flat-square)
 
 </div>
-# Gear-WenXinWorkShop-Starter
-
-## 获取access-token
-
-1. 查看下面文章：
-[文心一言获取access_token，并接入文心一言API](https://juejin.cn/post/7260418945721991227)
-2. 直接配置`api_key`、`secret_key`，starter支持自动获取`access_token`。
----
+# WenXin-Starter
 
 ## 项目简介
 - 百度 **“文心千帆 WENXINWORKSHOP”** 大模型的spring-boot-starter，可以帮助您快速接入百度的AI能力。
@@ -188,7 +181,7 @@ v1.0.0
 - 修复 并发安全问题
 
 v0.0.9.7 - pre release
-- 新增 对function call的简单支持 
+// - 新增 对function call的简单支持 
 - 新增 更细化的错误处理 
 - 修复 ban_round类型错误导致的反序列化错误 #15。 
 - 修复 system字段无长度限制 #16 
