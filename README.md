@@ -181,7 +181,8 @@ v1.0.0
 - 修复 并发安全问题
 
 v0.0.9.7 - pre release
-// - 新增 对function call的简单支持 
+
+- // 新增 对function call的简单支持 
 - 新增 更细化的错误处理 
 - 修复 ban_round类型错误导致的反序列化错误 #15。 
 - 修复 system字段无长度限制 #16 
