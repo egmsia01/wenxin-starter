@@ -1,33 +1,31 @@
-package com.gearwenxin.client.cerebras;
+package com.gearwenxin.client;
 
-import com.gearwenxin.client.base.BaseClient;
 import com.gearwenxin.config.WenXinProperties;
+
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 /**
  * @author Ge Mingjia
- * {@code @date} 2023/7/24
+ * {@code @date} 2023/7/20
  */
 @Slf4j
-@Lazy
 @Service
-public class CerebrasGPT6_7BClient extends BaseClient {
+public class ErnieBotVilGClient extends ImageClient {
 
     @Resource
     private WenXinProperties wenXinProperties;
 
     private String accessToken = null;
-    private static final String TAG = "Cerebras-GPT-6.7B-Client";
+    private static final String TAG = "ErnieBotVilGClient";
 
     private String getAccessToken() {
         return wenXinProperties.getAccessToken();
     }
 
     private String getCustomURL() {
-        return wenXinProperties.getCustom_Model_URL();
+        return wenXinProperties.getVilg_URL();
     }
 
     @Override
@@ -36,17 +34,18 @@ public class CerebrasGPT6_7BClient extends BaseClient {
     }
 
     @Override
-    public String getURL() {
-        return getCustomURL();
+    public void setCustomAccessToken(String accessToken) {
+        this.accessToken = accessToken;
     }
 
     @Override
-    public void setCustomAccessToken(String accessToken) {
-        this.accessToken = accessToken;
+    public String getURL() {
+        return getCustomURL();
     }
 
     @Override
     public String getTag() {
         return TAG;
     }
+
 }

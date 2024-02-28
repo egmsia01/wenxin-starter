@@ -8,7 +8,6 @@ import com.gearwenxin.model.images.ImageBot;
 import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Mono;
 
-import static com.gearwenxin.common.WenXinUtils.assertNotBlank;
 import static com.gearwenxin.common.WenXinUtils.assertNotNull;
 
 /**

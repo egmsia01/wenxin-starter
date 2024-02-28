@@ -80,7 +80,6 @@ public class ChatUtils {
         }
     }
 
-
     private static void synchronizeHistories(Deque<Message> original, Deque<Message> updated, Message message) {
         if (updated.size() <= original.size()) {
             updated.clear();

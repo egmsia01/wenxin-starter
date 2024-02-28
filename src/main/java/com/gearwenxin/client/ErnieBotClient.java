@@ -1,4 +1,4 @@
-package com.gearwenxin.client.ernie;
+package com.gearwenxin.client;
 
 import com.gearwenxin.client.base.FullClient;
 import com.gearwenxin.common.*;
