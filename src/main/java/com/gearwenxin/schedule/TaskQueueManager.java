@@ -35,44 +35,57 @@ public class TaskQueueManager {
     }
 
     public void addTask(ChatTask task) {
-        String clientName = task.getModelName();
-        Optional.ofNullable(taskMap.get(clientName)).ifPresentOrElse(list -> {
+        String modelName = task.getModelName();
+        Optional.ofNullable(taskMap.get(modelName)).ifPresentOrElse(list -> {
             list.add(task);
-            upTaskCount(clientName);
+            upTaskCount(modelName);
         }, () -> {
             List<ChatTask> list = new CopyOnWriteArrayList<>();
             list.add(task);
-            taskMap.put(clientName, list);
-            initTaskCount(clientName);
+            taskMap.put(modelName, list);
+            initTaskCount(modelName);
         });
     }
 
-    public ChatTask getTask(String clientName) {
-        List<ChatTask> list = taskMap.get(clientName);
+    public ChatTask getTask(String modelName) {
+        List<ChatTask> list = taskMap.get(modelName);
         if (list == null || list.isEmpty()) {
             return null;
         }
-        downTaskCount(clientName);
+        downTaskCount(modelName);
+
         return list.remove(0);
     }
 
-    private void initTaskCount(String clientName) {
-        taskCountMap.put(clientName, 0);
-        log.debug("init task count for {}", clientName);
+    public int getTaskCount(String modelName) {
+        return Optional.ofNullable(taskCountMap.get(modelName)).orElse(0);
     }
 
-    private void upTaskCount(String clientName) {
-        taskCountMap.put(clientName, taskCountMap.get(clientName) + 1);
-        log.debug("up task count for {}, number {}", clientName, taskCountMap.get(clientName));
+    private void initTaskCount(String modelName) {
+        taskCountMap.put(modelName, 0);
+        log.debug("init task count for {}", modelName);
     }
 
-    private void downTaskCount(String clientName) {
-        Integer taskCount = taskCountMap.get(clientName);
+    private void upTaskCount(String modelName) {
+        taskCountMap.put(modelName, taskCountMap.get(modelName) + 1);
+        log.debug("up task count for {}, number {}", modelName, taskCountMap.get(modelName));
+    }
+
+    private void downTaskCount(String modelName) {
+        Integer taskCount = taskCountMap.get(modelName);
         if (taskCount == null || taskCount <= 0) {
             return;
         }
-        taskCountMap.put(clientName, taskCount - 1);
-        log.debug("down task count for {}, number {}", clientName, taskCount - 1);
+        taskCountMap.put(modelName, taskCount - 1);
+        log.debug("down task count for {}, number {}", modelName, taskCount - 1);
+    }
+
+    public static void main(String[] args) {
+        TaskQueueManager instance = TaskQueueManager.getInstance();
+        instance.addTask(new ChatTask("client1", "task1", 1.0f));
+        instance.addTask(new ChatTask("client1", "task2", 1.0f));
+        System.out.println(instance.getTask("client1"));
+        System.out.println(instance.getTaskCount("client1"));
     }
 
 }
