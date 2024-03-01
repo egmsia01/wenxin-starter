@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.core.annotation.Order;
 
 import java.util.Objects;
 import java.util.Optional;
@@ -17,6 +18,7 @@ import java.util.Optional;
  * @author Ge Mingjia
  */
 @Slf4j
+@Order(1)
 @AutoConfiguration
 @EnableConfigurationProperties(WenXinProperties.class)
 public class GearWenXinConfig implements CommandLineRunner {

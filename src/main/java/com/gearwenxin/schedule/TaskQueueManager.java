@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -15,8 +16,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
 @Slf4j
 public class TaskQueueManager {
 
-    Map<String, List<ChatTask>> taskMap = new ConcurrentHashMap<>();
-    Map<String, Integer> taskCountMap = new ConcurrentHashMap<>();
+    private final Map<String, List<ChatTask>> taskMap = new ConcurrentHashMap<>();
+    private final Map<String, Integer> taskCountMap = new ConcurrentHashMap<>();
 
     private volatile static TaskQueueManager instance = null;
 
@@ -46,15 +47,17 @@ public class TaskQueueManager {
             initTaskCount(modelName);
         });
     }
-
     public ChatTask getTask(String modelName) {
         List<ChatTask> list = taskMap.get(modelName);
         if (list == null || list.isEmpty()) {
             return null;
         }
         downTaskCount(modelName);
-
         return list.remove(0);
+    }
+
+    public Set<String> getModelNames() {
+        return taskMap.keySet();
     }
 
     public int getTaskCount(String modelName) {
@@ -62,7 +65,7 @@ public class TaskQueueManager {
     }
 
     private void initTaskCount(String modelName) {
-        taskCountMap.put(modelName, 0);
+        taskCountMap.put(modelName, 1);
         log.debug("init task count for {}", modelName);
     }
 
@@ -84,8 +87,13 @@ public class TaskQueueManager {
         TaskQueueManager instance = TaskQueueManager.getInstance();
         instance.addTask(new ChatTask("client1", "task1", 1.0f));
         instance.addTask(new ChatTask("client1", "task2", 1.0f));
-        System.out.println(instance.getTask("client1"));
-        System.out.println(instance.getTaskCount("client1"));
+        instance.addTask(new ChatTask("client2", "task1", 1.0f));
+        instance.addTask(new ChatTask("client2", "task2", 1.0f));
+        instance.addTask(new ChatTask("client2", "task2", 1.0f));
+        instance.addTask(new ChatTask("client2", "task2", 1.0f));
+        System.out.println(instance.getTaskCount("client2"));
+        System.out.println(instance.getTask("client2"));
+
     }
 
 }
