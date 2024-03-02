@@ -47,12 +47,30 @@ public class TaskQueueManager {
             initTaskCount(modelName);
         });
     }
+
     public ChatTask getTask(String modelName) {
         List<ChatTask> list = taskMap.get(modelName);
         if (list == null || list.isEmpty()) {
             return null;
         }
         downTaskCount(modelName);
+        return list.remove(0);
+    }
+
+    public ChatTask getRandomTask() {
+        List<ChatTask> list = null;
+        String modelName = null;
+        for (Map.Entry<String, List<ChatTask>> entry : taskMap.entrySet()) {
+            if (!entry.getValue().isEmpty()) {
+                list = entry.getValue();
+                modelName = entry.getKey();
+                break;
+            }
+        }
+        downTaskCount(modelName);
+        if (list == null || list.isEmpty()) {
+            return null;
+        }
         return list.remove(0);
     }
 
@@ -81,19 +99,6 @@ public class TaskQueueManager {
         }
         taskCountMap.put(modelName, taskCount - 1);
         log.debug("down task count for {}, number {}", modelName, taskCount - 1);
-    }
-
-    public static void main(String[] args) {
-        TaskQueueManager instance = TaskQueueManager.getInstance();
-        instance.addTask(new ChatTask("client1", "task1", 1.0f));
-        instance.addTask(new ChatTask("client1", "task2", 1.0f));
-        instance.addTask(new ChatTask("client2", "task1", 1.0f));
-        instance.addTask(new ChatTask("client2", "task2", 1.0f));
-        instance.addTask(new ChatTask("client2", "task2", 1.0f));
-        instance.addTask(new ChatTask("client2", "task2", 1.0f));
-        System.out.println(instance.getTaskCount("client2"));
-        System.out.println(instance.getTask("client2"));
-
     }
 
 }

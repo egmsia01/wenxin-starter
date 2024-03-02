@@ -27,15 +27,15 @@ import static com.gearwenxin.common.WenXinUtils.assertNotBlankMono;
  */
 @Slf4j
 @Service
-public class ErnieBotClient extends FullClient {
+public class ChatProcessor extends FullClient {
 
     @Resource
     private WenXinProperties wenXinProperties;
 
     private String accessToken = null;
-    private static final String TAG = "ErnieBotClient";
+    private static final String TAG = "chatClient";
 
-    private static Map<String, Deque<Message>> ERNIE_MESSAGES_HISTORY_MAP = new ConcurrentHashMap<>();
+    private static Map<String, Deque<Message>> CHAT_MESSAGES_HISTORY_MAP = new ConcurrentHashMap<>();
 
     private static final String URL = Constant.ERNIE_BOT_URL;
 
@@ -64,11 +64,11 @@ public class ErnieBotClient extends FullClient {
     }
 
     public Map<String, Deque<Message>> getMessageHistoryMap() {
-        return ERNIE_MESSAGES_HISTORY_MAP;
+        return CHAT_MESSAGES_HISTORY_MAP;
     }
 
     public void initMessageHistoryMap(Map<String, Deque<Message>> map) {
-        ERNIE_MESSAGES_HISTORY_MAP = map;
+        CHAT_MESSAGES_HISTORY_MAP = map;
     }
 
     @Override
@@ -79,6 +79,11 @@ public class ErnieBotClient extends FullClient {
     @Override
     public Flux<ChatResponse> chatSingleOfStream(String content) {
         return Flux.from(this.chatSingleFunc(content, this::chatSingleOfStream));
+    }
+
+    @Override
+    public <T extends ChatBaseRequest> Flux<ChatResponse> chatViaWebSocket(T chatRequest) {
+        return null;
     }
 
     @Override

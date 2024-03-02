@@ -7,16 +7,14 @@ import lombok.Getter;
  * {@code @date} 2023/10/15
  */
 @Getter
-public enum ChatType {
-    once("_once"),
-    cont("_continuous"),
-    stream("_stream"),
-    onceStream("_once_stream"),
-    contStream("_continuous_stream");
+public enum ModelType {
+    chat("chat"),
+    image("image"),
+    embedding("embedding");
 
     private final String value;
 
-    ChatType(String value) {
+    ModelType(String value) {
         this.value = value;
     }
 

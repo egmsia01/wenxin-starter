@@ -8,15 +8,11 @@ import com.gearwenxin.entity.response.ChatResponse;
 import com.gearwenxin.exception.WenXinException;
 import com.gearwenxin.model.BaseBot;
 import com.gearwenxin.model.chat.SingleBot;
-import com.gearwenxin.schedule.TaskQueueManager;
 import com.gearwenxin.validator.RequestValidator;
 import com.gearwenxin.validator.RequestValidatorFactory;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.reactivestreams.Publisher;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.CommandLineRunner;
-import org.springframework.core.annotation.Order;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -31,42 +27,7 @@ import static com.gearwenxin.common.WenXinUtils.assertNotBlankMono;
  */
 @Slf4j
 @Data
-@Order(2)
-public abstract class BaseClient implements SingleBot, BaseBot, CommandLineRunner {
-
-    @Value("${gear.wenxin.model.qps}")
-    private List<String> modelQPSList;
-
-    private static Map<String, Integer> modelQPSMap = new HashMap<>();
-
-    private final TaskQueueManager taskManager = TaskQueueManager.getInstance();
-
-    @Override
-    public void run(String... args) {
-        initModelQPSMap();
-    }
-
-    public void initModelQPSMap() {
-        if (modelQPSList == null || modelQPSList.isEmpty()) {
-            return;
-        }
-        modelQPSList.forEach(s -> {
-            String[] split = s.split(" ");
-            modelQPSMap.put(split[0], Integer.parseInt(split[1]));
-        });
-        log.info("init model-qps-map complete");
-    }
-
-    public void handelTask() {
-        for (; ; ) {
-            Set<String> modelNames = taskManager.getModelNames();
-            int modelSize = modelNames.size();
-            if (modelSize == 0) {
-                return;
-            }
-
-        }
-    }
+public abstract class BaseClient implements SingleBot, BaseBot {
 
     @Override
     public Mono<ChatResponse> chatSingle(String content) {
@@ -86,11 +47,6 @@ public abstract class BaseClient implements SingleBot, BaseBot, CommandLineRunne
     @Override
     public <T extends ChatBaseRequest> Flux<ChatResponse> chatSingleOfStream(T chatRequest) {
         return Flux.from(chatSingleProcess(chatRequest, true));
-    }
-
-    @Override
-    public <T extends ChatBaseRequest> Flux<ChatResponse> chatViaWebSocket(T chatRequest) {
-        return null;
     }
 
     public <T extends ChatBaseRequest> Publisher<ChatResponse> chatSingleProcess(T requestT, boolean stream) {
