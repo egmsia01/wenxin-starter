@@ -29,7 +29,7 @@ public class ChatClient implements ChatModel {
                 .taskRequest(request)
                 .taskWeight(defaultWeight)
                 .build();
-        taskQueueManager.addTask(chatTask);
+//        taskQueueManager.addTask(chatTask);
         return null;
     }
 

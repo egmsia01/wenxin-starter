@@ -1,19 +1,25 @@
 package com.gearwenxin.schedule;
 
+import com.gearwenxin.entity.enums.ModelType;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import reactor.core.publisher.Flux;
+import reactor.core.scheduler.Schedulers;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ExecutorService;
 
 /**
  * @author GMerge
  * {@code @date} 2024/2/28
  */
 @Slf4j
+@Getter
 public class TaskQueueManager {
 
     private final Map<String, List<ChatTask>> taskMap = new ConcurrentHashMap<>();
@@ -33,19 +39,6 @@ public class TaskQueueManager {
             }
         }
         return instance;
-    }
-
-    public void addTask(ChatTask task) {
-        String modelName = task.getModelName();
-        Optional.ofNullable(taskMap.get(modelName)).ifPresentOrElse(list -> {
-            list.add(task);
-            upTaskCount(modelName);
-        }, () -> {
-            List<ChatTask> list = new CopyOnWriteArrayList<>();
-            list.add(task);
-            taskMap.put(modelName, list);
-            initTaskCount(modelName);
-        });
     }
 
     public ChatTask getTask(String modelName) {
@@ -82,17 +75,17 @@ public class TaskQueueManager {
         return Optional.ofNullable(taskCountMap.get(modelName)).orElse(0);
     }
 
-    private void initTaskCount(String modelName) {
+    public void initTaskCount(String modelName) {
         taskCountMap.put(modelName, 1);
         log.debug("init task count for {}", modelName);
     }
 
-    private void upTaskCount(String modelName) {
+    public void upTaskCount(String modelName) {
         taskCountMap.put(modelName, taskCountMap.get(modelName) + 1);
         log.debug("up task count for {}, number {}", modelName, taskCountMap.get(modelName));
     }
 
-    private void downTaskCount(String modelName) {
+    public void downTaskCount(String modelName) {
         Integer taskCount = taskCountMap.get(modelName);
         if (taskCount == null || taskCount <= 0) {
             return;
@@ -100,5 +93,30 @@ public class TaskQueueManager {
         taskCountMap.put(modelName, taskCount - 1);
         log.debug("down task count for {}, number {}", modelName, taskCount - 1);
     }
+
+    public static void main(String[] args) {
+        ExecutorService executor = ThreadPoolManager.getInstance(ModelType.chat);
+        CompletableFuture<Flux<String>> future = CompletableFuture.supplyAsync(() -> {
+            // 在线程池中执行任务，返回一个Flux
+            return generateFluxData().subscribeOn(Schedulers.fromExecutor(executor));
+        }, executor);
+
+        // 处理CompletableFuture返回的Flux
+        future.thenAccept(flux -> {
+            flux.subscribe(System.out::println);
+        });
+
+        // 等待异步任务完成
+        future.join();
+
+        // 关闭线程池
+        executor.shutdown();
+    }
+
+    // 模拟生成Flux数据的方法
+    public static Flux<String> generateFluxData() {
+        return Flux.just("Response 1", "Response 2", "Response 3");
+    }
+
 
 }
