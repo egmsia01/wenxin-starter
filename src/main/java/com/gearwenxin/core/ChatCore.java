@@ -7,6 +7,7 @@ import com.gearwenxin.entity.response.ChatResponse;
 import com.gearwenxin.entity.response.ErrorResponse;
 import com.gearwenxin.entity.response.TokenResponse;
 import com.gearwenxin.exception.WenXinException;
+import com.gearwenxin.schedule.TaskQueueManager;
 import com.gearwenxin.subscriber.CommonSubscriber;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
@@ -36,6 +37,9 @@ import static com.gearwenxin.common.WenXinUtils.*;
 @Slf4j
 public class ChatCore {
 
+    private final TaskQueueManager taskManager = TaskQueueManager.getInstance();
+    Map<String, Integer> modelCurrentQPSMap = taskManager.getModelCurrentQPSMap();
+
     private static final WebClient WEB_CLIENT = WebClient.builder()
             .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
             .build();
@@ -56,7 +60,8 @@ public class ChatCore {
 
         String completeUrl = url + ACCESS_TOKEN_PRE + accessToken;
 
-        return buildWebClient(completeUrl).post()
+        return buildWebClient(completeUrl)
+                .post()
                 .body(BodyInserters.fromValue(request))
                 .retrieve()
                 .bodyToMono(type)
@@ -125,7 +130,7 @@ public class ChatCore {
     /**
      * flux形式的回答，添加到历史消息中
      */
-    public static <T> Flux<ChatResponse> historyFlux(String url, String token, T request, Deque<Message> messagesHistory) {
+    public <T> Flux<ChatResponse> historyFlux(String url, String token, T request, Deque<Message> messagesHistory) {
         return Flux.create(emitter -> {
             CommonSubscriber subscriber = new CommonSubscriber(emitter, messagesHistory);
             ChatCore.fluxChatPost(
@@ -135,7 +140,7 @@ public class ChatCore {
         });
     }
 
-    public static <T> Mono<ChatResponse> historyMono(String url, String token, T request, Deque<Message> messagesHistory) {
+    public <T> Mono<ChatResponse> historyMono(String url, String token, T request, Deque<Message> messagesHistory) {
         Mono<ChatResponse> response = ChatCore.monoChatPost(
                 url, token, request, ChatResponse.class
         ).subscribeOn(Schedulers.boundedElastic());

@@ -1,18 +1,20 @@
 package com.gearwenxin.schedule;
 
-import com.gearwenxin.entity.enums.ModelType;
+import com.gearwenxin.entity.response.ChatResponse;
+import com.gearwenxin.entity.response.ImageResponse;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Flux;
-import reactor.core.scheduler.Schedulers;
+import reactor.core.publisher.Mono;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutorService;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * @author GMerge
@@ -22,8 +24,18 @@ import java.util.concurrent.ExecutorService;
 @Getter
 public class TaskQueueManager {
 
-    private final Map<String, List<ChatTask>> taskMap = new ConcurrentHashMap<>();
+    private final BlockingMap<String, List<ChatTask>> taskMap = new BlockingMap<>();
+
+    // 任务数量Map
     private final Map<String, Integer> taskCountMap = new ConcurrentHashMap<>();
+    private final Map<String, Integer> modelCurrentQPSMap = new ConcurrentHashMap<>();
+
+    // 提交的任务Map
+    private final BlockingMap<String, CompletableFuture<Flux<ChatResponse>>> chatFutureMap = new BlockingMap<>();
+    private final BlockingMap<String, CompletableFuture<Mono<ImageResponse>>> imageFutureMap = new BlockingMap<>();
+
+    private final Lock lock = new ReentrantLock();
+    private final Condition keyPresent = lock.newCondition();
 
     private volatile static TaskQueueManager instance = null;
 
@@ -41,34 +53,87 @@ public class TaskQueueManager {
         return instance;
     }
 
+    public String addTask(ChatTask task) {
+        lock.lock();
+        try {
+            String modelName = task.getModelName();
+            String taskId = UUID.randomUUID().toString();
+            task.setTaskId(taskId);
+            log.info("add task for {}", modelName);
+            Optional.ofNullable(taskMap.getMap().get(modelName))
+                    .ifPresentOrElse(list -> {
+                        list.add(task);
+                        taskMap.put(modelName, list);
+                        upTaskCount(modelName);
+                    }, () -> {
+                        List<ChatTask> list = new CopyOnWriteArrayList<>();
+                        list.add(task);
+                        taskMap.put(modelName, list);
+                        initTaskCount(modelName);
+                    });
+            keyPresent.signalAll();
+            return taskId;
+        } finally {
+            lock.unlock();
+        }
+    }
+
     public ChatTask getTask(String modelName) {
+        lock.lock();
         List<ChatTask> list = taskMap.get(modelName);
-        if (list == null || list.isEmpty()) {
-            return null;
+        while (list == null || list.isEmpty()) {
+            try {
+                keyPresent.await();
+            } catch (InterruptedException e) {
+                log.error("get task error", e);
+            } finally {
+                lock.unlock();
+            }
         }
         downTaskCount(modelName);
         return list.remove(0);
     }
 
     public ChatTask getRandomTask() {
-        List<ChatTask> list = null;
-        String modelName = null;
-        for (Map.Entry<String, List<ChatTask>> entry : taskMap.entrySet()) {
-            if (!entry.getValue().isEmpty()) {
-                list = entry.getValue();
-                modelName = entry.getKey();
-                break;
+        lock.lock();
+        try {
+            while (true) {
+                List<Map.Entry<String, List<ChatTask>>> nonEmptyLists = taskMap.getMap().entrySet().stream()
+                        .filter(entry -> !entry.getValue().isEmpty())
+                        .toList();
+
+                if (!nonEmptyLists.isEmpty()) {
+                    int randomIndex = ThreadLocalRandom.current().nextInt(nonEmptyLists.size());
+                    Map.Entry<String, List<ChatTask>> randomEntry = nonEmptyLists.get(randomIndex);
+                    String modelName = randomEntry.getKey();
+                    List<ChatTask> list = randomEntry.getValue();
+
+                    downTaskCount(modelName);
+                    return list.remove(0);
+                } else {
+                    try {
+                        keyPresent.await();
+                    } catch (InterruptedException e) {
+                        log.error("get random task error", e);
+                    }
+                }
             }
+        } finally {
+            lock.unlock();
         }
-        downTaskCount(modelName);
-        if (list == null || list.isEmpty()) {
-            return null;
-        }
-        return list.remove(0);
+    }
+
+
+    public CompletableFuture<Flux<ChatResponse>> getChatFuture(String taskId) {
+        return chatFutureMap.get(taskId);
+    }
+
+    public CompletableFuture<Mono<ImageResponse>> getImageFuture(String taskId) {
+        return imageFutureMap.get(taskId);
     }
 
     public Set<String> getModelNames() {
-        return taskMap.keySet();
+        return taskMap.getMap().keySet();
     }
 
     public int getTaskCount(String modelName) {
@@ -93,30 +158,5 @@ public class TaskQueueManager {
         taskCountMap.put(modelName, taskCount - 1);
         log.debug("down task count for {}, number {}", modelName, taskCount - 1);
     }
-
-    public static void main(String[] args) {
-        ExecutorService executor = ThreadPoolManager.getInstance(ModelType.chat);
-        CompletableFuture<Flux<String>> future = CompletableFuture.supplyAsync(() -> {
-            // 在线程池中执行任务，返回一个Flux
-            return generateFluxData().subscribeOn(Schedulers.fromExecutor(executor));
-        }, executor);
-
-        // 处理CompletableFuture返回的Flux
-        future.thenAccept(flux -> {
-            flux.subscribe(System.out::println);
-        });
-
-        // 等待异步任务完成
-        future.join();
-
-        // 关闭线程池
-        executor.shutdown();
-    }
-
-    // 模拟生成Flux数据的方法
-    public static Flux<String> generateFluxData() {
-        return Flux.just("Response 1", "Response 2", "Response 3");
-    }
-
 
 }

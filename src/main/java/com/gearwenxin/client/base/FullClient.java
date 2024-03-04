@@ -28,6 +28,8 @@ import static com.gearwenxin.common.WenXinUtils.assertNotBlankMono;
 @Slf4j
 public abstract class FullClient extends BaseClient implements ContBot {
 
+    ChatCore chatCore = new ChatCore();
+
     /**
      * 获取此模型的历史消息
      */
@@ -85,8 +87,8 @@ public abstract class FullClient extends BaseClient implements ContBot {
     }
 
     public Publisher<ChatResponse> typeReturnWithHistory(boolean stream, Object request, Deque<Message> messagesHistory) {
-        return stream ? ChatCore.historyFlux(getURL(), getCustomAccessToken(), request, messagesHistory) :
-                ChatCore.historyMono(getURL(), getCustomAccessToken(), request, messagesHistory);
+        return stream ? chatCore.historyFlux(getURL(), getCustomAccessToken(), request, messagesHistory) :
+                chatCore.historyMono(getURL(), getCustomAccessToken(), request, messagesHistory);
     }
 
     private Publisher<ChatResponse> chatContFunc(String content, String msgUid, BiFunction<ChatBaseRequest, String, Publisher<ChatResponse>> chatFunction) {

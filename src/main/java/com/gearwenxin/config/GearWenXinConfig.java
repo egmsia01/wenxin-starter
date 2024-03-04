@@ -2,6 +2,7 @@ package com.gearwenxin.config;
 
 import com.gearwenxin.core.ChatCore;
 import com.gearwenxin.common.ErrorCode;
+import com.gearwenxin.core.TaskHandler;
 import com.gearwenxin.entity.response.TokenResponse;
 import com.gearwenxin.exception.WenXinException;
 import lombok.extern.slf4j.Slf4j;
@@ -24,6 +25,8 @@ import java.util.Optional;
 public class GearWenXinConfig implements CommandLineRunner {
 
     private final WenXinProperties wenXinProperties;
+
+    TaskHandler taskHandler = TaskHandler.getInstance();
 
     @Autowired
     public GearWenXinConfig(WenXinProperties wenXinProperties) {
@@ -54,6 +57,9 @@ public class GearWenXinConfig implements CommandLineRunner {
         // 再次检测wenXinProperties是否被正确赋值
         Optional.ofNullable(wenXinProperties.getAccessToken())
                 .orElseThrow(() -> new WenXinException(ErrorCode.SYSTEM_ERROR, "accessToken 未被正确赋值！"));
+        log.info("1 TaskHandler start");
+        // TODO: 事件循环启动，不应该在这里启动
+        new Thread(() -> taskHandler.loopHandleTaskProcess()).start();
     }
 
 }

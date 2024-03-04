@@ -6,9 +6,14 @@ import com.gearwenxin.entity.response.ChatResponse;
 import com.gearwenxin.model.ChatModel;
 import com.gearwenxin.schedule.ChatTask;
 import com.gearwenxin.schedule.TaskQueueManager;
+import lombok.extern.slf4j.Slf4j;
+import reactor.core.CoreSubscriber;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.concurrent.CompletableFuture;
+
+@Slf4j
 public class ChatClient implements ChatModel {
 
     private final String modelName;
@@ -22,14 +27,6 @@ public class ChatClient implements ChatModel {
 
     @Override
     public Mono<ChatResponse> chat(String content) {
-        ChatBaseRequest request = ChatBaseRequest.builder().content(content).build();
-        ChatTask chatTask = ChatTask.builder()
-                .modelName(modelName)
-                .taskType(ModelType.chat)
-                .taskRequest(request)
-                .taskWeight(defaultWeight)
-                .build();
-//        taskQueueManager.addTask(chatTask);
         return null;
     }
 
@@ -50,7 +47,23 @@ public class ChatClient implements ChatModel {
 
     @Override
     public Flux<ChatResponse> chatStream(String content) {
-        return null;
+        ChatBaseRequest request = ChatBaseRequest.builder().content(content).build();
+        ChatTask chatTask = ChatTask.builder()
+                .modelName(modelName)
+                .taskType(ModelType.chat)
+                .taskRequest(request)
+                .taskWeight(defaultWeight)
+                .build();
+        String taskId = taskQueueManager.addTask(chatTask);
+        CompletableFuture<Flux<ChatResponse>> completableFuture = taskQueueManager.getChatFutureMap().get(taskId);
+        completableFuture.thenAccept(flux -> flux.subscribe(System.out::println));
+        return Flux.create(sink -> {
+            log.info("Flux create");
+            completableFuture.thenAcceptAsync(flux -> {
+                log.info("CompletableFuture thenAccept");
+                flux.subscribe(sink::next);
+            });
+        });
     }
 
     @Override

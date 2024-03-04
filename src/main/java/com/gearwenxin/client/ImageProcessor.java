@@ -19,7 +19,7 @@ import static com.gearwenxin.common.WenXinUtils.assertNotNull;
  */
 @Slf4j
 @Service
-public abstract class ImageClient implements ImageBot<ImageBaseRequest>, BaseBot {
+public class ImageProcessor implements ImageBot<ImageBaseRequest>, BaseBot {
 
     @Resource
     private WenXinProperties wenXinProperties;
