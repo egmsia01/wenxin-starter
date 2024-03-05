@@ -1,20 +1,27 @@
 package com.gearwenxin.client;
 
 import com.gearwenxin.entity.chatmodel.ChatBaseRequest;
+import com.gearwenxin.entity.chatmodel.ChatErnieRequest;
 import com.gearwenxin.entity.enums.ModelType;
 import com.gearwenxin.entity.response.ChatResponse;
 import com.gearwenxin.model.ChatModel;
+import com.gearwenxin.schedule.BlockingMap;
 import com.gearwenxin.schedule.ChatTask;
 import com.gearwenxin.schedule.TaskQueueManager;
+import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import reactor.core.CoreSubscriber;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
 
 import java.util.concurrent.CompletableFuture;
 
 @Slf4j
 public class ChatClient implements ChatModel {
+
+    @Resource
+    ChatProcessor chatProcessor;
 
     private final String modelName;
     private static final float defaultWeight = 0;
@@ -55,8 +62,12 @@ public class ChatClient implements ChatModel {
                 .taskWeight(defaultWeight)
                 .build();
         String taskId = taskQueueManager.addTask(chatTask);
-        CompletableFuture<Flux<ChatResponse>> completableFuture = taskQueueManager.getChatFutureMap().get(taskId);
-        completableFuture.thenAccept(flux -> flux.subscribe(System.out::println));
+        BlockingMap<String, CompletableFuture<Flux<ChatResponse>>> chatFutureMap = taskQueueManager.getChatFutureMap();
+        log.info("马上get: {}", chatFutureMap);
+        CompletableFuture<Flux<ChatResponse>> completableFuture = chatFutureMap.get(taskId);
+        log.info("get到了: {}", completableFuture);
+//        completableFuture.thenAccept(flux -> flux.subscribe(System.out::println));
+
         return Flux.create(sink -> {
             log.info("Flux create");
             completableFuture.thenAcceptAsync(flux -> {

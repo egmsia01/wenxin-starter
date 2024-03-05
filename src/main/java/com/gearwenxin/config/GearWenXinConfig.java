@@ -12,6 +12,7 @@ import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.core.annotation.Order;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -26,7 +27,7 @@ public class GearWenXinConfig implements CommandLineRunner {
 
     private final WenXinProperties wenXinProperties;
 
-    TaskHandler taskHandler = TaskHandler.getInstance();
+    private static final TaskHandler taskHandler = TaskHandler.getInstance();
 
     @Autowired
     public GearWenXinConfig(WenXinProperties wenXinProperties) {
@@ -38,6 +39,11 @@ public class GearWenXinConfig implements CommandLineRunner {
         String apiKey = wenXinProperties.getApiKey();
         String secretKey = wenXinProperties.getSecretKey();
         String accessToken = wenXinProperties.getAccessToken();
+
+        // TODO: 曲线救国，初始化modelQPSList
+        List<String> modelQPSList = wenXinProperties.getModelQPSList();
+        taskHandler.setModelQPSList(modelQPSList);
+
         if (apiKey == null || secretKey == null) {
             return;
         }
@@ -57,9 +63,6 @@ public class GearWenXinConfig implements CommandLineRunner {
         // 再次检测wenXinProperties是否被正确赋值
         Optional.ofNullable(wenXinProperties.getAccessToken())
                 .orElseThrow(() -> new WenXinException(ErrorCode.SYSTEM_ERROR, "accessToken 未被正确赋值！"));
-        log.info("1 TaskHandler start");
-        // TODO: 事件循环启动，不应该在这里启动
-        new Thread(() -> taskHandler.loopHandleTaskProcess()).start();
     }
 
 }

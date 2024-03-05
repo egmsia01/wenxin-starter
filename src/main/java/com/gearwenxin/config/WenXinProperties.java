@@ -4,6 +4,8 @@ import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 /**
  * @author Ge Mingjia
  * {@code @date} 2023/11/1
@@ -48,6 +50,7 @@ public class WenXinProperties {
     private String star_coder_url;
     private String custom_model_url;
     private String sql_coder_7b_url;
+    private List<String> model_qps;
 
     public String getAccessToken() {
         return accessToken;
@@ -184,6 +187,9 @@ public class WenXinProperties {
     public String getSQLCoder_7B() {
         return sql_coder_7b_url;
     }
+    public List<String> getModelQPSList() {
+        return model_qps;
+    }
 
     public void setAccessToken(String accessToken) {
         this.accessToken = accessToken;
@@ -319,6 +325,10 @@ public class WenXinProperties {
 
     public void setSQLCoder_7B(String sql_coder_7b_url) {
         this.sql_coder_7b_url = sql_coder_7b_url;
+    }
+
+    public void setModelQPSList(List<String> model_qps) {
+        this.model_qps = model_qps;
     }
 
 }

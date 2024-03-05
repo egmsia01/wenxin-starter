@@ -2,7 +2,7 @@ package com.gearwenxin.core;
 
 import com.gearwenxin.client.ChatProcessor;
 import com.gearwenxin.client.ImageProcessor;
-import com.gearwenxin.entity.chatmodel.ChatBaseRequest;
+import com.gearwenxin.config.WenXinProperties;
 import com.gearwenxin.entity.chatmodel.ChatErnieRequest;
 import com.gearwenxin.entity.request.ImageBaseRequest;
 import com.gearwenxin.entity.response.ChatResponse;
@@ -12,11 +12,9 @@ import com.gearwenxin.schedule.ChatTask;
 import com.gearwenxin.schedule.TaskQueueManager;
 import com.gearwenxin.schedule.ThreadPoolManager;
 import jakarta.annotation.Resource;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.aot.hint.annotation.Reflective;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.CommandLineRunner;
-import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -27,18 +25,16 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 
 @Slf4j
-public class TaskHandler implements CommandLineRunner {
-
-    private TaskHandler() {
-    }
-
-    @Value("${gear.wenxin.model.qps}")
-    private List<String> modelQPSList;
-
+@Service
+public class TaskHandler {
     public static final int DEFAULT_QPS = -1;
 
+    @Getter
+    @Setter
+    private List<String> modelQPSList = null;
+
     @Resource
-    ChatProcessor chatProcessor;
+    private ChatProcessor chatProcessor;
     @Resource
     ImageProcessor imageProcessor;
 
@@ -59,17 +55,24 @@ public class TaskHandler implements CommandLineRunner {
         return instance;
     }
 
-    @Override
-    public void run(String... args) {
-        log.info("TaskHandler start");
+    public void start() {
         initModelQPSMap();
-        loopHandleTaskProcess();
+        Set<String> modelNames = modelQPSMap.keySet();
+        modelNames.forEach(modelName -> new Thread(() -> {
+            try {
+                log.info("thread-{}, loopProcess start", Thread.currentThread().getName());
+                eventLoopProcess(modelName);
+            } catch (Exception e) {
+                log.error("eventLoopProcess error, modelName: {}, thread-{}", modelName, Thread.currentThread().getName(), e);
+            }
+        }).start());
     }
 
     public void initModelQPSMap() {
         if (modelQPSList == null || modelQPSList.isEmpty()) {
             return;
         }
+        log.debug("modelQPSList: {}", modelQPSList);
         modelQPSList.forEach(s -> {
             String[] split = s.split(" ");
             modelQPSMap.put(split[0], Integer.parseInt(split[1]));
@@ -81,14 +84,13 @@ public class TaskHandler implements CommandLineRunner {
         return modelQPSMap.getOrDefault(modelName, DEFAULT_QPS);
     }
 
-    public void loopHandleTaskProcess() {
+    public void eventLoopProcess(String modelName) {
         Map<String, Integer> modelCurrentQPSMap = taskManager.getModelCurrentQPSMap();
         for (; ; ) {
-            log.info("loopHandleTaskProcess");
-            ChatTask task = taskManager.getRandomTask();
+            log.info("thread-{}, loopHandleTaskProcess, modelName: {}", Thread.currentThread().getName(), modelName);
+            ChatTask task = taskManager.getTask(modelName);
             String taskId = task.getTaskId();
-            String modelName = task.getModelName();
-            log.info("task: {}", task);
+            log.info("get task: {}", task);
             Integer currentQPS = modelCurrentQPSMap.get(modelName);
             if (currentQPS == null) {
                 currentQPS = 0;
@@ -104,21 +106,21 @@ public class TaskHandler implements CommandLineRunner {
                         CompletableFuture<Flux<ChatResponse>> completableFuture = CompletableFuture.supplyAsync(() -> {
                             // 测试用，暂时这么写
                             ChatErnieRequest taskRequest = (ChatErnieRequest) task.getTaskRequest();
-                            return chatProcessor.chatSingleOfStream(taskRequest)
-                                    .subscribeOn(Schedulers.fromExecutor(executorService));
+                            return chatProcessor.chatSingleOfStream(taskRequest);
                         }, executorService);
                         chatFutureMap.put(taskId, completableFuture);
+                        log.info("add a chat task, taskId: {}", taskId);
                         // TODO：不应该在这里，暂时放这里
-                        modelCurrentQPSMap.put(modelName, modelCurrentQPSMap.get(modelName) - 1);
+                        modelCurrentQPSMap.put(taskId, modelCurrentQPSMap.get(modelName) - 1);
                     }
                     case image -> {
                         BlockingMap<String, CompletableFuture<Mono<ImageResponse>>> imageFutureMap = taskManager.getImageFutureMap();
                         CompletableFuture<Mono<ImageResponse>> completableFuture = CompletableFuture.supplyAsync(() -> {
                             ImageBaseRequest taskRequest = (ImageBaseRequest) task.getTaskRequest();
-                            return imageProcessor.chatImage(taskRequest)
-                                    .subscribeOn(Schedulers.fromExecutor(executorService));
+                            return imageProcessor.chatImage(taskRequest);
                         }, executorService);
                         imageFutureMap.put(taskId, completableFuture);
+                        log.info("add a image task, taskId: {}", taskId);
                         // TODO：不应该在这里，暂时放这里
                         modelCurrentQPSMap.put(modelName, modelCurrentQPSMap.get(modelName) - 1);
                     }

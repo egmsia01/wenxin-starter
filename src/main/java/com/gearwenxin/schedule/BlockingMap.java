@@ -1,6 +1,7 @@
 package com.gearwenxin.schedule;
 
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -8,6 +9,7 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+@Slf4j
 public class BlockingMap<K, V> {
     @Getter
     private final Map<K, V> map = new ConcurrentHashMap<>();
@@ -15,28 +17,16 @@ public class BlockingMap<K, V> {
     private final Condition keyPresent = lock.newCondition();
 
     public V put(K key, V value) {
-        lock.lock();
-        try {
-            V putValue = map.put(key, value);
-            keyPresent.signalAll();
-            return putValue;
-        } finally {
-            lock.unlock();
-        }
+        return map.put(key, value);
     }
 
     public V get(K key) {
-        lock.lock();
-        try {
             while (!map.containsKey(key)) {
-                keyPresent.await();
+                log.debug("key {{}} not present, waiting...", key);
+//                keyPresent.await();
             }
             return map.get(key);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        } finally {
-            lock.unlock();
-        }
+
     }
 
 }

@@ -18,7 +18,8 @@ public enum ErrorCode {
     OPERATION_ERROR(50001, "操作失败"),
     SYSTEM_NET_ERROR(50002, "系统网络异常"),
     WENXIN_ERROR(1,"响应异常"),
-    SYSTEM_INPUT_ERROR(336104, "'用户输入错误' system内容不合法");
+    SYSTEM_INPUT_ERROR(336104, "'用户输入错误' system内容不合法"),
+    EVENT_LOOP_ERROR(50003, "事件循环异常");
 
     /**
      * 状态码

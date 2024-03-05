@@ -54,40 +54,34 @@ public class TaskQueueManager {
     }
 
     public String addTask(ChatTask task) {
-        lock.lock();
-        try {
-            String modelName = task.getModelName();
-            String taskId = UUID.randomUUID().toString();
-            task.setTaskId(taskId);
-            log.info("add task for {}", modelName);
-            Optional.ofNullable(taskMap.getMap().get(modelName))
-                    .ifPresentOrElse(list -> {
-                        list.add(task);
-                        taskMap.put(modelName, list);
-                        upTaskCount(modelName);
-                    }, () -> {
-                        List<ChatTask> list = new CopyOnWriteArrayList<>();
-                        list.add(task);
-                        taskMap.put(modelName, list);
-                        initTaskCount(modelName);
-                    });
-            keyPresent.signalAll();
-            return taskId;
-        } finally {
-            lock.unlock();
+        String modelName = task.getModelName();
+        String taskId = UUID.randomUUID().toString();
+        task.setTaskId(taskId);
+        log.info("add task for {}", modelName);
+        Map<String, List<ChatTask>> innerMap = taskMap.getMap();
+        List<ChatTask> chatTaskList = innerMap.get(modelName);
+        if (chatTaskList == null) {
+            List<ChatTask> list = new CopyOnWriteArrayList<>();
+            list.add(task);
+            taskMap.put(modelName, list);
+            initTaskCount(modelName);
+        } else {
+            chatTaskList.add(task);
+            taskMap.put(modelName, chatTaskList);
+            upTaskCount(modelName);
         }
+//        keyPresent.signalAll();
+        return taskId;
+
     }
 
     public ChatTask getTask(String modelName) {
-        lock.lock();
         List<ChatTask> list = taskMap.get(modelName);
         while (list == null || list.isEmpty()) {
             try {
                 keyPresent.await();
             } catch (InterruptedException e) {
                 log.error("get task error", e);
-            } finally {
-                lock.unlock();
             }
         }
         downTaskCount(modelName);
