@@ -14,7 +14,7 @@ import jakarta.annotation.Resource;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -23,7 +23,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 
 @Slf4j
-@Service
+@Component
 public class TaskHandler {
     public static final int DEFAULT_QPS = -1;
 
@@ -34,34 +34,22 @@ public class TaskHandler {
     @Resource
     private ChatProcessor chatProcessor;
     @Resource
-    ImageProcessor imageProcessor;
+    private ImageProcessor imageProcessor;
 
     private static final Map<String, Integer> modelQPSMap = new HashMap<>();
 
     private final TaskQueueManager taskManager = TaskQueueManager.getInstance();
-
-    private volatile static TaskHandler instance = null;
-
-    public static TaskHandler getInstance() {
-        if (instance == null) {
-            synchronized (TaskHandler.class) {
-                if (instance == null) {
-                    instance = new TaskHandler();
-                }
-            }
-        }
-        return instance;
-    }
 
     public void start() {
         initModelQPSMap();
         Set<String> modelNames = modelQPSMap.keySet();
         modelNames.forEach(modelName -> new Thread(() -> {
             try {
-                log.info("thread-{}, loopProcess start", Thread.currentThread().getName());
+                log.info("thread-{}, model: {}, loop-process start", Thread.currentThread().getName(), modelName);
                 eventLoopProcess(modelName);
             } catch (Exception e) {
-                log.error("eventLoopProcess error, modelName: {}, thread-{}", modelName, Thread.currentThread().getName(), e);
+                e.printStackTrace();
+//                log.error("loop-process error, modelName: {}, thread-{}, error: {}", modelName, Thread.currentThread().getName(), e.getMessage());
             }
         }).start());
     }
@@ -70,12 +58,12 @@ public class TaskHandler {
         if (modelQPSList == null || modelQPSList.isEmpty()) {
             return;
         }
-        log.debug("modelQPSList: {}", modelQPSList);
+        log.debug("model qps list: {}", modelQPSList);
         modelQPSList.forEach(s -> {
             String[] split = s.split(" ");
             modelQPSMap.put(split[0], Integer.parseInt(split[1]));
         });
-        log.info("init model-qps-map complete");
+        log.info("init model qps map complete");
     }
 
     private int getModelQPS(String modelName) {
@@ -85,10 +73,9 @@ public class TaskHandler {
     public void eventLoopProcess(String modelName) {
         Map<String, Integer> modelCurrentQPSMap = taskManager.getModelCurrentQPSMap();
         for (; ; ) {
-            log.info("thread-{}, loopHandleTaskProcess, modelName: {}", Thread.currentThread().getName(), modelName);
             ChatTask task = taskManager.getTask(modelName);
             String taskId = task.getTaskId();
-            log.info("get task: {}", task);
+            log.debug("get task: {}", task);
             Integer currentQPS = modelCurrentQPSMap.get(modelName);
             if (currentQPS == null) {
                 currentQPS = 0;
@@ -104,11 +91,11 @@ public class TaskHandler {
                         CompletableFuture<Flux<ChatResponse>> completableFuture = CompletableFuture.supplyAsync(() -> {
                             // 测试用，暂时这么写
                             ChatErnieRequest taskRequest = (ChatErnieRequest) task.getTaskRequest();
-                            log.info("submit task {}", taskRequest.getContent());
+                            log.debug("submit task {}", taskRequest.getContent());
                             return chatProcessor.chatSingleOfStream(taskRequest);
                         }, executorService);
                         chatFutureMap.put(taskId, completableFuture);
-                        log.info("add a chat task, taskId: {}", taskId);
+                        log.debug("add a chat task, taskId: {}", taskId);
                         // TODO：不应该在这里，暂时放这里
                         modelCurrentQPSMap.put(taskId, modelCurrentQPSMap.get(modelName) - 1);
                     }
@@ -119,7 +106,7 @@ public class TaskHandler {
                             return imageProcessor.chatImage(taskRequest);
                         }, executorService);
                         imageFutureMap.put(taskId, completableFuture);
-                        log.info("add a image task, taskId: {}", taskId);
+                        log.debug("add a image task, taskId: {}", taskId);
                         // TODO：不应该在这里，暂时放这里
                         modelCurrentQPSMap.put(modelName, modelCurrentQPSMap.get(modelName) - 1);
                     }

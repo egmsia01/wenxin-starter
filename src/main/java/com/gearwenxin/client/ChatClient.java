@@ -1,5 +1,6 @@
 package com.gearwenxin.client;
 
+import com.gearwenxin.common.ModelConfig;
 import com.gearwenxin.entity.chatmodel.ChatBaseRequest;
 import com.gearwenxin.entity.chatmodel.ChatErnieRequest;
 import com.gearwenxin.entity.enums.ModelType;
@@ -8,26 +9,36 @@ import com.gearwenxin.model.ChatModel;
 import com.gearwenxin.schedule.BlockingMap;
 import com.gearwenxin.schedule.ChatTask;
 import com.gearwenxin.schedule.TaskQueueManager;
-import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
-import reactor.core.CoreSubscriber;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-import reactor.core.scheduler.Schedulers;
 
 import java.util.concurrent.CompletableFuture;
 
 @Slf4j
 public class ChatClient implements ChatModel {
 
-    @Resource
-    ChatProcessor chatProcessor;
-
     private final String modelName;
+    private final String modelUrl;
+
+    private ModelConfig modelConfig;
+
     private static final float defaultWeight = 0;
+
+    public ChatClient(String modelName, String modelUrl) {
+        this.modelName = modelName;
+        this.modelUrl = modelUrl;
+    }
 
     public ChatClient(String modelName) {
         this.modelName = modelName;
+        this.modelUrl = null;
+    }
+
+    public ChatClient(ModelConfig modelConfig) {
+        this.modelConfig = modelConfig;
+        this.modelName = modelConfig.getModelName();
+        this.modelUrl = modelConfig.getModelUrl();
     }
 
     TaskQueueManager taskQueueManager = TaskQueueManager.getInstance();
@@ -54,7 +65,8 @@ public class ChatClient implements ChatModel {
 
     @Override
     public Flux<ChatResponse> chatStream(String content) {
-        ChatBaseRequest request = ChatBaseRequest.builder().content(content).build();
+        ChatErnieRequest request = new ChatErnieRequest();
+        request.setContent(content);
         ChatTask chatTask = ChatTask.builder()
                 .modelName(modelName)
                 .taskType(ModelType.chat)
@@ -63,9 +75,7 @@ public class ChatClient implements ChatModel {
                 .build();
         String taskId = taskQueueManager.addTask(chatTask);
         BlockingMap<String, CompletableFuture<Flux<ChatResponse>>> chatFutureMap = taskQueueManager.getChatFutureMap();
-        CompletableFuture<Flux<ChatResponse>> completableFuture = chatFutureMap.get(taskId);
-        completableFuture.thenAccept(flux -> flux.subscribe(System.out::println));
-        return null;
+        return chatFutureMap.get(taskId).join();
     }
 
     @Override

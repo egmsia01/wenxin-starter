@@ -1,5 +1,6 @@
 package com.gearwenxin.core;
 
+import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.core.annotation.Order;
@@ -8,9 +9,10 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Order(2)
 @Component
-public class EventLoop implements CommandLineRunner {
+public class TaskLoop implements CommandLineRunner {
 
-    private static final TaskHandler taskHandler = TaskHandler.getInstance();
+    @Resource
+    private TaskHandler taskHandler;
 
     @Override
     public void run(String... args) {

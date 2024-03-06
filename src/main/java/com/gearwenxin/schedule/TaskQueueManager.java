@@ -78,11 +78,11 @@ public class TaskQueueManager {
     public ChatTask getTask(String modelName) {
         List<ChatTask> list = taskMap.get(modelName);
         while (list == null || list.isEmpty()) {
-            try {
-                keyPresent.await();
-            } catch (InterruptedException e) {
-                log.error("get task error", e);
-            }
+//            try {
+//                keyPresent.await();
+//            } catch (InterruptedException e) {
+//                log.error("get task error", e);
+//            }
         }
         downTaskCount(modelName);
         return list.remove(0);

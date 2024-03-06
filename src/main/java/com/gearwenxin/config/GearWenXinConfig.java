@@ -27,11 +27,12 @@ public class GearWenXinConfig implements CommandLineRunner {
 
     private final WenXinProperties wenXinProperties;
 
-    private static final TaskHandler taskHandler = TaskHandler.getInstance();
+    private final TaskHandler taskHandler;
 
     @Autowired
-    public GearWenXinConfig(WenXinProperties wenXinProperties) {
+    public GearWenXinConfig(WenXinProperties wenXinProperties, TaskHandler taskHandler) {
         this.wenXinProperties = wenXinProperties;
+        this.taskHandler = taskHandler;
     }
 
     @Override
