@@ -63,18 +63,9 @@ public class ChatClient implements ChatModel {
                 .build();
         String taskId = taskQueueManager.addTask(chatTask);
         BlockingMap<String, CompletableFuture<Flux<ChatResponse>>> chatFutureMap = taskQueueManager.getChatFutureMap();
-        log.info("马上get: {}", chatFutureMap);
         CompletableFuture<Flux<ChatResponse>> completableFuture = chatFutureMap.get(taskId);
-        log.info("get到了: {}", completableFuture);
-//        completableFuture.thenAccept(flux -> flux.subscribe(System.out::println));
-
-        return Flux.create(sink -> {
-            log.info("Flux create");
-            completableFuture.thenAcceptAsync(flux -> {
-                log.info("CompletableFuture thenAccept");
-                flux.subscribe(sink::next);
-            });
-        });
+        completableFuture.thenAccept(flux -> flux.subscribe(System.out::println));
+        return null;
     }
 
     @Override

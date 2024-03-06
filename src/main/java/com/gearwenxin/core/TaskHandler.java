@@ -2,7 +2,6 @@ package com.gearwenxin.core;
 
 import com.gearwenxin.client.ChatProcessor;
 import com.gearwenxin.client.ImageProcessor;
-import com.gearwenxin.config.WenXinProperties;
 import com.gearwenxin.entity.chatmodel.ChatErnieRequest;
 import com.gearwenxin.entity.request.ImageBaseRequest;
 import com.gearwenxin.entity.response.ChatResponse;
@@ -18,7 +17,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-import reactor.core.scheduler.Schedulers;
 
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
@@ -106,6 +104,7 @@ public class TaskHandler {
                         CompletableFuture<Flux<ChatResponse>> completableFuture = CompletableFuture.supplyAsync(() -> {
                             // 测试用，暂时这么写
                             ChatErnieRequest taskRequest = (ChatErnieRequest) task.getTaskRequest();
+                            log.info("submit task {}", taskRequest.getContent());
                             return chatProcessor.chatSingleOfStream(taskRequest);
                         }, executorService);
                         chatFutureMap.put(taskId, completableFuture);
