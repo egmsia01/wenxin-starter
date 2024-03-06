@@ -54,9 +54,10 @@ public class TaskQueueManager {
     }
 
     public String addTask(ChatTask task) {
-        String modelName = task.getModelName();
+        String modelName = task.getModelConfig().getModelName();
         String taskId = UUID.randomUUID().toString();
         task.setTaskId(taskId);
+        task.getModelConfig().setTaskId(taskId);
         log.info("add task for {}", modelName);
         Map<String, List<ChatTask>> innerMap = taskMap.getMap();
         List<ChatTask> chatTaskList = innerMap.get(modelName);

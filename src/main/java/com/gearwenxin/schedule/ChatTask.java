@@ -1,5 +1,6 @@
 package com.gearwenxin.schedule;
 
+import com.gearwenxin.common.ModelConfig;
 import com.gearwenxin.entity.enums.ModelType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -16,7 +17,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ChatTask {
 
-    private String modelName;
+    private String taskId;
+
+    private ModelConfig modelConfig;
 
     private ModelType taskType;
 
@@ -24,6 +27,6 @@ public class ChatTask {
 
     private Float taskWeight;
 
-    private String taskId;
+    private String messageId;
 
 }

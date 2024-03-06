@@ -1,8 +1,10 @@
 package com.gearwenxin.subscriber;
 
+import com.gearwenxin.common.ModelConfig;
 import com.gearwenxin.core.ChatUtils;
 import com.gearwenxin.entity.Message;
 import com.gearwenxin.entity.response.ChatResponse;
+import com.gearwenxin.schedule.TaskQueueManager;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.reactivestreams.Subscriber;
@@ -11,6 +13,7 @@ import reactor.core.Disposable;
 import reactor.core.publisher.FluxSink;
 
 import java.util.Deque;
+import java.util.Map;
 import java.util.Optional;
 import java.util.StringJoiner;
 
@@ -24,14 +27,19 @@ import static com.gearwenxin.common.WenXinUtils.buildAssistantMessage;
 @Slf4j
 public class CommonSubscriber implements Subscriber<ChatResponse>, Disposable {
 
+    private final TaskQueueManager taskManager = TaskQueueManager.getInstance();
+    Map<String, Integer> qpsMap = taskManager.getModelCurrentQPSMap();
+
     private final FluxSink<ChatResponse> emitter;
     private Subscription subscription;
     private final Deque<Message> messagesHistory;
+    private final ModelConfig modelConfig;
     private final StringJoiner joiner = new StringJoiner("");
 
-    public CommonSubscriber(FluxSink<ChatResponse> emitter, Deque<Message> messagesHistory) {
+    public CommonSubscriber(FluxSink<ChatResponse> emitter, Deque<Message> messagesHistory, ModelConfig modelConfig) {
         this.emitter = emitter;
         this.messagesHistory = messagesHistory;
+        this.modelConfig = modelConfig;
     }
 
     @Override
@@ -58,10 +66,10 @@ public class CommonSubscriber implements Subscriber<ChatResponse>, Disposable {
 
     @Override
     public void onError(Throwable throwable) {
+        qpsMap.put(modelConfig.getTaskId(), qpsMap.get(modelConfig.getModelName()) - 1);
         if (isDisposed()) {
             return;
         }
-
         log.error("onError");
         emitter.error(throwable);
     }
@@ -78,6 +86,7 @@ public class CommonSubscriber implements Subscriber<ChatResponse>, Disposable {
             ChatUtils.offerMessage(messagesHistory, message);
             log.debug("offerMessage onComplete");
         });
+        qpsMap.put(modelConfig.getTaskId(), qpsMap.get(modelConfig.getModelName()) - 1);
         emitter.complete();
     }
 
@@ -91,4 +100,5 @@ public class CommonSubscriber implements Subscriber<ChatResponse>, Disposable {
     public boolean isDisposed() {
         return Disposable.super.isDisposed();
     }
+
 }

@@ -18,27 +18,12 @@ import java.util.concurrent.CompletableFuture;
 @Slf4j
 public class ChatClient implements ChatModel {
 
-    private final String modelName;
-    private final String modelUrl;
-
-    private ModelConfig modelConfig;
+    private final ModelConfig modelConfig;
 
     private static final float defaultWeight = 0;
 
-    public ChatClient(String modelName, String modelUrl) {
-        this.modelName = modelName;
-        this.modelUrl = modelUrl;
-    }
-
-    public ChatClient(String modelName) {
-        this.modelName = modelName;
-        this.modelUrl = null;
-    }
-
     public ChatClient(ModelConfig modelConfig) {
         this.modelConfig = modelConfig;
-        this.modelName = modelConfig.getModelName();
-        this.modelUrl = modelConfig.getModelUrl();
     }
 
     TaskQueueManager taskQueueManager = TaskQueueManager.getInstance();
@@ -65,22 +50,22 @@ public class ChatClient implements ChatModel {
 
     @Override
     public Flux<ChatResponse> chatStream(String content) {
-        ChatErnieRequest request = new ChatErnieRequest();
-        request.setContent(content);
-        ChatTask chatTask = ChatTask.builder()
-                .modelName(modelName)
-                .taskType(ModelType.chat)
-                .taskRequest(request)
-                .taskWeight(defaultWeight)
-                .build();
-        String taskId = taskQueueManager.addTask(chatTask);
-        BlockingMap<String, CompletableFuture<Flux<ChatResponse>>> chatFutureMap = taskQueueManager.getChatFutureMap();
-        return chatFutureMap.get(taskId).join();
+        return chatStream(content, defaultWeight);
     }
 
     @Override
     public Flux<ChatResponse> chatStream(String content, float weight) {
-        return null;
+        ChatErnieRequest request = new ChatErnieRequest();
+        request.setContent(content);
+        ChatTask chatTask = ChatTask.builder()
+                .modelConfig(modelConfig)
+                .taskType(ModelType.chat)
+                .taskRequest(request)
+                .taskWeight(weight)
+                .build();
+        String taskId = taskQueueManager.addTask(chatTask);
+        BlockingMap<String, CompletableFuture<Flux<ChatResponse>>> chatFutureMap = taskQueueManager.getChatFutureMap();
+        return chatFutureMap.get(taskId).join();
     }
 
     @Override

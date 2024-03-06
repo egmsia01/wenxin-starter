@@ -1,15 +1,13 @@
-package com.gearwenxin.core;
+package com.gearwenxin.schedule;
 
-import com.gearwenxin.client.ChatProcessor;
+import com.gearwenxin.common.ModelConfig;
+import com.gearwenxin.service.ChatService;
 import com.gearwenxin.client.ImageProcessor;
+import com.gearwenxin.entity.chatmodel.ChatBaseRequest;
 import com.gearwenxin.entity.chatmodel.ChatErnieRequest;
 import com.gearwenxin.entity.request.ImageBaseRequest;
 import com.gearwenxin.entity.response.ChatResponse;
 import com.gearwenxin.entity.response.ImageResponse;
-import com.gearwenxin.schedule.BlockingMap;
-import com.gearwenxin.schedule.ChatTask;
-import com.gearwenxin.schedule.TaskQueueManager;
-import com.gearwenxin.schedule.ThreadPoolManager;
 import jakarta.annotation.Resource;
 import lombok.Getter;
 import lombok.Setter;
@@ -32,7 +30,7 @@ public class TaskHandler {
     private List<String> modelQPSList = null;
 
     @Resource
-    private ChatProcessor chatProcessor;
+    private ChatService chatService;
     @Resource
     private ImageProcessor imageProcessor;
 
@@ -48,8 +46,7 @@ public class TaskHandler {
                 log.info("thread-{}, model: {}, loop-process start", Thread.currentThread().getName(), modelName);
                 eventLoopProcess(modelName);
             } catch (Exception e) {
-                e.printStackTrace();
-//                log.error("loop-process error, modelName: {}, thread-{}, error: {}", modelName, Thread.currentThread().getName(), e.getMessage());
+                log.error("loop-process error, modelName: {}, thread-{}", modelName, Thread.currentThread().getName(), e);
             }
         }).start());
     }
@@ -75,6 +72,7 @@ public class TaskHandler {
         for (; ; ) {
             ChatTask task = taskManager.getTask(modelName);
             String taskId = task.getTaskId();
+            ModelConfig modelConfig = task.getModelConfig();
             log.debug("get task: {}", task);
             Integer currentQPS = modelCurrentQPSMap.get(modelName);
             if (currentQPS == null) {
@@ -89,15 +87,20 @@ public class TaskHandler {
                         BlockingMap<String, CompletableFuture<Flux<ChatResponse>>> chatFutureMap = taskManager.getChatFutureMap();
                         // 提交任务到线程池
                         CompletableFuture<Flux<ChatResponse>> completableFuture = CompletableFuture.supplyAsync(() -> {
-                            // 测试用，暂时这么写
-                            ChatErnieRequest taskRequest = (ChatErnieRequest) task.getTaskRequest();
-                            log.debug("submit task {}", taskRequest.getContent());
-                            return chatProcessor.chatSingleOfStream(taskRequest);
+                            // 如果包含ernie，则使用erni的请求类
+                            ChatBaseRequest taskRequest;
+                            if (modelConfig.getModelName().toLowerCase().contains("ernie")) {
+                                taskRequest = (ChatErnieRequest) task.getTaskRequest();
+                            } else {
+                                taskRequest = (ChatBaseRequest) task.getTaskRequest();
+                            }
+                            log.info("submit task {}, ernie: {}", taskRequest.getContent(), taskRequest.getClass() == ChatErnieRequest.class);
+                            if (task.getMessageId() != null) {
+                                return chatService.chatContinuousStream(taskRequest, task.getMessageId(), modelConfig);
+                            } else return chatService.chatOnceStream(taskRequest, modelConfig);
                         }, executorService);
                         chatFutureMap.put(taskId, completableFuture);
-                        log.debug("add a chat task, taskId: {}", taskId);
-                        // TODO：不应该在这里，暂时放这里
-                        modelCurrentQPSMap.put(taskId, modelCurrentQPSMap.get(modelName) - 1);
+                        log.info("add a chat task, taskId: {}", taskId);
                     }
                     case image -> {
                         BlockingMap<String, CompletableFuture<Mono<ImageResponse>>> imageFutureMap = taskManager.getImageFutureMap();
@@ -107,8 +110,6 @@ public class TaskHandler {
                         }, executorService);
                         imageFutureMap.put(taskId, completableFuture);
                         log.debug("add a image task, taskId: {}", taskId);
-                        // TODO：不应该在这里，暂时放这里
-                        modelCurrentQPSMap.put(modelName, modelCurrentQPSMap.get(modelName) - 1);
                     }
                 }
             } else {

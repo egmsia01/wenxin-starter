@@ -1,6 +1,7 @@
 package com.gearwenxin.core;
 
 import com.gearwenxin.common.ErrorCode;
+import com.gearwenxin.common.ModelConfig;
 import com.gearwenxin.common.WenXinUtils;
 import com.gearwenxin.entity.Message;
 import com.gearwenxin.entity.response.ChatResponse;
@@ -38,7 +39,7 @@ import static com.gearwenxin.common.WenXinUtils.*;
 public class ChatCore {
 
     private final TaskQueueManager taskManager = TaskQueueManager.getInstance();
-    Map<String, Integer> modelCurrentQPSMap = taskManager.getModelCurrentQPSMap();
+    Map<String, Integer> qpsMap = taskManager.getModelCurrentQPSMap();
 
     private static final WebClient WEB_CLIENT = WebClient.builder()
             .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
@@ -54,9 +55,9 @@ public class ChatCore {
      * @param request     请求类
      * @return Mono<T>
      */
-    public static <T> Mono<T> monoChatPost(String url, String accessToken, Object request, Class<T> type) {
+    public <T> Mono<T> monoPost(String url, String accessToken, Object request, Class<T> type) {
         validateParams(url, accessToken, request, type);
-        log.info("monoURL => {}", url);
+        log.debug("model url: {}", url);
 
         String completeUrl = url + ACCESS_TOKEN_PRE + accessToken;
 
@@ -77,9 +78,9 @@ public class ChatCore {
      * @param request     请求类
      * @return Flux<T>
      */
-    public static <T> Flux<T> fluxChatPost(String url, String accessToken, Object request, Class<T> type) {
+    public <T> Flux<T> fluxPost(String url, String accessToken, Object request, Class<T> type) {
         validateParams(url, accessToken, request, type);
-        log.info("fluxURL => {}", url);
+        log.debug("model url: {}", url);
 
         String completeUrl = url + ACCESS_TOKEN_PRE + accessToken;
 
@@ -100,9 +101,9 @@ public class ChatCore {
      * @param paramsMap   请求参数Map
      * @return Mono<T>
      */
-    public static <T> Mono<T> monoChatGet(String url, String accessToken, Map<String, String> paramsMap, Class<T> type) {
+    public <T> Mono<T> monoGet(String url, String accessToken, Map<String, String> paramsMap, Class<T> type) {
         validateParams(url, accessToken, paramsMap, type);
-        log.info("monoURL => {}", url);
+        log.debug("model url: {}", url);
 
         paramsMap.put("access_token", accessToken);
         String queryParams = paramsMap.entrySet().stream()
@@ -118,7 +119,6 @@ public class ChatCore {
                     return next.exchange(filteredRequest);
                 })
                 .build();
-        log.info("monoGet => {}", queryParams);
 
         return client.get()
                 .retrieve()
@@ -130,18 +130,16 @@ public class ChatCore {
     /**
      * flux形式的回答，添加到历史消息中
      */
-    public <T> Flux<ChatResponse> historyFlux(String url, String token, T request, Deque<Message> messagesHistory) {
+    public <T> Flux<ChatResponse> historyFluxPost(String url, String token, T request, Deque<Message> messagesHistory, ModelConfig config) {
         return Flux.create(emitter -> {
-            CommonSubscriber subscriber = new CommonSubscriber(emitter, messagesHistory);
-            ChatCore.fluxChatPost(
-                    url, token, request, ChatResponse.class
-            ).subscribe(subscriber);
+            CommonSubscriber subscriber = new CommonSubscriber(emitter, messagesHistory, config);
+            fluxPost(url, token, request, ChatResponse.class).subscribe(subscriber);
             emitter.onDispose(subscriber);
         });
     }
 
-    public <T> Mono<ChatResponse> historyMono(String url, String token, T request, Deque<Message> messagesHistory) {
-        Mono<ChatResponse> response = ChatCore.monoChatPost(
+    public <T> Mono<ChatResponse> historyMonoPost(String url, String token, T request, Deque<Message> messagesHistory, ModelConfig config) {
+        Mono<ChatResponse> response = monoPost(
                 url, token, request, ChatResponse.class
         ).subscribeOn(Schedulers.boundedElastic());
 
@@ -150,6 +148,7 @@ public class ChatCore {
 
             Message messageResult = WenXinUtils.buildAssistantMessage(chatResponse.getResult());
             ChatUtils.offerMessage(messagesHistory, messageResult);
+            qpsMap.put(config.getTaskId(), qpsMap.get(config.getModelName()) - 1);
 
             return Mono.just(chatResponse);
         });
@@ -186,7 +185,7 @@ public class ChatCore {
 
     private static Consumer<Throwable> handleWebClientError() {
         return err -> {
-            log.error("请求错误 => {} {}", err instanceof WebClientResponseException
+            log.error("请求错误: {} {}", err instanceof WebClientResponseException
                     ? ((WebClientResponseException) err).getStatusCode() : "Unknown", err.getMessage());
             throw new WenXinException(ErrorCode.SYSTEM_NET_ERROR);
         };

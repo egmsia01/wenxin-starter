@@ -1,6 +1,5 @@
 package com.gearwenxin.client;
 
-import com.gearwenxin.client.base.BaseClient;
 import com.gearwenxin.core.ChatCore;
 import com.gearwenxin.common.ConvertUtils;
 import com.gearwenxin.common.ErrorCode;
@@ -15,6 +14,7 @@ import com.gearwenxin.entity.request.PromptRequest;
 import com.gearwenxin.entity.response.PromptResponse;
 import com.gearwenxin.model.BaseBot;
 import com.gearwenxin.model.PromptBot;
+import com.gearwenxin.service.ChatService;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 
@@ -34,6 +34,8 @@ import java.util.Map;
 @Lazy
 @Service
 public class PromptBotClient implements PromptBot, BaseBot {
+
+    ChatCore chatCore = new ChatCore();
 
     @Resource
     private WenXinProperties wenXinProperties;
@@ -79,18 +81,18 @@ public class PromptBotClient implements PromptBot, BaseBot {
         Map<String, String> paramMap = promptRequest.getParamMap();
         paramMap.put("id", promptRequest.getId());
 
-        return ChatCore.monoChatGet(
+        return chatCore.monoGet(
                 URL, getCustomAccessToken(), paramMap, PromptResponse.class
         );
     }
 
     @Override
-    public <U extends BaseClient, T extends ChatBaseRequest> Flux<ChatResponse> chatUsePrompt(ChatPromptRequest request, T chatRequest, U chatClient) {
+    public <U extends ChatService, T extends ChatBaseRequest> Flux<ChatResponse> chatUsePrompt(ChatPromptRequest request, T chatRequest, U chatClient) {
         return this.chatPrompt(request).flatMapMany(response -> {
             log.debug("PromptResponse => {}", response);
             chatRequest.setContent(response.getResult().getContent());
 
-            return chatClient.chatSingleOfStream(chatRequest);
+            return chatClient.chatOnceStream(chatRequest, null);
         });
     }
 

@@ -21,6 +21,8 @@ import static com.gearwenxin.common.WenXinUtils.assertNotNull;
 @Service
 public class ImageProcessor implements ImageBot<ImageBaseRequest>, BaseBot {
 
+    ChatCore chatCore = new ChatCore();
+
     @Resource
     private WenXinProperties wenXinProperties;
 
@@ -61,7 +63,7 @@ public class ImageProcessor implements ImageBot<ImageBaseRequest>, BaseBot {
         imageBaseRequest.validSelf();
         log.info(getTag() + "imageRequest => {}", imageBaseRequest);
 
-        return ChatCore.monoChatPost(
+        return chatCore.monoPost(
                 getURL(), getCustomAccessToken(), imageBaseRequest, ImageResponse.class
         );
     }

@@ -1,6 +1,6 @@
 package com.gearwenxin.model;
 
-import com.gearwenxin.client.base.BaseClient;
+import com.gearwenxin.service.ChatService;
 import com.gearwenxin.entity.chatmodel.ChatBaseRequest;
 import com.gearwenxin.entity.chatmodel.ChatPromptRequest;
 import com.gearwenxin.entity.response.ChatResponse;
@@ -29,6 +29,6 @@ public interface PromptBot {
      * @param request 请求实体类
      * @return ChatResponse 响应实体类
      */
-    <U extends BaseClient, T extends ChatBaseRequest> Flux<ChatResponse> chatUsePrompt(ChatPromptRequest request, T chatRequest, U chatClient);
+    <U extends ChatService, T extends ChatBaseRequest> Flux<ChatResponse> chatUsePrompt(ChatPromptRequest request, T chatRequest, U chatClient);
 
 }

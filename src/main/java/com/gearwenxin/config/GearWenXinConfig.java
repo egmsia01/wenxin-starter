@@ -2,7 +2,7 @@ package com.gearwenxin.config;
 
 import com.gearwenxin.core.ChatCore;
 import com.gearwenxin.common.ErrorCode;
-import com.gearwenxin.core.TaskHandler;
+import com.gearwenxin.schedule.TaskHandler;
 import com.gearwenxin.entity.response.TokenResponse;
 import com.gearwenxin.exception.WenXinException;
 import lombok.extern.slf4j.Slf4j;

@@ -112,18 +112,4 @@ public class ChatUtils {
         messagesHistory.addAll(updatedHistory);
     }
 
-    public static <T extends ChatBaseRequest> Object buildTargetRequest(Deque<Message> messagesHistory, boolean stream, T request) {
-        Object targetRequest = null;
-        if (request.getClass() == ChatBaseRequest.class) {
-            BaseRequest.BaseRequestBuilder requestBuilder = ConvertUtils.toBaseRequest(request).stream(stream);
-            if (messagesHistory != null) requestBuilder.messages(messagesHistory);
-            targetRequest = requestBuilder.build();
-        } else if (request.getClass() == ChatErnieRequest.class) {
-            ErnieRequest.ErnieRequestBuilder requestBuilder = ConvertUtils.toErnieRequest((ChatErnieRequest) request).stream(stream);
-            if (messagesHistory != null) requestBuilder.messages(messagesHistory);
-            targetRequest = requestBuilder.build();
-        }
-        return targetRequest;
-    }
-
 }
