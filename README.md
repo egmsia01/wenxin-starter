@@ -50,6 +50,8 @@ PromptBotClient -> ChatPromptRequest -> PromptResponse
 ### 1、添加依赖
 
 - Maven
+
+[拥有更高通用性与性能的 2.0-beta 版本已进入测试，可以在此试用](https://github.com/GMerge01/wenxin-starter/tree/2.0)
 ```xml
 <dependency>
   <groupId>io.github.gemingjia</groupId>
