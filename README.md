@@ -32,11 +32,6 @@
 [使用demo](https://github.com/gemingjia/springboot-wenxin-demo)
 
 ```text
-SpringBoot 3.x中，如遇到`A component required a bean of type xxx that could not be found.`报错，请在启动类添加注解：
-`@ComponentScan(basePackages = {"com.gearwenxin", "你的启动类所在包名"})`
-```
-
-```text
 Client类型 -> 参数类 -> 响应类：
 
 ErnieBotClient、ErnieBot4Client、ErnieBotTurboClient -> ChatErnieRequest -> ChatResponse
@@ -54,13 +49,13 @@ PromptBotClient -> ChatPromptRequest -> PromptResponse
 <dependency>
   <groupId>io.github.gemingjia</groupId>
   <artifactId>gear-wenxinworkshop-starter</artifactId>
-  <version>1.1.2</version>
+  <version>2.0.0-beta2</version>
 </dependency>
 ```
 - Gradle
 ```gradle
 dependencies {
-  implementation 'io.github.gemingjia:gear-wenxinworkshop-starter:1.1.2' 
+  implementation 'io.github.gemingjia:gear-wenxinworkshop-starter:2.0.0-beta2' 
 }
 ```
 
@@ -82,75 +77,64 @@ dependencies {
   gear.wenxin.access-token=xx.xxxxxxxxxx.xxxxxx.xxxxxxx.xxxxx-xxxx
   ```
 
+- 模型qps设置
+  ```yaml
+  gear:
+    wenxin:
+      model-qps:
+        # 模型名 QPS数量
+        - Ernie 10
+        - Lamma 10
+        - ChatGLM 10
+  ```
+
 ### 3、调用示例
 
 ```java
 
+@Configuration
+public class ClientConfig {
+
+  @Bean
+  @Qualifier("Ernie")
+  public ChatClient ernieClient() {
+    ModelConfig modelConfig = new ModelConfig();
+    modelConfig.setModelName("Ernie");
+    modelConfig.setModelUrl("https://aip.baidubce.com/rpc/2.0/ai_custom/v1/wenxinworkshop/chat/completions");
+    return new ChatClient(modelConfig);
+  }
+
+}
+
 @RestController
 public class ChatController {
 
-  // 要调用的模型的客户端（示例为文心4.0）
+  // 要调用的模型的客户端（示例为文心）
   @Resource
-  private ErnieBot4Client ernieBot4Client;
-  @Resource
-  private StableDiffusionXLClient stableDiffusionXLClient;
+  @Qualifier("Ernie")
+  private ChatClient chatClient;
 
-  // 单次对话
-  @PostMapping("/chat")
-  public Mono<ChatResponse> chatSingle(String msg) {
-      return ernieBot4Client.chatSingle(msg);
-  }
-
-  // 流式返回，连续对话（SSE形式）
-  @GetMapping(value = "/stream/chats", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-  public SseEmitter chatSingleSSE(@RequestParam String msg) {
-      String chatUID = "test-user-1001";
-      SseEmitter emitter = new SseEmitter();
-      ernieBot4Client.chatContOfStream(msg, chatUID).subscribe(response -> {
-          try {
-              emitter.send(SseEmitter.event().data(response.getResult()));
-          } catch (Exception e) {
-              emitter.completeWithError(e);
-          }
-      }, emitter::completeWithError, emitter::complete);
-      return emitter;
-  }
-
-  // Prompt模板
-  @PostMapping("/prompt")
-  public Mono<PromptResponse> chatSingle() {
-      Map<String, String> map = new HashMap<>();
-      map.put("article", "我看见过波澜壮阔的大海，玩赏过水平如镜的西湖，却从没看见过漓江这样的水。漓江的水真静啊，静得让你感觉不到它在流动。");
-      map.put("number", "20");
-      PromptRequest promptRequest = new PromptRequest();
-      promptRequest.setId(1234);
-      promptRequest.setParamMap(map);
-    
-      return promptBotClient.chatPrompt(promptRequest);
-  }
-
-  // 文生图
-  @PostMapping("/image")
-  public Mono<ImageResponse> chatImage() {
-      ImageBaseRequest imageBaseRequest = ImageBaseRequest.builder()
-            // 提示词
-            .prompt("一个头发中分背带裤的人")
-            // 大小
-            .size("1024x1024")
-            // 反向提示词（不包含什么）
-            .negativePrompt("鸡")
-            // 生成图片数量（1-4）
-            .n(1)
-            // 迭代轮次（10-50）
-            .steps(20)
-            // 采样方式
-            .samplerIndex(SamplerType.Euler_A.getValue())
-            .userId("1001")
-            .build();
-
-      return stableDiffusionXLClient.chatImage(imageBaseRequest);
-  }
+  /**
+   * chatClient.chatStream(msg) 单轮流式对话
+   * chatClient.chatStream(new ChatErnieRequest()) 单轮流式对话, 参数可调
+   * chatClient.chatsStream(msg, msgId) 连续对话
+   * chatClient.chatsStream(new ChatErnieRequest(), msgId) 连续对话, 参数可调
+   */
   
+  // 单轮对话，流式接口
+  @GetMapping(value = "/stream/sse", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+  public SseEmitter chatSingleSSE(@RequestParam String msg) {
+    SseEmitter emitter = new SseEmitter();
+    chatClient.chatStream(msg).subscribe(response -> {
+      try {
+        emitter.send(SseEmitter.event().data(response.getResult()));
+      } catch (Exception e) {
+        emitter.completeWithError(e);
+      }
+    }, emitter::completeWithError, emitter::complete);
+    return emitter;
+  }
+
 }
 ```
 
@@ -159,76 +143,12 @@ public class ChatController {
 [![Star History Chart](https://api.star-history.com/svg?repos=GMerge01/wenxin-starter&type=Date)](https://star-history.com/#GMerge01/wenxin-starter)
 
 ## 更新日志
+v2.0.0 - bata2
 
-v1.1.3 [JDK1.8 专版]
-- 合并master分支1.1.2
-
-v1.1.2
-- 修复 PromptBotClient循环依赖问题
-
-v1.1.1
-- 修复 部分场景下无法获取access-token的问题
-- 修复 并发场景下会造成消息错乱的问题
-- 优化 场景下的性能
-- 优化 同步官方文档新版请求参数与响应参数
-
-v1.0.1  - jdk8 专版
-- 同步 master 分支的修改
-
-v1.0.0
-- 重构 Bean注入方式与配置读取，可能引起路径兼容问题。
-- 优化 大量代码精简
-- 修复 并发安全问题
-
-v0.0.9.7 - pre release
-
-- // 新增 对function call的简单支持 
-- 新增 更细化的错误处理 
-- 修复 ban_round类型错误导致的反序列化错误 #15。 
-- 修复 system字段无长度限制 #16 
-- 修复 system字段包含敏感词导致的npe问题 
-- 修复 概率出现的The connection observed an error错误
-
-v0.0.9.6
-- [new]  支持JDK1.8  JDK1.8专版
-
-v0.0.9.5 - Canary
-- 支持文心4.0
-- 同步官网响应字段（2023-10-20）。
-
-v0.0.9.1
-- 完全的响应式风格。
-- 更改历史消息的数据结构，Queue -> Deque，如有使用消息导入导出功能请注意修改。
-- 修复 快速连续请求导致的npe问题 ( #8 )。
-- 修复 响应前再次请求导致的消息格式错误( #10 )。
-- 修复 api_key配置错误导致的异常。
-- 优化 非空校验。
-- 优化 消息队列的数据结构。
-- 优化 流式返回性能。
-- 同步官网响应字段（2023-9-13）。
-
-v0.0.7.2
-
-全面转向webflux响应式风格，请注意适配返回值
-- 重构 完全适配webflux响应式风格，去除代码中的阻塞操作。
-- 优化 接口命名
-- 优化 空值检测
-- 优化 日志输出的规范性
-- 优化 不同模型的URL配置名称（无感知）
-- 新增 配置API-Key 和 Secret-Key自动获取access-Token，每次启动自动获取
-- 新增 9+模型的API支持
-
-v0.0.6
-
-！此版本与之前版本客户端路径不兼容，请重新导包
-- 重构 客户端的实现方式，大幅增加了拓展性
-- 修复 URL错乱问题
-- 优化 导入/导出历史消息记录方法
-- 新增 access-token的设置方法，优先级 setCustomAccessToken > extend and override > application.yaml
-- 新增 支持图片生成
-- 新增 通用客户端CommonClient，新模型未适配时可使用这个，大概率可用
-- 新增 高度自定义设计，直接extends DefaltParamsClient并重写方法即可
-- 新增 大量模型适配，支持文心千帆所有模型，包括：文心一言 ErnieBot、ERNIE-Bot-turbo、BLOOMZ-7B、Ernie-Bot-VilG、VisualGLM-6B、Llama-2、Linly-Chinese-LLaMA-2-7B、Linly-Chinese-LLaMA-2-13B、ChatGLM2-6B、RWKV-4-World、OpenLLaMA-7B、Falcon-7B、Dolly-12B、MPT-7B-Instruct、Stable-Diffusion-v1.5、RWKV-4-pile-14B、RWKV-5-World、RWKV-Raven-14B、Falcon-40B、MPT-30B-instruct、Flan-UL2、Cerebras-GPT-13B、Cerebras-GPT-6.7B、Pythia-12B、Pythia-6.9B、GPT-J-6B、GPT-NeoX-20B、OA-Pythia-12B-SFT-4、GPT4All-J、StableLM-Alpha-7B 、 StarCoder、Prompt模板。
+！ 2.x 版本与 1.x 版本不兼容
+- 重构 SDK架构，大幅提升性能
+- 重构 客户端生成方式，支持自定义多模型，不再需要适配
+- 完善 普通chat流式接口现已可用
 
 ## 使用文档
 
