@@ -2,7 +2,7 @@ package com.gearwenxin.schedule;
 
 import com.gearwenxin.common.ModelConfig;
 import com.gearwenxin.service.ChatService;
-import com.gearwenxin.client.ImageProcessor;
+import com.gearwenxin.service.ImageService;
 import com.gearwenxin.entity.chatmodel.ChatBaseRequest;
 import com.gearwenxin.entity.chatmodel.ChatErnieRequest;
 import com.gearwenxin.entity.request.ImageBaseRequest;
@@ -32,7 +32,7 @@ public class TaskHandler {
     @Resource
     private ChatService chatService;
     @Resource
-    private ImageProcessor imageProcessor;
+    private ImageService imageService;
 
     private static final Map<String, Integer> modelQPSMap = new HashMap<>();
 
@@ -106,7 +106,7 @@ public class TaskHandler {
                         BlockingMap<String, CompletableFuture<Mono<ImageResponse>>> imageFutureMap = taskManager.getImageFutureMap();
                         CompletableFuture<Mono<ImageResponse>> completableFuture = CompletableFuture.supplyAsync(() -> {
                             ImageBaseRequest taskRequest = (ImageBaseRequest) task.getTaskRequest();
-                            return imageProcessor.chatImage(taskRequest);
+                            return imageService.chatImage(taskRequest);
                         }, executorService);
                         imageFutureMap.put(taskId, completableFuture);
                         log.debug("add a image task, taskId: {}", taskId);

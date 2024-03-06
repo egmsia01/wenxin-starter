@@ -1,4 +1,4 @@
-package com.gearwenxin.client;
+package com.gearwenxin.service;
 
 import com.gearwenxin.config.WenXinProperties;
 import com.gearwenxin.core.ChatCore;
@@ -19,7 +19,7 @@ import static com.gearwenxin.common.WenXinUtils.assertNotNull;
  */
 @Slf4j
 @Service
-public class ImageProcessor implements ImageBot<ImageBaseRequest>, BaseBot {
+public class ImageService implements ImageBot<ImageBaseRequest>, BaseBot {
 
     ChatCore chatCore = new ChatCore();
 

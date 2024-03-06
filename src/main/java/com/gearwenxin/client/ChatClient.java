@@ -55,8 +55,16 @@ public class ChatClient implements ChatModel {
 
     @Override
     public Flux<ChatResponse> chatStream(String content, float weight) {
-        ChatErnieRequest request = new ChatErnieRequest();
-        request.setContent(content);
+        return chatStream(ChatErnieRequest.builder().content(content).build(), weight);
+    }
+
+    @Override
+    public <T extends ChatBaseRequest> Flux<ChatResponse> chatStream(T chatRequest) {
+        return chatStream(chatRequest, defaultWeight);
+    }
+
+    @Override
+    public <T extends ChatBaseRequest> Flux<ChatResponse> chatStream(T request, float weight) {
         ChatTask chatTask = ChatTask.builder()
                 .modelConfig(modelConfig)
                 .taskType(ModelType.chat)
@@ -66,16 +74,6 @@ public class ChatClient implements ChatModel {
         String taskId = taskQueueManager.addTask(chatTask);
         BlockingMap<String, CompletableFuture<Flux<ChatResponse>>> chatFutureMap = taskQueueManager.getChatFutureMap();
         return chatFutureMap.get(taskId).join();
-    }
-
-    @Override
-    public <T extends ChatBaseRequest> Flux<ChatResponse> chatStream(T chatRequest) {
-        return null;
-    }
-
-    @Override
-    public <T extends ChatBaseRequest> Flux<ChatResponse> chatStream(T chatRequest, float weight) {
-        return null;
     }
 
     @Override
@@ -100,21 +98,30 @@ public class ChatClient implements ChatModel {
 
     @Override
     public Flux<ChatResponse> chatsStream(String content, String msgUid) {
-        return null;
+        return chatsStream(content, msgUid, defaultWeight);
     }
 
     @Override
     public Flux<ChatResponse> chatsStream(String content, String msgUid, float weight) {
-        return null;
+        return chatsStream(ChatErnieRequest.builder().content(content).build(), msgUid, weight);
     }
 
     @Override
     public <T extends ChatBaseRequest> Flux<ChatResponse> chatsStream(T chatRequest, String msgUid) {
-        return null;
+        return chatsStream(chatRequest, msgUid, defaultWeight);
     }
 
     @Override
-    public <T extends ChatBaseRequest> Flux<ChatResponse> chatsStream(T chatRequest, String msgUid, float weight) {
-        return null;
+    public <T extends ChatBaseRequest> Flux<ChatResponse> chatsStream(T request, String msgUid, float weight) {
+        ChatTask chatTask = ChatTask.builder()
+                .modelConfig(modelConfig)
+                .taskType(ModelType.chat)
+                .taskRequest(request)
+                .messageId(msgUid)
+                .taskWeight(weight)
+                .build();
+        String taskId = taskQueueManager.addTask(chatTask);
+        BlockingMap<String, CompletableFuture<Flux<ChatResponse>>> chatFutureMap = taskQueueManager.getChatFutureMap();
+        return chatFutureMap.get(taskId).join();
     }
 }
