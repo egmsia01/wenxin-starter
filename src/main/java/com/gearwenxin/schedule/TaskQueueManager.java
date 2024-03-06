@@ -10,10 +10,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.*;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.*;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -37,7 +34,7 @@ public class TaskQueueManager {
     private final BlockingMap<String, CompletableFuture<Mono<ImageResponse>>> imageFutureMap = new BlockingMap<>();
 
     private final Lock lock = new ReentrantLock();
-    private final Condition keyPresent = lock.newCondition();
+    private final Map<String, CountDownLatch> latchMap = new ConcurrentHashMap<>();
 
     private volatile static TaskQueueManager instance = null;
 
@@ -73,53 +70,15 @@ public class TaskQueueManager {
             taskMap.put(modelName, chatTaskList);
             upTaskCount(modelName);
         }
-//        keyPresent.signalAll();
         return taskId;
 
     }
 
     public ChatTask getTask(String modelName) {
-        List<ChatTask> list = taskMap.get(modelName);
-        while (list == null || list.isEmpty()) {
-//            try {
-//                keyPresent.await();
-//            } catch (InterruptedException e) {
-//                log.error("get task error", e);
-//            }
-        }
+        List<ChatTask> list = taskMap.get(modelName, true);
         downTaskCount(modelName);
         return list.remove(0);
     }
-
-    public ChatTask getRandomTask() {
-        lock.lock();
-        try {
-            while (true) {
-                List<Map.Entry<String, List<ChatTask>>> nonEmptyLists = taskMap.getMap().entrySet().stream()
-                        .filter(entry -> !entry.getValue().isEmpty())
-                        .toList();
-
-                if (!nonEmptyLists.isEmpty()) {
-                    int randomIndex = ThreadLocalRandom.current().nextInt(nonEmptyLists.size());
-                    Map.Entry<String, List<ChatTask>> randomEntry = nonEmptyLists.get(randomIndex);
-                    String modelName = randomEntry.getKey();
-                    List<ChatTask> list = randomEntry.getValue();
-
-                    downTaskCount(modelName);
-                    return list.remove(0);
-                } else {
-                    try {
-                        keyPresent.await();
-                    } catch (InterruptedException e) {
-                        log.error("get random task error", e);
-                    }
-                }
-            }
-        } finally {
-            lock.unlock();
-        }
-    }
-
 
     public CompletableFuture<Flux<ChatResponse>> getChatFuture(String taskId) {
         return chatFutureMap.get(taskId);

@@ -99,7 +99,9 @@ public class TaskHandler {
                             log.info("submit task {}, ernie: {}", taskRequest.getContent(), taskRequest.getClass() == ChatErnieRequest.class);
                             if (task.getMessageId() != null) {
                                 return chatService.chatContinuousStream(taskRequest, task.getMessageId(), modelConfig);
-                            } else return chatService.chatOnceStream(taskRequest, modelConfig);
+                            } else {
+                                return chatService.chatOnceStream(taskRequest, modelConfig);
+                            }
                         }, executorService);
                         chatFutureMap.put(taskId, completableFuture);
                         log.info("add a chat task, taskId: {}", taskId);
@@ -118,6 +120,11 @@ public class TaskHandler {
                 // 把任务再放回去
                 // TODO: 待优化，QPS超额应该直接wait()
                 taskManager.addTask(task);
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    log.error("thread sleep error", e);
+                }
             }
         }
 
