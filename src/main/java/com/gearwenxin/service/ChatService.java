@@ -10,6 +10,7 @@ import com.gearwenxin.entity.chatmodel.ChatErnieRequest;
 import com.gearwenxin.entity.request.ErnieRequest;
 import com.gearwenxin.entity.response.ChatResponse;
 import com.gearwenxin.entity.Message;
+import com.gearwenxin.schedule.entity.ModelConfig;
 import com.gearwenxin.validator.RequestValidator;
 import com.gearwenxin.validator.RequestValidatorFactory;
 import jakarta.annotation.Resource;

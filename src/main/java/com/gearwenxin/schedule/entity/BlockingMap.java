@@ -1,4 +1,4 @@
-package com.gearwenxin.schedule;
+package com.gearwenxin.schedule.entity;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;

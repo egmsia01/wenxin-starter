@@ -1,4 +1,4 @@
-package com.gearwenxin.common;
+package com.gearwenxin.schedule.entity;
 
 import lombok.Data;
 

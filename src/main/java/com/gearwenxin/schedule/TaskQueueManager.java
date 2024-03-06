@@ -2,6 +2,8 @@ package com.gearwenxin.schedule;
 
 import com.gearwenxin.entity.response.ChatResponse;
 import com.gearwenxin.entity.response.ImageResponse;
+import com.gearwenxin.schedule.entity.BlockingMap;
+import com.gearwenxin.schedule.entity.ChatTask;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Flux;

@@ -1,6 +1,6 @@
 package com.gearwenxin.subscriber;
 
-import com.gearwenxin.common.ModelConfig;
+import com.gearwenxin.schedule.entity.ModelConfig;
 import com.gearwenxin.core.ChatUtils;
 import com.gearwenxin.entity.Message;
 import com.gearwenxin.entity.response.ChatResponse;

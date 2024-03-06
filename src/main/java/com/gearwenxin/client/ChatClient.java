@@ -1,13 +1,13 @@
 package com.gearwenxin.client;
 
-import com.gearwenxin.common.ModelConfig;
-import com.gearwenxin.entity.chatmodel.ChatBaseRequest;
 import com.gearwenxin.entity.chatmodel.ChatErnieRequest;
+import com.gearwenxin.schedule.entity.ModelConfig;
+import com.gearwenxin.entity.chatmodel.ChatBaseRequest;
 import com.gearwenxin.entity.enums.ModelType;
 import com.gearwenxin.entity.response.ChatResponse;
 import com.gearwenxin.model.ChatModel;
-import com.gearwenxin.schedule.BlockingMap;
-import com.gearwenxin.schedule.ChatTask;
+import com.gearwenxin.schedule.entity.BlockingMap;
+import com.gearwenxin.schedule.entity.ChatTask;
 import com.gearwenxin.schedule.TaskQueueManager;
 import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Flux;
@@ -55,7 +55,9 @@ public class ChatClient implements ChatModel {
 
     @Override
     public Flux<ChatResponse> chatStream(String content, float weight) {
-        return chatStream(ChatErnieRequest.builder().content(content).build(), weight);
+        ChatErnieRequest request = new ChatErnieRequest();
+        request.setContent(content);
+        return chatStream(request, weight);
     }
 
     @Override
@@ -103,7 +105,9 @@ public class ChatClient implements ChatModel {
 
     @Override
     public Flux<ChatResponse> chatsStream(String content, String msgUid, float weight) {
-        return chatsStream(ChatErnieRequest.builder().content(content).build(), msgUid, weight);
+        ChatErnieRequest request = new ChatErnieRequest();
+        request.setContent(content);
+        return chatsStream(request, msgUid, weight);
     }
 
     @Override

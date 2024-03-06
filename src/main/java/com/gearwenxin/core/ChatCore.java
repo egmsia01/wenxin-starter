@@ -1,7 +1,7 @@
 package com.gearwenxin.core;
 
 import com.gearwenxin.common.ErrorCode;
-import com.gearwenxin.common.ModelConfig;
+import com.gearwenxin.schedule.entity.ModelConfig;
 import com.gearwenxin.common.WenXinUtils;
 import com.gearwenxin.entity.Message;
 import com.gearwenxin.entity.response.ChatResponse;
