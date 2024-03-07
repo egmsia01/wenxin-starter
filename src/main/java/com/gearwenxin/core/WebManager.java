@@ -90,7 +90,6 @@ public class WebManager {
                 .retrieve()
                 .bodyToMono(type)
                 .doOnSuccess(response -> {
-                    log.info("Mono complete");
                     handleErrResponse(response);
                     qpsMap.put(config.getModelName(), qpsMap.get(config.getModelName()) - 1);
                 })
@@ -118,12 +117,21 @@ public class WebManager {
                 .accept(MediaType.TEXT_EVENT_STREAM)
                 .retrieve()
                 .bodyToFlux(type)
-                .doOnNext(WebManager::handleErrResponse)
+                .doOnNext(response -> {
+                    handleErrResponse(response);
+                    ChatResponse chatResponse = (ChatResponse) response;
+                    String text = ((ChatResponse) response).getResult();
+                    if (text.startsWith("data:") && text.length() > 5) {
+                        text = text.substring(5);
+                    }
+                    if (text.endsWith("\n\n")) {
+                        text = text.substring(0, text.length() - 2);
+                        text = text.trim();
+                    }
+                    chatResponse.setResult(text);
+                })
                 .doOnError(WebClientResponseException.class, handleWebClientError())
-                .doOnComplete(() -> {
-                    log.info("Flux complete");
-                    qpsMap.put(config.getModelName(), qpsMap.get(config.getModelName()) - 1);
-                });
+                .doOnComplete(() -> qpsMap.put(config.getModelName(), qpsMap.get(config.getModelName()) - 1));
     }
 
     /**

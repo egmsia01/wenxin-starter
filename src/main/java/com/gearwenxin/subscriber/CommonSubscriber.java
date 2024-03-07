@@ -46,7 +46,7 @@ public class CommonSubscriber implements Subscriber<ChatResponse>, Disposable {
     public void onSubscribe(Subscription subscription) {
         this.subscription = subscription;
         subscription.request(1);
-        log.info("onSubscribe");
+        log.debug("onSubscribe");
     }
 
     @Override
@@ -57,10 +57,10 @@ public class CommonSubscriber implements Subscriber<ChatResponse>, Disposable {
 
         assertNotNull(response, "ChatResponse is null");
 
-        log.info("onNext...");
+        log.debug("onNext...");
 
         Optional.ofNullable(response.getResult()).ifPresent(joiner::add);
-        subscription.request(15);
+        subscription.request(1);
         emitter.next(response);
     }
 
@@ -70,7 +70,7 @@ public class CommonSubscriber implements Subscriber<ChatResponse>, Disposable {
         if (isDisposed()) {
             return;
         }
-        log.error("onError");
+        log.debug("onError");
         emitter.error(throwable);
     }
 
@@ -79,7 +79,7 @@ public class CommonSubscriber implements Subscriber<ChatResponse>, Disposable {
         if (isDisposed()) {
             return;
         }
-        log.info("onComplete");
+        log.debug("onComplete");
         String result = joiner.toString();
         Optional.ofNullable(result).filter(StringUtils::isNotBlank).ifPresent(r -> {
             Message message = buildAssistantMessage(r);
@@ -92,7 +92,7 @@ public class CommonSubscriber implements Subscriber<ChatResponse>, Disposable {
 
     @Override
     public void dispose() {
-        log.info("dispose");
+        log.debug("dispose");
         subscription.cancel();
     }
 
