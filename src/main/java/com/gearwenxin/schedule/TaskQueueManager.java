@@ -103,10 +103,21 @@ public class TaskQueueManager {
         log.info("init task count for {}", modelName);
     }
 
+    public synchronized void initModelCurrentQPS(String modelName) {
+        modelCurrentQPSMap.put(modelName, 0);
+        log.info("init model current qps for {}", modelName);
+    }
+
     public synchronized void upTaskCount(String modelName) {
         Integer taskCount = taskCountMap.get(modelName);
         taskCountMap.put(modelName, taskCount + 1);
         log.info("up task count for {}, number {}", modelName, taskCount + 1);
+    }
+
+    public synchronized void upModelCurrentQPS(String modelName) {
+        Integer currentQPS = modelCurrentQPSMap.get(modelName);
+        modelCurrentQPSMap.put(modelName, currentQPS + 1);
+        log.info("up model current qps for {}, number {}", modelName, currentQPS + 1);
     }
 
     public synchronized void downTaskCount(String modelName) {
@@ -116,6 +127,15 @@ public class TaskQueueManager {
         }
         taskCountMap.put(modelName, taskCount - 1);
         log.info("down task count for {}, number {}", modelName, taskCount - 1);
+    }
+
+    public synchronized void downModelCurrentQPS(String modelName) {
+        Integer currentQPS = modelCurrentQPSMap.get(modelName);
+        if (currentQPS == null || currentQPS <= 0) {
+            return;
+        }
+        modelCurrentQPSMap.put(modelName, currentQPS - 1);
+        log.info("down model current qps for {}, number {}", modelName, currentQPS - 1);
     }
 
 }

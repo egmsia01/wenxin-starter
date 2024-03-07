@@ -28,7 +28,6 @@ import static com.gearwenxin.common.WenXinUtils.buildAssistantMessage;
 public class CommonSubscriber implements Subscriber<ChatResponse>, Disposable {
 
     private final TaskQueueManager taskManager = TaskQueueManager.getInstance();
-    Map<String, Integer> qpsMap = taskManager.getModelCurrentQPSMap();
 
     private final FluxSink<ChatResponse> emitter;
     private Subscription subscription;
@@ -66,7 +65,7 @@ public class CommonSubscriber implements Subscriber<ChatResponse>, Disposable {
 
     @Override
     public void onError(Throwable throwable) {
-        qpsMap.put(modelConfig.getModelName(), qpsMap.get(modelConfig.getModelName()) - 1);
+        taskManager.downModelCurrentQPS(modelConfig.getModelName());
         if (isDisposed()) {
             return;
         }
@@ -86,7 +85,6 @@ public class CommonSubscriber implements Subscriber<ChatResponse>, Disposable {
             ChatUtils.offerMessage(messagesHistory, message);
             log.debug("offerMessage onComplete");
         });
-        qpsMap.put(modelConfig.getModelName(), qpsMap.get(modelConfig.getModelName()) - 1);
         emitter.complete();
     }
 

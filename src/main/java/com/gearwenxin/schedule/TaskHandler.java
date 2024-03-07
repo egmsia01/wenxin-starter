@@ -78,14 +78,18 @@ public class TaskHandler {
     public void eventLoopProcess(String modelName) {
         Map<String, Integer> modelCurrentQPSMap = taskManager.getModelCurrentQPSMap();
         for (; ; ) {
-            int currentQPS = modelCurrentQPSMap.computeIfAbsent(modelName, k -> 0);
+            Integer currentQPS = modelCurrentQPSMap.get(modelName);
+            if (currentQPS == null) {
+                taskManager.initModelCurrentQPS(modelName);
+                currentQPS = 0;
+            }
             log.info("[{}] current qps: {}", modelName, currentQPS);
-            if (currentQPS <= getModelQPS(modelName) || getModelQPS(modelName) == DEFAULT_QPS) {
+            if (currentQPS < getModelQPS(modelName) || getModelQPS(modelName) == DEFAULT_QPS) {
                 ChatTask task = taskManager.getTask(modelName);
                 String taskId = task.getTaskId();
                 ModelConfig modelConfig = task.getModelConfig();
                 log.debug("get task: {}", task);
-                modelCurrentQPSMap.put(modelName, currentQPS + 1);
+                taskManager.upModelCurrentQPS(modelName);
                 ExecutorService executorService = ThreadPoolManager.getInstance(task.getTaskType());
                 switch (task.getTaskType()) {
                     case chat, embedding -> {

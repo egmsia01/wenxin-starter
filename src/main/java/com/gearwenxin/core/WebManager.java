@@ -91,7 +91,7 @@ public class WebManager {
                 .bodyToMono(type)
                 .doOnSuccess(response -> {
                     handleErrResponse(response);
-                    qpsMap.put(config.getModelName(), qpsMap.get(config.getModelName()) - 1);
+                    taskManager.downModelCurrentQPS(config.getModelName());
                 })
                 .doOnError(WebClientResponseException.class, handleWebClientError());
     }
@@ -131,7 +131,7 @@ public class WebManager {
                     chatResponse.setResult(text);
                 })
                 .doOnError(WebClientResponseException.class, handleWebClientError())
-                .doOnComplete(() -> qpsMap.put(config.getModelName(), qpsMap.get(config.getModelName()) - 1));
+                .doOnComplete(() -> taskManager.downModelCurrentQPS(config.getModelName()));
     }
 
     /**
@@ -188,7 +188,7 @@ public class WebManager {
 
             Message messageResult = WenXinUtils.buildAssistantMessage(chatResponse.getResult());
             ChatUtils.offerMessage(messagesHistory, messageResult);
-            qpsMap.put(config.getModelName(), qpsMap.get(config.getModelName()) - 1);
+            taskManager.downModelCurrentQPS(config.getModelName());
 
             return Mono.just(chatResponse);
         });
