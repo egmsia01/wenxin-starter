@@ -27,7 +27,7 @@ public class TaskQueueManager {
     private final BlockingMap<String, List<ChatTask>> taskMap = new BlockingMap<>();
 
     // 任务数量Map
-    private final Map<String, AtomicInteger> taskCountMap = new ConcurrentHashMap<>();
+    private final Map<String, Integer> taskCountMap = new ConcurrentHashMap<>();
     private final Map<String, Integer> modelCurrentQPSMap = new ConcurrentHashMap<>();
 
     // 提交的任务Map
@@ -53,12 +53,13 @@ public class TaskQueueManager {
         return instance;
     }
 
-    public String addTask(ChatTask task) {
+    public synchronized String addTask(ChatTask task) {
         String modelName = task.getModelConfig().getModelName();
         String taskId = UUID.randomUUID().toString();
         task.setTaskId(taskId);
         task.getModelConfig().setTaskId(taskId);
         log.info("add task for {}", modelName);
+
         Map<String, List<ChatTask>> innerMap = taskMap.getMap();
         List<ChatTask> chatTaskList = innerMap.get(modelName);
         if (chatTaskList == null) {
@@ -71,7 +72,7 @@ public class TaskQueueManager {
             taskMap.put(modelName, chatTaskList);
             upTaskCount(modelName);
         }
-
+        log.info("task count: {}", getTaskCount(modelName));
         return taskId;
     }
 
@@ -94,35 +95,27 @@ public class TaskQueueManager {
     }
 
     public int getTaskCount(String modelName) {
-        AtomicInteger atomicInteger = taskCountMap.get(modelName);
-        if (atomicInteger == null) {
-            return 0;
-        }
-        return atomicInteger.get();
+        return taskCountMap.get(modelName);
     }
 
-    public void initTaskCount(String modelName) {
-        taskCountMap.put(modelName, new AtomicInteger(1));
-        log.debug("init task count for {}", modelName);
+    public synchronized void initTaskCount(String modelName) {
+        taskCountMap.put(modelName, 1);
+        log.info("init task count for {}", modelName);
     }
 
-    public void upTaskCount(String modelName) {
-        AtomicInteger atomicInteger = taskCountMap.get(modelName);
-        atomicInteger.incrementAndGet();
-        log.debug("up task count for {}, number {}", modelName, atomicInteger);
+    public synchronized void upTaskCount(String modelName) {
+        Integer taskCount = taskCountMap.get(modelName);
+        taskCountMap.put(modelName, taskCount + 1);
+        log.info("up task count for {}, number {}", modelName, taskCount + 1);
     }
 
-    public void downTaskCount(String modelName) {
-        AtomicInteger atomicInteger = taskCountMap.get(modelName);
-        if (atomicInteger == null) {
+    public synchronized void downTaskCount(String modelName) {
+        Integer taskCount = taskCountMap.get(modelName);
+        if (taskCount == null || taskCount <= 0) {
             return;
         }
-        int taskCount = atomicInteger.get();
-        if (taskCount <= 0) {
-            return;
-        }
-        atomicInteger.decrementAndGet();
-        log.debug("down task count for {}, number {}", modelName, taskCount - 1);
+        taskCountMap.put(modelName, taskCount - 1);
+        log.info("down task count for {}, number {}", modelName, taskCount - 1);
     }
 
 }

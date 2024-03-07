@@ -1,6 +1,6 @@
 package com.gearwenxin.client;
 
-import com.gearwenxin.core.ChatCore;
+import com.gearwenxin.core.WebManager;
 import com.gearwenxin.common.ConvertUtils;
 import com.gearwenxin.common.ErrorCode;
 import com.gearwenxin.common.Constant;
@@ -35,7 +35,7 @@ import java.util.Map;
 @Service
 public class PromptBotClient implements PromptBot, BaseBot {
 
-    ChatCore chatCore = new ChatCore();
+    WebManager webManager = new WebManager();
 
     @Resource
     private WenXinProperties wenXinProperties;
@@ -81,7 +81,7 @@ public class PromptBotClient implements PromptBot, BaseBot {
         Map<String, String> paramMap = promptRequest.getParamMap();
         paramMap.put("id", promptRequest.getId());
 
-        return chatCore.monoGet(
+        return webManager.monoGet(
                 URL, getCustomAccessToken(), paramMap, PromptResponse.class
         );
     }

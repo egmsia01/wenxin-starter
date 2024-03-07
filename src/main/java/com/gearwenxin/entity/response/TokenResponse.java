@@ -31,4 +31,10 @@ public class TokenResponse {
     @JsonProperty("session_secret")
     private String sessionSecret;
 
+    @JsonProperty("error_description")
+    private String errorDescription;
+
+    @JsonProperty("error")
+    private String error;
+
 }

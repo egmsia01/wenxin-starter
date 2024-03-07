@@ -1,7 +1,7 @@
 package com.gearwenxin.service;
 
 import com.gearwenxin.config.WenXinProperties;
-import com.gearwenxin.core.ChatCore;
+import com.gearwenxin.core.WebManager;
 import com.gearwenxin.entity.request.ImageBaseRequest;
 import com.gearwenxin.entity.response.ImageResponse;
 import com.gearwenxin.model.BaseBot;
@@ -21,7 +21,7 @@ import static com.gearwenxin.common.WenXinUtils.assertNotNull;
 @Service
 public class ImageService implements ImageBot<ImageBaseRequest>, BaseBot {
 
-    ChatCore chatCore = new ChatCore();
+    WebManager webManager = new WebManager();
 
     @Resource
     private WenXinProperties wenXinProperties;
@@ -34,7 +34,7 @@ public class ImageService implements ImageBot<ImageBaseRequest>, BaseBot {
     }
 
     private String getCustomURL() {
-        return wenXinProperties.getVilg_URL();
+        return null;
     }
 
     @Override
@@ -63,7 +63,7 @@ public class ImageService implements ImageBot<ImageBaseRequest>, BaseBot {
         imageBaseRequest.validSelf();
         log.info(getTag() + "imageRequest => {}", imageBaseRequest);
 
-        return chatCore.monoPost(
+        return webManager.monoPost(
                 null, getCustomAccessToken(), imageBaseRequest, ImageResponse.class
         );
     }

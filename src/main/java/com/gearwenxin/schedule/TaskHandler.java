@@ -45,14 +45,15 @@ public class TaskHandler {
         Set<String> modelNames = modelQPSMap.keySet();
         modelNames.forEach(modelName -> new Thread(() -> {
             try {
-                log.info("thread-{}, model: {}, loop-process start", Thread.currentThread().getName(), modelName);
+                Thread.currentThread().setName(modelName + "-thread");
+                log.info("{}, model: {}, loop process start", Thread.currentThread().getName(), modelName);
                 eventLoopProcess(modelName);
             } catch (Exception e) {
                 log.error("loop-process error, modelName: {}, thread-{}", modelName, Thread.currentThread().getName(), e);
                 if (!Thread.currentThread().isAlive()) {
-                    log.error("thread-{} is not alive", Thread.currentThread().getName());
-                    eventLoopProcess(modelName);
+                    log.error("{} is not alive", Thread.currentThread().getName());
                     log.info("restarting model: {}", modelName);
+                    Thread.currentThread().start();
                 }
             }
         }).start());
@@ -77,16 +78,13 @@ public class TaskHandler {
     public void eventLoopProcess(String modelName) {
         Map<String, Integer> modelCurrentQPSMap = taskManager.getModelCurrentQPSMap();
         for (; ; ) {
-            ChatTask task = taskManager.getTask(modelName);
-            String taskId = task.getTaskId();
-            ModelConfig modelConfig = task.getModelConfig();
-            log.debug("get task: {}", task);
-            Integer currentQPS = modelCurrentQPSMap.get(modelName);
-            if (currentQPS == null) {
-                currentQPS = 0;
-                modelCurrentQPSMap.put(modelName, 0);
-            }
+            int currentQPS = modelCurrentQPSMap.computeIfAbsent(modelName, k -> 0);
+            log.info("[{}] current qps: {}", modelName, currentQPS);
             if (currentQPS <= getModelQPS(modelName) || getModelQPS(modelName) == DEFAULT_QPS) {
+                ChatTask task = taskManager.getTask(modelName);
+                String taskId = task.getTaskId();
+                ModelConfig modelConfig = task.getModelConfig();
+                log.debug("get task: {}", task);
                 modelCurrentQPSMap.put(modelName, currentQPS + 1);
                 ExecutorService executorService = ThreadPoolManager.getInstance(task.getTaskType());
                 switch (task.getTaskType()) {
@@ -101,7 +99,7 @@ public class TaskHandler {
                             } else {
                                 taskRequest = (ChatBaseRequest) task.getTaskRequest();
                             }
-                            log.info("submit task {}, ernie: {}", taskRequest.getContent(), taskRequest.getClass() == ChatErnieRequest.class);
+                            log.info("submit task {}, ernie: {}", taskId, taskRequest.getClass() == ChatErnieRequest.class);
                             if (task.getMessageId() != null) {
                                 return chatService.chatContinuousStream(taskRequest, task.getMessageId(), modelConfig);
                             } else {
@@ -109,7 +107,6 @@ public class TaskHandler {
                             }
                         }, executorService);
                         chatFutureMap.put(taskId, completableFuture);
-                        log.info("add a chat task, taskId: {}", taskId);
                     }
                     case image -> {
                         BlockingMap<String, CompletableFuture<Mono<ImageResponse>>> imageFutureMap = taskManager.getImageFutureMap();
@@ -122,10 +119,9 @@ public class TaskHandler {
                     }
                 }
             } else {
-                // 把任务再放回去
                 // TODO: 待优化，QPS超额应该直接wait()
-                taskManager.addTask(task);
                 try {
+                    log.info("model: {}, sleep 1s", modelName);
                     Thread.sleep(1000);
                 } catch (InterruptedException e) {
                     log.error("thread sleep error", e);

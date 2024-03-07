@@ -45,8 +45,8 @@ public class CommonSubscriber implements Subscriber<ChatResponse>, Disposable {
     @Override
     public void onSubscribe(Subscription subscription) {
         this.subscription = subscription;
-        subscription.request(15);
-        log.debug("onSubscribe");
+        subscription.request(1);
+        log.info("onSubscribe");
     }
 
     @Override
@@ -57,7 +57,7 @@ public class CommonSubscriber implements Subscriber<ChatResponse>, Disposable {
 
         assertNotNull(response, "ChatResponse is null");
 
-        log.debug("CommonSubscriber.onNext");
+        log.info("onNext...");
 
         Optional.ofNullable(response.getResult()).ifPresent(joiner::add);
         subscription.request(15);
@@ -66,7 +66,7 @@ public class CommonSubscriber implements Subscriber<ChatResponse>, Disposable {
 
     @Override
     public void onError(Throwable throwable) {
-        qpsMap.put(modelConfig.getTaskId(), qpsMap.get(modelConfig.getModelName()) - 1);
+        qpsMap.put(modelConfig.getModelName(), qpsMap.get(modelConfig.getModelName()) - 1);
         if (isDisposed()) {
             return;
         }
@@ -79,20 +79,20 @@ public class CommonSubscriber implements Subscriber<ChatResponse>, Disposable {
         if (isDisposed()) {
             return;
         }
-        log.debug("onComplete");
+        log.info("onComplete");
         String result = joiner.toString();
         Optional.ofNullable(result).filter(StringUtils::isNotBlank).ifPresent(r -> {
             Message message = buildAssistantMessage(r);
             ChatUtils.offerMessage(messagesHistory, message);
             log.debug("offerMessage onComplete");
         });
-        qpsMap.put(modelConfig.getTaskId(), qpsMap.get(modelConfig.getModelName()) - 1);
+        qpsMap.put(modelConfig.getModelName(), qpsMap.get(modelConfig.getModelName()) - 1);
         emitter.complete();
     }
 
     @Override
     public void dispose() {
-        log.debug("dispose");
+        log.info("dispose");
         subscription.cancel();
     }
 

@@ -12,7 +12,6 @@ import com.gearwenxin.schedule.TaskQueueManager;
 import com.gearwenxin.schedule.entity.ModelHeader;
 import com.gearwenxin.subscriber.CommonSubscriber;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.web.reactive.function.BodyInserters;
@@ -38,7 +37,7 @@ import static com.gearwenxin.common.WenXinUtils.*;
  * {@code @date} 2023/7/21
  */
 @Slf4j
-public class ChatCore {
+public class WebManager {
 
     private final TaskQueueManager taskManager = TaskQueueManager.getInstance();
     Map<String, Integer> qpsMap = taskManager.getModelCurrentQPSMap();
@@ -90,7 +89,11 @@ public class ChatCore {
                 .body(BodyInserters.fromValue(request))
                 .retrieve()
                 .bodyToMono(type)
-                .doOnSuccess(ChatCore::handleErrResponse)
+                .doOnSuccess(response -> {
+                    log.info("Mono complete");
+                    handleErrResponse(response);
+                    qpsMap.put(config.getModelName(), qpsMap.get(config.getModelName()) - 1);
+                })
                 .doOnError(WebClientResponseException.class, handleWebClientError());
     }
 
@@ -115,8 +118,12 @@ public class ChatCore {
                 .accept(MediaType.TEXT_EVENT_STREAM)
                 .retrieve()
                 .bodyToFlux(type)
-                .doOnNext(ChatCore::handleErrResponse)
-                .doOnError(WebClientResponseException.class, handleWebClientError());
+                .doOnNext(WebManager::handleErrResponse)
+                .doOnError(WebClientResponseException.class, handleWebClientError())
+                .doOnComplete(() -> {
+                    log.info("Flux complete");
+                    qpsMap.put(config.getModelName(), qpsMap.get(config.getModelName()) - 1);
+                });
     }
 
     /**
@@ -149,7 +156,7 @@ public class ChatCore {
         return client.get()
                 .retrieve()
                 .bodyToMono(type)
-                .doOnSuccess(ChatCore::handleErrResponse)
+                .doOnSuccess(WebManager::handleErrResponse)
                 .doOnError(WebClientResponseException.class, handleWebClientError());
     }
 
@@ -173,7 +180,7 @@ public class ChatCore {
 
             Message messageResult = WenXinUtils.buildAssistantMessage(chatResponse.getResult());
             ChatUtils.offerMessage(messagesHistory, messageResult);
-            qpsMap.put(config.getTaskId(), qpsMap.get(config.getModelName()) - 1);
+            qpsMap.put(config.getModelName(), qpsMap.get(config.getModelName()) - 1);
 
             return Mono.just(chatResponse);
         });
@@ -187,8 +194,7 @@ public class ChatCore {
         return buildWebClient(url, null)
                 .get()
                 .retrieve()
-                .bodyToMono(TokenResponse.class)
-                .doOnError(WebClientResponseException.class, handleWebClientError());
+                .bodyToMono(TokenResponse.class);
     }
 
     public static String encodeURL(String component) {

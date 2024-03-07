@@ -2,7 +2,7 @@ package com.gearwenxin.service;
 
 import com.gearwenxin.common.*;
 import com.gearwenxin.config.WenXinProperties;
-import com.gearwenxin.core.ChatCore;
+import com.gearwenxin.core.WebManager;
 import com.gearwenxin.core.ChatUtils;
 import com.gearwenxin.entity.BaseRequest;
 import com.gearwenxin.entity.chatmodel.ChatBaseRequest;
@@ -37,7 +37,7 @@ public class ChatService {
 
     private static Map<String, Deque<Message>> CHAT_MESSAGES_HISTORY_MAP = new ConcurrentHashMap<>();
 
-    private final ChatCore chatCore = new ChatCore();
+    private final WebManager webManager = new WebManager();
 
     private String getAccessToken() {
         return wenXinProperties.getAccessToken();
@@ -83,16 +83,16 @@ public class ChatService {
 
             log.info("model: {}, stream: {}, continuous: {}", request, stream, true);
 
-            return stream ? chatCore.historyFluxPost(accessToken, targetRequest, messagesHistory, config) :
-                    chatCore.historyMonoPost(accessToken, targetRequest, messagesHistory, config);
+            return stream ? webManager.historyFluxPost(accessToken, targetRequest, messagesHistory, config) :
+                    webManager.historyMonoPost(accessToken, targetRequest, messagesHistory, config);
         } else {
             targetRequest = buildTargetRequest(null, stream, request);
         }
 
         log.info("model: {}, stream: {}, continuous: {}", request.getClass(), stream, false);
 
-        return stream ? chatCore.fluxPost(config, accessToken, targetRequest, ChatResponse.class) :
-                chatCore.monoPost(config, accessToken, targetRequest, ChatResponse.class);
+        return stream ? webManager.fluxPost(config, accessToken, targetRequest, ChatResponse.class) :
+                webManager.monoPost(config, accessToken, targetRequest, ChatResponse.class);
     }
 
     public <T extends ChatBaseRequest> void validRequest(T request, ModelConfig config) {
