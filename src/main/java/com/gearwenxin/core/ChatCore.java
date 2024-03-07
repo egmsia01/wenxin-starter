@@ -9,8 +9,10 @@ import com.gearwenxin.entity.response.ErrorResponse;
 import com.gearwenxin.entity.response.TokenResponse;
 import com.gearwenxin.exception.WenXinException;
 import com.gearwenxin.schedule.TaskQueueManager;
+import com.gearwenxin.schedule.entity.ModelHeader;
 import com.gearwenxin.subscriber.CommonSubscriber;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.web.reactive.function.BodyInserters;
@@ -41,27 +43,49 @@ public class ChatCore {
     private final TaskQueueManager taskManager = TaskQueueManager.getInstance();
     Map<String, Integer> qpsMap = taskManager.getModelCurrentQPSMap();
 
-    private static final WebClient WEB_CLIENT = WebClient.builder()
-            .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-            .build();
-
     private static final String ACCESS_TOKEN_PRE = "?access_token=";
+
+    private static WebClient buildWebClient(String baseUrl, ModelHeader header) {
+        WebClient.Builder builder = WebClient.builder()
+                .baseUrl(baseUrl)
+                .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
+
+        if (header == null) {
+            return builder.build();
+        }
+
+        if (header.get_X_Ratelimit_Limit_Requests() != null) {
+            builder.defaultHeader("X-Ratelimit-Limit-Requests", String.valueOf(header.get_X_Ratelimit_Limit_Requests()));
+        }
+        if (header.get_X_Ratelimit_Limit_Tokens() != null) {
+            builder.defaultHeader("X-Ratelimit-Limit-Tokens", String.valueOf(header.get_X_Ratelimit_Limit_Tokens()));
+        }
+        if (header.get_X_Ratelimit_Remaining_Requests() != null) {
+            builder.defaultHeader("X-Ratelimit-Remaining-Requests", String.valueOf(header.get_X_Ratelimit_Remaining_Requests()));
+        }
+        if (header.get_X_Ratelimit_Remaining_Tokens() != null) {
+            builder.defaultHeader("X-Ratelimit-Remaining-Tokens", String.valueOf(header.get_X_Ratelimit_Remaining_Tokens()));
+        }
+
+        return builder.build();
+    }
 
     /**
      * 非流式请求 POST
      *
-     * @param url         请求地址
+     * @param config      Model配置
      * @param accessToken accessToken
      * @param request     请求类
      * @return Mono<T>
      */
-    public <T> Mono<T> monoPost(String url, String accessToken, Object request, Class<T> type) {
+    public <T> Mono<T> monoPost(ModelConfig config, String accessToken, Object request, Class<T> type) {
+        String url = config.getModelUrl();
         validateParams(url, accessToken, request, type);
         log.debug("model url: {}", url);
 
         String completeUrl = url + ACCESS_TOKEN_PRE + accessToken;
 
-        return buildWebClient(completeUrl)
+        return buildWebClient(completeUrl, config.getModelHeader())
                 .post()
                 .body(BodyInserters.fromValue(request))
                 .retrieve()
@@ -73,18 +97,20 @@ public class ChatCore {
     /**
      * 流式请求 POST
      *
-     * @param url         请求地址
+     * @param config      Model配置
      * @param accessToken accessToken
      * @param request     请求类
      * @return Flux<T>
      */
-    public <T> Flux<T> fluxPost(String url, String accessToken, Object request, Class<T> type) {
+    public <T> Flux<T> fluxPost(ModelConfig config, String accessToken, Object request, Class<T> type) {
+        String url = config.getModelUrl();
         validateParams(url, accessToken, request, type);
         log.debug("model url: {}", url);
 
         String completeUrl = url + ACCESS_TOKEN_PRE + accessToken;
 
-        return buildWebClient(completeUrl).post()
+        return buildWebClient(completeUrl, config.getModelHeader())
+                .post()
                 .body(BodyInserters.fromValue(request))
                 .accept(MediaType.TEXT_EVENT_STREAM)
                 .retrieve()
@@ -110,7 +136,7 @@ public class ChatCore {
                 .map(entry -> entry.getKey() + "=" + encodeURL(entry.getValue()))
                 .collect(Collectors.joining("&"));
 
-        WebClient client = buildWebClient(url).mutate()
+        WebClient client = buildWebClient(url, null).mutate()
                 .filter((request, next) -> {
                     String uriWithQueryParams = request.url() + "?" + queryParams;
                     ClientRequest filteredRequest = ClientRequest.from(request)
@@ -130,18 +156,17 @@ public class ChatCore {
     /**
      * flux形式的回答，添加到历史消息中
      */
-    public <T> Flux<ChatResponse> historyFluxPost(String url, String token, T request, Deque<Message> messagesHistory, ModelConfig config) {
+    public <T> Flux<ChatResponse> historyFluxPost(String token, T request, Deque<Message> messagesHistory, ModelConfig config) {
         return Flux.create(emitter -> {
             CommonSubscriber subscriber = new CommonSubscriber(emitter, messagesHistory, config);
-            fluxPost(url, token, request, ChatResponse.class).subscribe(subscriber);
+            fluxPost(config, token, request, ChatResponse.class).subscribe(subscriber);
             emitter.onDispose(subscriber);
         });
     }
 
-    public <T> Mono<ChatResponse> historyMonoPost(String url, String token, T request, Deque<Message> messagesHistory, ModelConfig config) {
-        Mono<ChatResponse> response = monoPost(
-                url, token, request, ChatResponse.class
-        ).subscribeOn(Schedulers.boundedElastic());
+    public <T> Mono<ChatResponse> historyMonoPost(String token, T request, Deque<Message> messagesHistory, ModelConfig config) {
+        Mono<ChatResponse> response = monoPost(config, token, request, ChatResponse.class)
+                .subscribeOn(Schedulers.boundedElastic());
 
         return response.flatMap(chatResponse -> {
             assertNotNullMono(ErrorCode.SYSTEM_ERROR, "响应错误！", chatResponse.getResult(), chatResponse);
@@ -159,7 +184,8 @@ public class ChatCore {
 
         final String url = String.format(GET_ACCESS_TOKEN_URL, apiKey, secretKey);
 
-        return buildWebClient(url).get()
+        return buildWebClient(url, null)
+                .get()
                 .retrieve()
                 .bodyToMono(TokenResponse.class)
                 .doOnError(WebClientResponseException.class, handleWebClientError());
@@ -168,12 +194,6 @@ public class ChatCore {
     public static String encodeURL(String component) {
         assertNotBlank(component, "EncodeURL error!");
         return URLEncoder.encode(component, StandardCharsets.UTF_8);
-    }
-
-    private static WebClient buildWebClient(String baseUrl) {
-        return WEB_CLIENT.mutate()
-                .baseUrl(baseUrl)
-                .build();
     }
 
     private static <T> void validateParams(String url, String accessToken, Object request, Class<T> type) {

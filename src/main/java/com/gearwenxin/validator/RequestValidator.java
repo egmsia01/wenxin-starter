@@ -1,5 +1,5 @@
 package com.gearwenxin.validator;
 
-public interface RequestValidator {
-    <T> void validate(T request);
+import com.gearwenxin.schedule.entity.ModelConfig;public interface RequestValidator {
+    <T> void validate(T request, ModelConfig config);
 }

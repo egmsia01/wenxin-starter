@@ -5,6 +5,9 @@ import lombok.Data;
 @Data
 public class ModelConfig {
 
+    /**
+     * 任务id, 无需传，SDK内部使用
+     */
     private String taskId;
 
     private String modelName;
@@ -13,6 +16,10 @@ public class ModelConfig {
 
     private String accessToken;
 
-    private Integer contentMaxLength;
+    private Integer contentMaxLength = 8000;
+
+    private ModelHeader modelHeader;
+
+    private boolean enableStringResponse;
 
 }

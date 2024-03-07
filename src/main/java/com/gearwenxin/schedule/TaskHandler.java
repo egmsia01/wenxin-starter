@@ -49,6 +49,11 @@ public class TaskHandler {
                 eventLoopProcess(modelName);
             } catch (Exception e) {
                 log.error("loop-process error, modelName: {}, thread-{}", modelName, Thread.currentThread().getName(), e);
+                if (!Thread.currentThread().isAlive()) {
+                    log.error("thread-{} is not alive", Thread.currentThread().getName());
+                    eventLoopProcess(modelName);
+                    log.info("restarting model: {}", modelName);
+                }
             }
         }).start());
     }

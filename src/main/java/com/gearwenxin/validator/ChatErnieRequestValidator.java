@@ -3,6 +3,7 @@ package com.gearwenxin.validator;
 import com.gearwenxin.common.ErrorCode;
 import com.gearwenxin.entity.chatmodel.ChatErnieRequest;
 import com.gearwenxin.exception.WenXinException;
+import com.gearwenxin.schedule.entity.ModelConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
@@ -12,15 +13,15 @@ import static com.gearwenxin.common.Constant.MAX_SYSTEM_LENGTH;
 @Slf4j
 public class ChatErnieRequestValidator implements RequestValidator {
     @Override
-    public <T> void validate(T request) {
+    public <T> void validate(T request, ModelConfig config) {
         ChatErnieRequest chatErnieRequest = (ChatErnieRequest) request;
         // 检查content不为空
         if (StringUtils.isBlank(chatErnieRequest.getContent())) {
             throw new WenXinException(ErrorCode.PARAMS_ERROR, "content cannot be empty");
         }
         // 检查单个content长度
-        if (chatErnieRequest.getContent().length() > MAX_CONTENT_LENGTH) {
-            throw new WenXinException(ErrorCode.PARAMS_ERROR, "content's length cannot be more than 2000");
+        if (chatErnieRequest.getContent().length() > config.getContentMaxLength()) {
+            throw new WenXinException(ErrorCode.PARAMS_ERROR, "content's length cannot be more than " + config.getContentMaxLength());
         }
         // 检查temperature和topP不都有值
         if (chatErnieRequest.getTemperature() != null && chatErnieRequest.getTopP() != null) {
@@ -47,5 +48,5 @@ public class ChatErnieRequestValidator implements RequestValidator {
             throw new WenXinException(ErrorCode.PARAMS_ERROR, "system's length cannot be more than 1024");
         }
     }
-    
+
 }

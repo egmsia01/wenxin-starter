@@ -68,7 +68,7 @@ public class ChatService {
     }
 
     public <T extends ChatBaseRequest> Publisher<ChatResponse> chatProcess(T request, String msgUid, boolean stream, ModelConfig config) {
-        validRequest(request);
+        validRequest(request, config);
         boolean isContinuous = (msgUid != null);
         String url = config.getModelUrl();
         String accessToken = config.getAccessToken() == null ? getAccessToken() : config.getAccessToken();
@@ -83,21 +83,21 @@ public class ChatService {
 
             log.info("model: {}, stream: {}, continuous: {}", request, stream, true);
 
-            return stream ? chatCore.historyFluxPost(url, accessToken, targetRequest, messagesHistory, config) :
-                    chatCore.historyMonoPost(url, accessToken, targetRequest, messagesHistory, config);
+            return stream ? chatCore.historyFluxPost(accessToken, targetRequest, messagesHistory, config) :
+                    chatCore.historyMonoPost(accessToken, targetRequest, messagesHistory, config);
         } else {
             targetRequest = buildTargetRequest(null, stream, request);
         }
 
         log.info("model: {}, stream: {}, continuous: {}", request.getClass(), stream, false);
 
-        return stream ? chatCore.fluxPost(url, accessToken, targetRequest, ChatResponse.class) :
-                chatCore.monoPost(url, accessToken, targetRequest, ChatResponse.class);
+        return stream ? chatCore.fluxPost(config, accessToken, targetRequest, ChatResponse.class) :
+                chatCore.monoPost(config, accessToken, targetRequest, ChatResponse.class);
     }
 
-    public <T extends ChatBaseRequest> void validRequest(T request) {
-        RequestValidator validator = RequestValidatorFactory.getValidator(request);
-        validator.validate(request);
+    public <T extends ChatBaseRequest> void validRequest(T request, ModelConfig config) {
+        RequestValidator validator = RequestValidatorFactory.getValidator(config);
+        validator.validate(request, config);
     }
 
     public static <T extends ChatBaseRequest> Object buildTargetRequest(Deque<Message> messagesHistory, boolean stream, T request) {

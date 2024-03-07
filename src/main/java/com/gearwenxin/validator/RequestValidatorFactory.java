@@ -1,18 +1,15 @@
 package com.gearwenxin.validator;
 
-import com.gearwenxin.common.ErrorCode;
-import com.gearwenxin.entity.chatmodel.ChatBaseRequest;
-import com.gearwenxin.entity.chatmodel.ChatErnieRequest;
-import com.gearwenxin.exception.WenXinException;
+import com.gearwenxin.schedule.entity.ModelConfig;
 
 public class RequestValidatorFactory {
-    public static RequestValidator getValidator(ChatBaseRequest request) {
-        if (request.getClass() == ChatBaseRequest.class) {
-            return new ChatBaseRequestValidator();
-        } else if (request.getClass() == ChatErnieRequest.class) {
+
+    public static RequestValidator getValidator(ModelConfig config) {
+
+        if (config.getModelName().toLowerCase().contains("ernie")) {
             return new ChatErnieRequestValidator();
         } else {
-            throw new WenXinException(ErrorCode.REQUEST_TYPE_ERROR);
+            return new ChatBaseRequestValidator();
         }
     }
 }

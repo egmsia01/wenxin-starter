@@ -64,7 +64,7 @@ public class ImageService implements ImageBot<ImageBaseRequest>, BaseBot {
         log.info(getTag() + "imageRequest => {}", imageBaseRequest);
 
         return chatCore.monoPost(
-                getURL(), getCustomAccessToken(), imageBaseRequest, ImageResponse.class
+                null, getCustomAccessToken(), imageBaseRequest, ImageResponse.class
         );
     }
 

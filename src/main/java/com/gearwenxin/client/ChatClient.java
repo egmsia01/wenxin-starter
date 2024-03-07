@@ -74,8 +74,8 @@ public class ChatClient implements ChatModel {
                 .taskWeight(weight)
                 .build();
         String taskId = taskQueueManager.addTask(chatTask);
-        BlockingMap<String, CompletableFuture<Flux<ChatResponse>>> chatFutureMap = taskQueueManager.getChatFutureMap();
-        return chatFutureMap.get(taskId).join();
+        BlockingMap<String, CompletableFuture<Flux<ChatResponse>>> futureMap = taskQueueManager.getChatFutureMap();
+        return futureMap.get(taskId).join();
     }
 
     @Override
