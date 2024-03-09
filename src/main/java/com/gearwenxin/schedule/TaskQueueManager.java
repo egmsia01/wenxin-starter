@@ -24,6 +24,8 @@ import java.util.concurrent.locks.ReentrantLock;
 @Getter
 public class TaskQueueManager {
 
+    public static final String TAG = "TaskQueueManager";
+
     private final Map<String, List<ChatTask>> taskMap = new ConcurrentHashMap<>();
 
     // 任务数量Map
@@ -58,7 +60,6 @@ public class TaskQueueManager {
         String taskId = UUID.randomUUID().toString();
         task.setTaskId(taskId);
         task.getModelConfig().setTaskId(taskId);
-        log.info("add task for {}", modelName);
 
         List<ChatTask> chatTaskList = taskMap.get(modelName);
         if (chatTaskList == null) {
@@ -71,19 +72,11 @@ public class TaskQueueManager {
             taskMap.put(modelName, chatTaskList);
             upTaskCount(modelName);
         }
-        log.info("task count: {}", getTaskCount(modelName));
+        log.info("[{}] add task for [{}], count: {}", TAG, modelName, getTaskCount(modelName));
         return taskId;
     }
 
     public synchronized ChatTask getTask(String modelName) {
-        List<ChatTask> chatTasks = taskMap.get(modelName);
-        if (chatTasks != null && !chatTasks.isEmpty()) {
-            chatTasks.forEach(task -> {
-                String taskId = task.getTaskId();
-                log.info("「追踪」task id: {}", taskId);
-            });
-            log.info("「追踪」id number: {}", chatTasks.size());
-        }
         List<ChatTask> list = taskMap.remove(modelName);
         if (list == null || list.isEmpty()) {
             return null;
@@ -110,24 +103,24 @@ public class TaskQueueManager {
 
     public synchronized void initTaskCount(String modelName) {
         taskCountMap.put(modelName, 1);
-        log.info("init task count for {}", modelName);
+        log.debug("[{}] init task count for {}", TAG, modelName);
     }
 
     public synchronized void initModelCurrentQPS(String modelName) {
         modelCurrentQPSMap.put(modelName, 0);
-        log.info("init model current qps for {}", modelName);
+        log.debug("[{}] init model current qps for {}", TAG, modelName);
     }
 
     public synchronized void upTaskCount(String modelName) {
         Integer taskCount = taskCountMap.get(modelName);
         taskCountMap.put(modelName, taskCount + 1);
-        log.info("up task count for {}, number {}", modelName, taskCount + 1);
+        log.debug("[{}] up task count for {}, number {}", TAG, modelName, taskCount + 1);
     }
 
     public synchronized void upModelCurrentQPS(String modelName) {
         Integer currentQPS = modelCurrentQPSMap.get(modelName);
         modelCurrentQPSMap.put(modelName, currentQPS + 1);
-        log.info("up model current qps for {}, number {}", modelName, currentQPS + 1);
+        log.debug("[{}] up model current qps for {}, number {}", TAG, modelName, currentQPS + 1);
     }
 
     public synchronized void downTaskCount(String modelName) {
@@ -136,7 +129,7 @@ public class TaskQueueManager {
             return;
         }
         taskCountMap.put(modelName, taskCount - 1);
-        log.info("down task count for {}, number {}", modelName, taskCount - 1);
+        log.debug("[{}] down task count for {}, number {}", TAG, modelName, taskCount - 1);
     }
 
     public synchronized void downModelCurrentQPS(String modelName) {
@@ -145,7 +138,7 @@ public class TaskQueueManager {
             return;
         }
         modelCurrentQPSMap.put(modelName, currentQPS - 1);
-        log.info("down model current qps for {}, number {}", modelName, currentQPS - 1);
+        log.debug("[{}] down model current qps for {}, number {}", TAG, modelName, currentQPS - 1);
     }
 
 }

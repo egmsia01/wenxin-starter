@@ -28,7 +28,7 @@ public class BlockingMap<K, V> {
 
     public V get(K key) {
         while (!map.containsKey(key)) {
-            log.info("key {{}} not present, waiting...", key);
+            log.debug("[BlockingMap] key {{}} not present, waiting...", key);
             CountDownLatch latch = new CountDownLatch(1);
             latchMap.put(key, latch);
             try {

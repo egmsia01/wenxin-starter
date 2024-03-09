@@ -25,6 +25,8 @@ import java.util.concurrent.ExecutorService;
 @Slf4j
 @Component
 public class TaskHandler {
+
+    public static final String TAG = "TaskHandler";
     public static final int DEFAULT_QPS = -1;
 
     @Getter
@@ -46,13 +48,13 @@ public class TaskHandler {
         modelNames.forEach(modelName -> new Thread(() -> {
             try {
                 Thread.currentThread().setName(modelName + "-thread");
-                log.info("{}, model: {}, loop process start", Thread.currentThread().getName(), modelName);
+                log.info("[{}] {}, model: {}, loop start", TAG, Thread.currentThread().getName(), modelName);
                 eventLoopProcess(modelName);
             } catch (Exception e) {
-                log.error("loop-process error, modelName: {}, thread-{}", modelName, Thread.currentThread().getName(), e);
+                log.error("[{}] loop-process error, modelName: {}, thread-{}", TAG, modelName, Thread.currentThread().getName(), e);
                 if (!Thread.currentThread().isAlive()) {
-                    log.error("{} is not alive", Thread.currentThread().getName());
-                    log.info("restarting model: {}", modelName);
+                    log.error("[{}] {} is not alive", TAG, Thread.currentThread().getName());
+                    log.info("[{}] restarting model: {}", TAG, modelName);
                     Thread.currentThread().start();
                 }
             }
@@ -63,12 +65,12 @@ public class TaskHandler {
         if (modelQPSList == null || modelQPSList.isEmpty()) {
             return;
         }
-        log.debug("model qps list: {}", modelQPSList);
+        log.debug("[{}] model qps list: {}", TAG, modelQPSList);
         modelQPSList.forEach(s -> {
             String[] split = s.split(" ");
             modelQPSMap.put(split[0], Integer.parseInt(split[1]));
         });
-        log.info("init model qps map complete");
+        log.info("[{}] init model qps map complete", TAG);
     }
 
     private int getModelQPS(String modelName) {
@@ -83,21 +85,21 @@ public class TaskHandler {
                 taskManager.initModelCurrentQPS(modelName);
                 currentQPS = 0;
             }
-            log.info("[{}] current qps: {}", modelName, currentQPS);
+            log.debug("[{}] [{}] current qps: {}", TAG, modelName, currentQPS);
             if (currentQPS < getModelQPS(modelName) || getModelQPS(modelName) == DEFAULT_QPS) {
                 ChatTask task = taskManager.getTask(modelName);
                 if (task == null) {
                     try {
-                        log.info("model: {}, sleep 1s", modelName);
+                        log.debug("[{}] model: {}, sleep 1s", TAG, modelName);
                         Thread.sleep(1000);
                     } catch (InterruptedException e) {
-                        log.error("thread sleep error", e);
+                        log.error("[{}] thread sleep error", TAG, e);
                     }
                     continue;
                 }
                 String taskId = task.getTaskId();
                 ModelConfig modelConfig = task.getModelConfig();
-                log.debug("get task: {}", task);
+                log.debug("[{}] get task: {}", TAG, task);
                 taskManager.upModelCurrentQPS(modelName);
                 ExecutorService executorService = ThreadPoolManager.getInstance(task.getTaskType());
                 switch (task.getTaskType()) {
@@ -112,7 +114,7 @@ public class TaskHandler {
                             } else {
                                 taskRequest = (ChatBaseRequest) task.getTaskRequest();
                             }
-                            log.info("submit task {}, ernie: {}", taskId, taskRequest.getClass() == ChatErnieRequest.class);
+                            log.debug("[{}] submit task {}, ernie: {}", TAG, taskId, taskRequest.getClass() == ChatErnieRequest.class);
                             if (task.getMessageId() != null) {
                                 return chatService.chatContinuousStream(taskRequest, task.getMessageId(), modelConfig);
                             } else {
@@ -128,16 +130,16 @@ public class TaskHandler {
                             return imageService.chatImage(taskRequest);
                         }, executorService);
                         imageFutureMap.put(taskId, completableFuture);
-                        log.debug("add a image task, taskId: {}", taskId);
+                        log.debug("[{}] add a image task, taskId: {}", TAG, taskId);
                     }
                 }
             } else {
                 // TODO: 待优化，QPS超额应该直接wait()
                 try {
-                    log.info("model: {}, sleep 1s", modelName);
+                    log.debug("[{}] model: {}, sleep 1s", TAG, modelName);
                     Thread.sleep(1000);
                 } catch (InterruptedException e) {
-                    log.error("thread sleep error", e);
+                    log.error("[{}] thread sleep error", TAG, e);
                 }
             }
         }

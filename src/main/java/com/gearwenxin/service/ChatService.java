@@ -32,6 +32,8 @@ import java.util.concurrent.ConcurrentLinkedDeque;
 @Service
 public class ChatService {
 
+    public static final String TAG = "ChatService";
+
     @Resource
     private WenXinProperties wenXinProperties;
 
@@ -81,7 +83,7 @@ public class ChatService {
             Message message = WenXinUtils.buildUserMessage(request.getContent());
             ChatUtils.offerMessage(messagesHistory, message);
 
-            log.info("model: {}, stream: {}, continuous: {}", request, stream, true);
+            log.debug("[{}], stream: {}, continuous: {}", TAG, stream, true);
 
             return stream ? webManager.historyFluxPost(accessToken, targetRequest, messagesHistory, config) :
                     webManager.historyMonoPost(accessToken, targetRequest, messagesHistory, config);
@@ -89,7 +91,7 @@ public class ChatService {
             targetRequest = buildTargetRequest(null, stream, request);
         }
 
-        log.info("model: {}, stream: {}, continuous: {}", request.getClass(), stream, false);
+        log.debug("[{}], stream: {}, continuous: {}", TAG, stream, false);
 
         return stream ? webManager.fluxPost(config, accessToken, targetRequest, ChatResponse.class) :
                 webManager.monoPost(config, accessToken, targetRequest, ChatResponse.class);
