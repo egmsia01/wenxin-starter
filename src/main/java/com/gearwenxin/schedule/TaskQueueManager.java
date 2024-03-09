@@ -92,11 +92,11 @@ public class TaskQueueManager {
         return list.remove(0);
     }
 
-    public synchronized CompletableFuture<Flux<ChatResponse>> getChatFuture(String taskId) {
+    public CompletableFuture<Flux<ChatResponse>> getChatFuture(String taskId) {
         return chatFutureMap.get(taskId);
     }
 
-    public synchronized CompletableFuture<Mono<ImageResponse>> getImageFuture(String taskId) {
+    public CompletableFuture<Mono<ImageResponse>> getImageFuture(String taskId) {
         return imageFutureMap.get(taskId);
     }
 
