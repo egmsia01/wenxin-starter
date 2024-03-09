@@ -6,6 +6,8 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 @Getter
 @Slf4j
@@ -13,8 +15,9 @@ public class BlockingMap<K, V> {
 
     private final Map<K, V> map = new ConcurrentHashMap<>();
     private final Map<K, CountDownLatch> latchMap = new ConcurrentHashMap<>();
+    private final Lock lock = new ReentrantLock();
 
-    public V put(K key, V value) {
+    public synchronized V put(K key, V value) {
         V previous = map.put(key, value);
         CountDownLatch latch = latchMap.remove(key);
         if (latch != null) {
@@ -25,7 +28,7 @@ public class BlockingMap<K, V> {
 
     public V get(K key) {
         while (!map.containsKey(key)) {
-            log.debug("key {{}} not present, waiting...", key);
+            log.info("key {{}} not present, waiting...", key);
             CountDownLatch latch = new CountDownLatch(1);
             latchMap.put(key, latch);
             try {
@@ -38,10 +41,10 @@ public class BlockingMap<K, V> {
     }
 
     public V get(K key, boolean delete) {
-        V value = get(key);
         if (delete) {
-            map.remove(key);
+            return map.remove(key);
         }
-        return value;
+        return map.get(key);
     }
+
 }

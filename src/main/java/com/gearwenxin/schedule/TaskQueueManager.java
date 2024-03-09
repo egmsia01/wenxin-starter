@@ -24,7 +24,7 @@ import java.util.concurrent.locks.ReentrantLock;
 @Getter
 public class TaskQueueManager {
 
-    private final BlockingMap<String, List<ChatTask>> taskMap = new BlockingMap<>();
+    private final Map<String, List<ChatTask>> taskMap = new ConcurrentHashMap<>();
 
     // 任务数量Map
     private final Map<String, Integer> taskCountMap = new ConcurrentHashMap<>();
@@ -60,8 +60,7 @@ public class TaskQueueManager {
         task.getModelConfig().setTaskId(taskId);
         log.info("add task for {}", modelName);
 
-        Map<String, List<ChatTask>> innerMap = taskMap.getMap();
-        List<ChatTask> chatTaskList = innerMap.get(modelName);
+        List<ChatTask> chatTaskList = taskMap.get(modelName);
         if (chatTaskList == null) {
             List<ChatTask> list = new CopyOnWriteArrayList<>();
             list.add(task);
@@ -76,22 +75,33 @@ public class TaskQueueManager {
         return taskId;
     }
 
-    public ChatTask getTask(String modelName) {
-        List<ChatTask> list = taskMap.get(modelName, true);
+    public synchronized ChatTask getTask(String modelName) {
+        List<ChatTask> chatTasks = taskMap.get(modelName);
+        if (chatTasks != null && !chatTasks.isEmpty()) {
+            chatTasks.forEach(task -> {
+                String taskId = task.getTaskId();
+                log.info("「追踪」task id: {}", taskId);
+            });
+            log.info("「追踪」id number: {}", chatTasks.size());
+        }
+        List<ChatTask> list = taskMap.remove(modelName);
+        if (list == null || list.isEmpty()) {
+            return null;
+        }
         downTaskCount(modelName);
         return list.remove(0);
     }
 
-    public CompletableFuture<Flux<ChatResponse>> getChatFuture(String taskId) {
+    public synchronized CompletableFuture<Flux<ChatResponse>> getChatFuture(String taskId) {
         return chatFutureMap.get(taskId);
     }
 
-    public CompletableFuture<Mono<ImageResponse>> getImageFuture(String taskId) {
+    public synchronized CompletableFuture<Mono<ImageResponse>> getImageFuture(String taskId) {
         return imageFutureMap.get(taskId);
     }
 
     public Set<String> getModelNames() {
-        return taskMap.getMap().keySet();
+        return taskMap.keySet();
     }
 
     public int getTaskCount(String modelName) {

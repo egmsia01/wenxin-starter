@@ -86,6 +86,15 @@ public class TaskHandler {
             log.info("[{}] current qps: {}", modelName, currentQPS);
             if (currentQPS < getModelQPS(modelName) || getModelQPS(modelName) == DEFAULT_QPS) {
                 ChatTask task = taskManager.getTask(modelName);
+                if (task == null) {
+                    try {
+                        log.info("model: {}, sleep 1s", modelName);
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        log.error("thread sleep error", e);
+                    }
+                    continue;
+                }
                 String taskId = task.getTaskId();
                 ModelConfig modelConfig = task.getModelConfig();
                 log.debug("get task: {}", task);

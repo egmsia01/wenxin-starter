@@ -16,7 +16,7 @@ public class ThreadPoolManager {
         if (executorServices[index] == null) {
             synchronized (ExecutorService.class) {
                 if (executorServices[index] == null) {
-                    log.info("creat new thread pool for {}", type);
+                    log.info("creat new thread pool for [{}]", type);
                     executorServices[index] = Executors.newFixedThreadPool(NUM_THREADS);
                 }
             }
