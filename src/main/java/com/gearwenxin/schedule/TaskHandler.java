@@ -1,6 +1,6 @@
 package com.gearwenxin.schedule;
 
-import com.gearwenxin.schedule.entity.ModelConfig;
+import com.gearwenxin.config.ModelConfig;
 import com.gearwenxin.schedule.entity.BlockingMap;
 import com.gearwenxin.schedule.entity.ChatTask;
 import com.gearwenxin.service.ChatService;

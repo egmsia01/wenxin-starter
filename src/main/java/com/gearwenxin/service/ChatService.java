@@ -10,10 +10,12 @@ import com.gearwenxin.entity.chatmodel.ChatErnieRequest;
 import com.gearwenxin.entity.request.ErnieRequest;
 import com.gearwenxin.entity.response.ChatResponse;
 import com.gearwenxin.entity.Message;
-import com.gearwenxin.schedule.entity.ModelConfig;
+import com.gearwenxin.config.ModelConfig;
 import com.gearwenxin.validator.RequestValidator;
 import com.gearwenxin.validator.RequestValidatorFactory;
 import jakarta.annotation.Resource;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.reactivestreams.Publisher;
 import org.springframework.stereotype.Service;
@@ -37,20 +39,14 @@ public class ChatService {
     @Resource
     private WenXinProperties wenXinProperties;
 
-    private static Map<String, Deque<Message>> CHAT_MESSAGES_HISTORY_MAP = new ConcurrentHashMap<>();
+    @Getter
+    @Setter
+    private Map<String, Deque<Message>> chatMessageHistoryMap = new ConcurrentHashMap<>();
 
     private final WebManager webManager = new WebManager();
 
     private String getAccessToken() {
         return wenXinProperties.getAccessToken();
-    }
-
-    public Map<String, Deque<Message>> getMessageHistoryMap() {
-        return CHAT_MESSAGES_HISTORY_MAP;
-    }
-
-    public void initMessageHistoryMap(Map<String, Deque<Message>> map) {
-        CHAT_MESSAGES_HISTORY_MAP = map;
     }
 
     public <T extends ChatBaseRequest> Mono<ChatResponse> chatOnce(T chatRequest, ModelConfig config) {
@@ -72,18 +68,17 @@ public class ChatService {
     public <T extends ChatBaseRequest> Publisher<ChatResponse> chatProcess(T request, String msgUid, boolean stream, ModelConfig config) {
         validRequest(request, config);
         boolean isContinuous = (msgUid != null);
-        String url = config.getModelUrl();
         String accessToken = config.getAccessToken() == null ? getAccessToken() : config.getAccessToken();
         Object targetRequest;
         if (isContinuous) {
-            Deque<Message> messagesHistory = getMessageHistoryMap().computeIfAbsent(
+            Deque<Message> messagesHistory = getChatMessageHistoryMap().computeIfAbsent(
                     msgUid, key -> new ConcurrentLinkedDeque<>()
             );
             targetRequest = buildTargetRequest(messagesHistory, stream, request);
             Message message = WenXinUtils.buildUserMessage(request.getContent());
             ChatUtils.offerMessage(messagesHistory, message);
 
-            log.debug("[{}], stream: {}, continuous: {}", TAG, stream, true);
+            log.debug("[{}] stream: {}, continuous: {}", TAG, stream, true);
 
             return stream ? webManager.historyFluxPost(accessToken, targetRequest, messagesHistory, config) :
                     webManager.historyMonoPost(accessToken, targetRequest, messagesHistory, config);
@@ -91,7 +86,7 @@ public class ChatService {
             targetRequest = buildTargetRequest(null, stream, request);
         }
 
-        log.debug("[{}], stream: {}, continuous: {}", TAG, stream, false);
+        log.debug("[{}] stream: {}, continuous: {}", TAG, stream, false);
 
         return stream ? webManager.fluxPost(config, accessToken, targetRequest, ChatResponse.class) :
                 webManager.monoPost(config, accessToken, targetRequest, ChatResponse.class);

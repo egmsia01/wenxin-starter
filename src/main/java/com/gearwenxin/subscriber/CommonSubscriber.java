@@ -1,6 +1,6 @@
 package com.gearwenxin.subscriber;
 
-import com.gearwenxin.schedule.entity.ModelConfig;
+import com.gearwenxin.config.ModelConfig;
 import com.gearwenxin.core.ChatUtils;
 import com.gearwenxin.entity.Message;
 import com.gearwenxin.entity.response.ChatResponse;
@@ -13,7 +13,6 @@ import reactor.core.Disposable;
 import reactor.core.publisher.FluxSink;
 
 import java.util.Deque;
-import java.util.Map;
 import java.util.Optional;
 import java.util.StringJoiner;
 

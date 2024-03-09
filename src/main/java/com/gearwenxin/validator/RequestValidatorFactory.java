@@ -1,6 +1,6 @@
 package com.gearwenxin.validator;
 
-import com.gearwenxin.schedule.entity.ModelConfig;
+import com.gearwenxin.config.ModelConfig;
 
 public class RequestValidatorFactory {
 

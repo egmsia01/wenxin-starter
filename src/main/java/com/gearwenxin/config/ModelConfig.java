@@ -1,5 +1,6 @@
-package com.gearwenxin.schedule.entity;
+package com.gearwenxin.config;
 
+import com.gearwenxin.schedule.entity.ModelHeader;
 import lombok.Data;
 
 @Data

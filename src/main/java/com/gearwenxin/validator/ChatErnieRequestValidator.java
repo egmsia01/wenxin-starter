@@ -3,11 +3,10 @@ package com.gearwenxin.validator;
 import com.gearwenxin.common.ErrorCode;
 import com.gearwenxin.entity.chatmodel.ChatErnieRequest;
 import com.gearwenxin.exception.WenXinException;
-import com.gearwenxin.schedule.entity.ModelConfig;
+import com.gearwenxin.config.ModelConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
-import static com.gearwenxin.common.Constant.MAX_CONTENT_LENGTH;
 import static com.gearwenxin.common.Constant.MAX_SYSTEM_LENGTH;
 
 @Slf4j

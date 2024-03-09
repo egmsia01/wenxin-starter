@@ -1,7 +1,7 @@
 package com.gearwenxin.client;
 
 import com.gearwenxin.entity.chatmodel.ChatErnieRequest;
-import com.gearwenxin.schedule.entity.ModelConfig;
+import com.gearwenxin.config.ModelConfig;
 import com.gearwenxin.entity.chatmodel.ChatBaseRequest;
 import com.gearwenxin.entity.enums.ModelType;
 import com.gearwenxin.entity.response.ChatResponse;
@@ -127,4 +127,5 @@ public class ChatClient implements ChatModel {
         BlockingMap<String, CompletableFuture<Flux<ChatResponse>>> chatFutureMap = taskQueueManager.getChatFutureMap();
         return chatFutureMap.get(taskId).join();
     }
+
 }

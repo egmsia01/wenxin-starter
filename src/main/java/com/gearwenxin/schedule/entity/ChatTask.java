@@ -1,5 +1,6 @@
 package com.gearwenxin.schedule.entity;
 
+import com.gearwenxin.config.ModelConfig;
 import com.gearwenxin.entity.enums.ModelType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
