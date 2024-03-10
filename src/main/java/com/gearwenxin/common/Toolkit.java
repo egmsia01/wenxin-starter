@@ -8,7 +8,6 @@ public class Toolkit {
         } else {
             elseRunnable.run();
         }
-
     }
 
 }
