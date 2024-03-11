@@ -27,22 +27,32 @@ public class ChatClient implements ChatModel {
 
     @Override
     public Mono<ChatResponse> chat(String content) {
-        return Mono.from(chatStream(content));
+        return chat(content, defaultWeight);
     }
 
     @Override
     public Mono<ChatResponse> chat(String content, float weight) {
-        return Mono.from(chatStream(content, weight));
+        ChatErnieRequest request = new ChatErnieRequest();
+        request.setContent(content);
+        return chat(request, weight);
     }
 
     @Override
     public <T extends ChatBaseRequest> Mono<ChatResponse> chat(T chatRequest) {
-        return Mono.from(chatStream(chatRequest));
+        return chat(chatRequest, defaultWeight);
     }
 
     @Override
     public <T extends ChatBaseRequest> Mono<ChatResponse> chat(T chatRequest, float weight) {
-        return Mono.from(chatStream(chatRequest, weight));
+        ChatTask chatTask = ChatTask.builder()
+                .modelConfig(modelConfig)
+                .taskType(ModelType.chat)
+                .taskRequest(chatRequest)
+                .taskWeight(weight)
+                .stream(false)
+                .build();
+        String taskId = taskQueueManager.addTask(chatTask);
+        return Mono.from(taskQueueManager.getChatFuture(taskId).join());
     }
 
     @Override
@@ -69,9 +79,10 @@ public class ChatClient implements ChatModel {
                 .taskType(ModelType.chat)
                 .taskRequest(request)
                 .taskWeight(weight)
+                .stream(true)
                 .build();
         String taskId = taskQueueManager.addTask(chatTask);
-        return taskQueueManager.getChatFuture(taskId).join();
+        return Flux.from(taskQueueManager.getChatFuture(taskId).join());
     }
 
     @Override
@@ -119,9 +130,10 @@ public class ChatClient implements ChatModel {
                 .taskRequest(request)
                 .messageId(msgUid)
                 .taskWeight(weight)
+                .stream(true)
                 .build();
         String taskId = taskQueueManager.addTask(chatTask);
-        return taskQueueManager.getChatFuture(taskId).join();
+        return Flux.from(taskQueueManager.getChatFuture(taskId).join());
     }
 
 }

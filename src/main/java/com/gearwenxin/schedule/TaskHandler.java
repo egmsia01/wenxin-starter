@@ -14,6 +14,7 @@ import jakarta.annotation.Resource;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.reactivestreams.Publisher;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -120,7 +121,7 @@ public class TaskHandler {
         switch (task.getTaskType()) {
             case chat, embedding -> {
                 // 提交任务到线程池
-                CompletableFuture<Flux<ChatResponse>> completableFuture = CompletableFuture.supplyAsync(() -> {
+                CompletableFuture<Publisher<ChatResponse>> completableFuture = CompletableFuture.supplyAsync(() -> {
                     // 如果包含ernie，则使用erni的请求类
                     ChatBaseRequest taskRequest;
                     if (modelConfig.getModelName().toLowerCase().contains("ernie")) {
@@ -129,11 +130,7 @@ public class TaskHandler {
                         taskRequest = (ChatBaseRequest) task.getTaskRequest();
                     }
                     log.debug("[{}] submit task {}, ernie: {}", TAG, taskId, taskRequest.getClass() == ChatErnieRequest.class);
-                    if (task.getMessageId() != null) {
-                        return chatService.chatContinuousStream(taskRequest, task.getMessageId(), modelConfig);
-                    } else {
-                        return chatService.chatOnceStream(taskRequest, modelConfig);
-                    }
+                    return chatService.chatProcess(taskRequest, task.getMessageId(), task.isStream(), modelConfig);
                 }, executorService);
                 taskManager.getChatFutureMap().putAndNotify(taskId, completableFuture);
             }

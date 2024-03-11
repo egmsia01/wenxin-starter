@@ -29,4 +29,6 @@ public class ChatTask {
 
     private String messageId;
 
+    private boolean stream;
+
 }

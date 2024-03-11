@@ -81,9 +81,7 @@ public class PromptBotClient implements PromptBot, BaseBot {
         Map<String, String> paramMap = promptRequest.getParamMap();
         paramMap.put("id", promptRequest.getId());
 
-        return webManager.monoGet(
-                URL, getCustomAccessToken(), paramMap, PromptResponse.class
-        );
+        return webManager.monoGet(URL, getCustomAccessToken(), paramMap, PromptResponse.class);
     }
 
     @Override
@@ -92,7 +90,8 @@ public class PromptBotClient implements PromptBot, BaseBot {
             log.debug("PromptResponse => {}", response);
             chatRequest.setContent(response.getResult().getContent());
 
-            return chatClient.chatOnceStream(chatRequest, null);
+//            return chatClient.chatProcess(chatRequest, null);
+            return null;
         });
     }
 

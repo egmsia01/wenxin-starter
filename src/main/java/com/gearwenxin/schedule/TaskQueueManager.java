@@ -6,6 +6,7 @@ import com.gearwenxin.schedule.entity.BlockingMap;
 import com.gearwenxin.schedule.entity.ChatTask;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import org.reactivestreams.Publisher;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -31,7 +32,7 @@ public class TaskQueueManager {
     private final Map<String, Integer> modelCurrentQPSMap = new ConcurrentHashMap<>();
 
     // 提交的任务Map
-    private final BlockingMap<String, CompletableFuture<Flux<ChatResponse>>> chatFutureMap = new BlockingMap<>();
+    private final BlockingMap<String, CompletableFuture<Publisher<ChatResponse>>> chatFutureMap = new BlockingMap<>();
     private final BlockingMap<String, CompletableFuture<Mono<ImageResponse>>> imageFutureMap = new BlockingMap<>();
 
     private final Lock lock = new ReentrantLock();
@@ -59,7 +60,7 @@ public class TaskQueueManager {
         task.setTaskId(taskId);
         task.getModelConfig().setTaskId(taskId);
         List<ChatTask> chatTaskList = taskMap.get(modelName);
-        synchronized (TaskQueueManager.class) {
+        synchronized (this) {
             if (chatTaskList == null) {
                 List<ChatTask> list = new CopyOnWriteArrayList<>();
                 list.add(task);
@@ -84,7 +85,7 @@ public class TaskQueueManager {
         return list.remove(0);
     }
 
-    public CompletableFuture<Flux<ChatResponse>> getChatFuture(String taskId) {
+    public CompletableFuture<Publisher<ChatResponse>> getChatFuture(String taskId) {
         return chatFutureMap.getAndAwait(taskId);
     }
 

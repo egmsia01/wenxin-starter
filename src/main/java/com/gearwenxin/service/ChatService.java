@@ -19,8 +19,6 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.reactivestreams.Publisher;
 import org.springframework.stereotype.Service;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -47,22 +45,6 @@ public class ChatService {
 
     private String getAccessToken() {
         return wenXinProperties.getAccessToken();
-    }
-
-    public <T extends ChatBaseRequest> Mono<ChatResponse> chatOnce(T chatRequest, ModelConfig config) {
-        return Mono.from(chatProcess(chatRequest, null, false, config));
-    }
-
-    public <T extends ChatBaseRequest> Flux<ChatResponse> chatOnceStream(T chatRequest, ModelConfig config) {
-        return Flux.from(chatProcess(chatRequest, null, true, config));
-    }
-
-    public <T extends ChatBaseRequest> Mono<ChatResponse> chatContinuous(T chatRequest, String msgUid, ModelConfig config) {
-        return Mono.from(chatProcess(chatRequest, msgUid, false, config));
-    }
-
-    public <T extends ChatBaseRequest> Flux<ChatResponse> chatContinuousStream(T chatRequest, String msgUid, ModelConfig config) {
-        return Flux.from(chatProcess(chatRequest, msgUid, true, config));
     }
 
     public <T extends ChatBaseRequest> Publisher<ChatResponse> chatProcess(T request, String msgUid, boolean stream, ModelConfig config) {
