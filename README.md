@@ -142,7 +142,7 @@ public class ChatController {
 
 ## Star History
 
-[![Star History Chart](https://api.star-history.com/svg?repos=GMerge01/wenxin-starter&type=Date)](https://star-history.com/#GMerge01/wenxin-starter)
+[![Star History Chart](https://api.star-history.com/svg?repos=egmsia01/wenxin-starter&type=Date)](https://star-history.com/#egmsia01/wenxin-starter)
 
 ## 更新日志
 v2.0.0 - bata
