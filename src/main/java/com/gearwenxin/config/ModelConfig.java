@@ -3,8 +3,10 @@ package com.gearwenxin.config;
 import com.gearwenxin.schedule.entity.ModelHeader;
 import lombok.Data;
 
+import java.io.Serializable;
+
 @Data
-public class ModelConfig {
+public class ModelConfig implements Serializable {
 
     /**
      * 任务id, 无需传，SDK内部使用

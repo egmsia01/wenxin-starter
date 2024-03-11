@@ -17,7 +17,7 @@ public class BlockingMap<K, V> {
     private final Map<K, CountDownLatch> latchMap = new ConcurrentHashMap<>();
     private final Lock lock = new ReentrantLock();
 
-    public synchronized V put(K key, V value) {
+    public synchronized V putAndNotify(K key, V value) {
         V previous = map.put(key, value);
         CountDownLatch latch = latchMap.remove(key);
         if (latch != null) {
@@ -26,7 +26,11 @@ public class BlockingMap<K, V> {
         return previous;
     }
 
-    public V get(K key) {
+    public V put(K key, V value) {
+        return map.put(key, value);
+    }
+
+    public V getAndAwait(K key) {
         while (!map.containsKey(key)) {
             log.debug("[BlockingMap] key {{}} not present, waiting...", key);
             CountDownLatch latch = new CountDownLatch(1);
@@ -37,6 +41,10 @@ public class BlockingMap<K, V> {
                 log.error("latch await error", e);
             }
         }
+        return map.get(key);
+    }
+
+    public V get(K key) {
         return map.get(key);
     }
 

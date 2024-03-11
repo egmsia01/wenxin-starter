@@ -6,12 +6,15 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import static com.gearwenxin.entity.enums.ModelType.addTask;
+
 @Slf4j
 public class ThreadPoolManager {
 
     public static final String TAG = "ThreadPoolManager";
     private static final int NUM_THREADS = 5;
-    private static final ExecutorService[] executorServices = new ExecutorService[3];
+    private static final int TASK_NUM_THREADS = 10;
+    private static final ExecutorService[] executorServices = new ExecutorService[4];
 
     public static ExecutorService getInstance(ModelType type) {
         int index = getIndex(type);
@@ -19,7 +22,11 @@ public class ThreadPoolManager {
             synchronized (ExecutorService.class) {
                 if (executorServices[index] == null) {
                     log.info("[{}] creat new thread pool for [{}]", TAG, type);
-                    executorServices[index] = Executors.newFixedThreadPool(NUM_THREADS);
+                    if (type == addTask) {
+                        executorServices[index] = Executors.newFixedThreadPool(TASK_NUM_THREADS);
+                    } else {
+                        executorServices[index] = Executors.newFixedThreadPool(NUM_THREADS);
+                    }
                 }
             }
         }
@@ -31,6 +38,7 @@ public class ThreadPoolManager {
             case chat -> 0;
             case image -> 1;
             case embedding -> 2;
+            case addTask -> 3;
         };
     }
 

@@ -6,14 +6,14 @@ import com.gearwenxin.entity.chatmodel.ChatBaseRequest;
 import com.gearwenxin.entity.enums.ModelType;
 import com.gearwenxin.entity.response.ChatResponse;
 import com.gearwenxin.model.ChatModel;
-import com.gearwenxin.schedule.entity.BlockingMap;
+import com.gearwenxin.schedule.ThreadPoolManager;
 import com.gearwenxin.schedule.entity.ChatTask;
 import com.gearwenxin.schedule.TaskQueueManager;
 import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
 
 @Slf4j
 public class ChatClient implements ChatModel {
@@ -27,6 +27,7 @@ public class ChatClient implements ChatModel {
     }
 
     TaskQueueManager taskQueueManager = TaskQueueManager.getInstance();
+    ExecutorService executorService = ThreadPoolManager.getInstance(ModelType.addTask);
 
     @Override
     public Mono<ChatResponse> chat(String content) {
@@ -124,8 +125,7 @@ public class ChatClient implements ChatModel {
                 .taskWeight(weight)
                 .build();
         String taskId = taskQueueManager.addTask(chatTask);
-        BlockingMap<String, CompletableFuture<Flux<ChatResponse>>> chatFutureMap = taskQueueManager.getChatFutureMap();
-        return chatFutureMap.get(taskId).join();
+        return taskQueueManager.getChatFuture(taskId).join();
     }
 
 }

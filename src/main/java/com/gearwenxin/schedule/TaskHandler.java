@@ -135,14 +135,14 @@ public class TaskHandler {
                         return chatService.chatOnceStream(taskRequest, modelConfig);
                     }
                 }, executorService);
-                taskManager.getChatFutureMap().put(taskId, completableFuture);
+                taskManager.getChatFutureMap().putAndNotify(taskId, completableFuture);
             }
             case image -> {
                 CompletableFuture<Mono<ImageResponse>> completableFuture = CompletableFuture.supplyAsync(() -> {
                     ImageBaseRequest taskRequest = (ImageBaseRequest) task.getTaskRequest();
                     return imageService.chatImage(taskRequest);
                 }, executorService);
-                taskManager.getImageFutureMap().put(taskId, completableFuture);
+                taskManager.getImageFutureMap().putAndNotify(taskId, completableFuture);
                 log.debug("[{}] add a image task, taskId: {}", TAG, taskId);
             }
         }

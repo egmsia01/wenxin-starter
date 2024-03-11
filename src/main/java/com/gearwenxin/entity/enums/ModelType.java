@@ -10,7 +10,8 @@ import lombok.Getter;
 public enum ModelType {
     chat("chat"),
     image("image"),
-    embedding("embedding");
+    embedding("embedding"),
+    addTask("addTask");
 
     private final String value;
 
