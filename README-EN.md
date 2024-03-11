@@ -138,7 +138,7 @@ public class ChatController {
 
 <div>
 Click => 
-<a href="/wenxin-doc-en.md">Documents</a>
+<a href="/doc/wenxin-doc-en.md">Documents</a>
 </div>
 
 ## Open Source License

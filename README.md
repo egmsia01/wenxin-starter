@@ -186,7 +186,7 @@ v2.0.0 - bata
 
 <div>
 点击跳转 => 
-<a href="/wenxin-doc.md">使用文档</a>
+<a href="/doc/wenxin-doc.md">使用文档</a>
 </div>
 
 ## 开源协议
