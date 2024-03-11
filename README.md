@@ -97,75 +97,76 @@ dependencies {
 @Configuration
 public class ClientConfig {
 
-  @Bean
-  @Qualifier("Ernie")
-  public ChatClient ernieClient() {
-    ModelConfig modelConfig = new ModelConfig();
-    // 模型名称，需跟设置的QPS数值的名称一致 (建议与官网名称一致)
-    modelConfig.setModelName("Ernie");
-    // 模型url
-    modelConfig.setModelUrl("https://aip.baidubce.com/rpc/2.0/ai_custom/v1/wenxinworkshop/chat/completions");
-    // 单独设置某个模型的access-token, 优先级高于全局access-token, 统一使用全局的话可以不设置
-    modelConfig.setAccessToken("xx.xx.xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
-
-    ModelHeader modelHeader = new ModelHeader();
-    // 一分钟内允许的最大请求次数
-    modelHeader.set_X_Ratelimit_Limit_Requests(100);
-    // 一分钟内允许的最大tokens消耗，包含输入tokens和输出tokens
-    modelHeader.set_X_Ratelimit_Limit_Tokens(2000);
-    // 达到RPM速率限制前，剩余可发送的请求数配额，如果配额用完，将会在0-60s后刷新
-    modelHeader.set_X_Ratelimit_Remaining_Requests(1000);
-    // 达到TPM速率限制前，剩余可消耗的tokens数配额，如果配额用完，将会在0-60s后刷新
-    modelHeader.set_X_Ratelimit_Remaining_Tokens(5000);
-
-    modelConfig.setModelHeader(modelHeader);
-
-    return new ChatClient(modelConfig);
-  }
+    @Bean
+    @Qualifier("Ernie")
+    public ChatClient ernieClient() {
+        
+        ModelConfig modelConfig = new ModelConfig();
+        // 模型名称，需跟设置的QPS数值的名称一致 (建议与官网名称一致)
+        modelConfig.setModelName("Ernie");
+        // 模型url
+        modelConfig.setModelUrl("https://aip.baidubce.com/rpc/2.0/ai_custom/v1/wenxinworkshop/chat/completions");
+        // 单独设置某个模型的access-token, 优先级高于全局access-token, 统一使用全局的话可以不设置
+        modelConfig.setAccessToken("xx.xx.xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
+  
+        ModelHeader modelHeader = new ModelHeader();
+        // 一分钟内允许的最大请求次数
+        modelHeader.set_X_Ratelimit_Limit_Requests(100);
+        // 一分钟内允许的最大tokens消耗，包含输入tokens和输出tokens
+        modelHeader.set_X_Ratelimit_Limit_Tokens(2000);
+        // 达到RPM速率限制前，剩余可发送的请求数配额，如果配额用完，将会在0-60s后刷新
+        modelHeader.set_X_Ratelimit_Remaining_Requests(1000);
+        // 达到TPM速率限制前，剩余可消耗的tokens数配额，如果配额用完，将会在0-60s后刷新
+        modelHeader.set_X_Ratelimit_Remaining_Tokens(5000);
+  
+        modelConfig.setModelHeader(modelHeader);
+  
+        return new ChatClient(modelConfig);
+    }
 
 }
 
 @RestController
 public class ChatController {
 
-  // 要调用的模型的客户端（示例为文心）
-  @Resource
-  @Qualifier("Ernie")
-  private ChatClient chatClient;
-
-  /**
-   * chatClient.chatStream(msg) 单轮流式对话
-   * chatClient.chatStream(new ChatErnieRequest()) 单轮流式对话, 参数可调
-   * chatClient.chatsStream(msg, msgId) 连续对话
-   * chatClient.chatsStream(new ChatErnieRequest(), msgId) 连续对话, 参数可调
-   */
-
-  /**
-   * 以下两种方式均可
-   */
-  // 连续对话，流式
-  @GetMapping(value = "/stream/chats", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-  public Flux<String> chatSingleStream(@RequestParam String msg, @RequestParam String uid) {
-    // 单次对话 chatClient.chatStream(msg)
-    Flux<ChatResponse> responseFlux = chatClient.chatsStream(msg, uid);
-    return responseFlux.map(ChatResponse::getResult);
-  }
-
-  // 连续对话，流式
-  @GetMapping(value = "/stream/chats1", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-  public SseEmitter chats(@RequestParam String msg, @RequestParam String uid) {
-    SseEmitter emitter = new SseEmitter();
-    // 支持参数设置 ChatErnieRequest（Ernie系列模型）、ChatBaseRequest（其他模型）
-    // 单次对话 chatClient.chatsStream(msg)
-    chatClient.chatsStream(msg, uid).subscribe(response -> {
-      try {
-        emitter.send(SseEmitter.event().data(response.getResult()));
-      } catch (IOException e) {
-        throw new RuntimeException(e);
-      }
-    });
-    return emitter;
-  }
+    // 要调用的模型的客户端（示例为文心）
+    @Resource
+    @Qualifier("Ernie")
+    private ChatClient chatClient;
+  
+    /**
+     * chatClient.chatStream(msg) 单轮流式对话
+     * chatClient.chatStream(new ChatErnieRequest()) 单轮流式对话, 参数可调
+     * chatClient.chatsStream(msg, msgId) 连续对话
+     * chatClient.chatsStream(new ChatErnieRequest(), msgId) 连续对话, 参数可调
+     */
+  
+    /**
+     * 以下两种方式均可
+     */
+    // 连续对话，流式
+    @GetMapping(value = "/stream/chats", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public Flux<String> chatSingleStream(@RequestParam String msg, @RequestParam String uid) {
+        // 单次对话 chatClient.chatStream(msg)
+        Flux<ChatResponse> responseFlux = chatClient.chatsStream(msg, uid);
+        return responseFlux.map(ChatResponse::getResult);
+    }
+  
+    // 连续对话，流式
+    @GetMapping(value = "/stream/chats1", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public SseEmitter chats(@RequestParam String msg, @RequestParam String uid) {
+        SseEmitter emitter = new SseEmitter();
+        // 支持参数设置 ChatErnieRequest（Ernie系列模型）、ChatBaseRequest（其他模型）
+        // 单次对话 chatClient.chatsStream(msg)
+        chatClient.chatsStream(msg, uid).subscribe(response -> {
+            try {
+                emitter.send(SseEmitter.event().data(response.getResult()));
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
+        return emitter;
+    }
 
 }
 ```
