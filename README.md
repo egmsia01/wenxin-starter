@@ -18,6 +18,8 @@
 </div>
 # WenXin-Starter
 
+# [1.0版本链接](https://github.com/egmsia01/wenxin-starter/tree/master?tab=readme-ov-file)
+
 ## 项目简介
 - 百度 **“文心千帆 WENXINWORKSHOP”** 大模型的spring-boot-starter，可以帮助您快速接入百度的AI能力。
 - 完整对接文心千帆的官方API文档。
@@ -48,14 +50,14 @@ PromptBotClient -> ChatPromptRequest -> PromptResponse
 ```xml
 <dependency>
   <groupId>io.github.gemingjia</groupId>
-  <artifactId>gear-wenxinworkshop-starter</artifactId>
-  <version>2.0.0-beta2</version>
+  <artifactId>wenxin-starter</artifactId>
+  <version>2.0.0-beta</version>
 </dependency>
 ```
 - Gradle
 ```gradle
 dependencies {
-  implementation 'io.github.gemingjia:gear-wenxinworkshop-starter:2.0.0-beta2' 
+  implementation 'io.github.gemingjia:wenxin-starter:2.0.0-beta' 
 }
 ```
 
@@ -143,12 +145,12 @@ public class ChatController {
 [![Star History Chart](https://api.star-history.com/svg?repos=GMerge01/wenxin-starter&type=Date)](https://star-history.com/#GMerge01/wenxin-starter)
 
 ## 更新日志
-v2.0.0 - bata2
+v2.0.0 - bata
 
 ！ 2.x 版本与 1.x 版本不兼容
 - 重构 SDK架构，大幅提升性能
 - 重构 客户端生成方式，支持自定义多模型，不再需要适配
-- 完善 普通chat流式接口现已可用
+- 完善 普通chat接口现已可用
 
 ## 使用文档
 
