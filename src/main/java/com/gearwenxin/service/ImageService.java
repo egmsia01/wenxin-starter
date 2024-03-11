@@ -19,7 +19,7 @@ import static com.gearwenxin.common.WenXinUtils.assertNotNull;
  */
 @Slf4j
 @Service
-public class ImageService implements ImageBot<ImageBaseRequest>, BaseBot {
+public class ImageService implements ImageBot<ImageBaseRequest> {
 
     WebManager webManager = new WebManager();
 
@@ -33,38 +33,15 @@ public class ImageService implements ImageBot<ImageBaseRequest>, BaseBot {
         return wenXinProperties.getAccessToken();
     }
 
-    private String getCustomURL() {
-        return null;
-    }
-
-    @Override
-    public String getCustomAccessToken() {
-        return accessToken != null ? accessToken : getAccessToken();
-    }
-
-    @Override
-    public void setCustomAccessToken(String accessToken) {
-        this.accessToken = accessToken;
-    }
-
-    @Override
-    public String getURL() {
-        return getCustomURL();
-    }
-
-    @Override
-    public String getTag() {
-        return TAG;
-    }
 
     @Override
     public Mono<ImageResponse> chatImage(ImageBaseRequest imageBaseRequest) {
         assertNotNull(imageBaseRequest, "imageBaseRequest is null");
         imageBaseRequest.validSelf();
-        log.info(getTag() + "imageRequest => {}", imageBaseRequest);
+        log.info("" + "imageRequest => {}", imageBaseRequest);
 
         return webManager.monoPost(
-                null, getCustomAccessToken(), imageBaseRequest, ImageResponse.class
+                null, getAccessToken(), imageBaseRequest, ImageResponse.class
         );
     }
 

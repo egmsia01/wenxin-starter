@@ -137,12 +137,13 @@ public class WebManager {
     /**
      * 非流式请求 Get
      *
-     * @param url         请求地址
+     * @param config      Model配置
      * @param accessToken accessToken
      * @param paramsMap   请求参数Map
      * @return Mono<T>
      */
-    public <T> Mono<T> monoGet(String url, String accessToken, Map<String, String> paramsMap, Class<T> type) {
+    public <T> Mono<T> monoGet(ModelConfig config, String accessToken, Map<String, String> paramsMap, Class<T> type) {
+        String url = config.getModelUrl();
         validateParams(url, accessToken, paramsMap, type);
         log.debug("model url: {}", url);
 

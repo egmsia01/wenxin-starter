@@ -1,6 +1,8 @@
 package com.gearwenxin.schedule;
 
 import com.gearwenxin.config.ModelConfig;
+import com.gearwenxin.entity.chatmodel.ChatPromptRequest;
+import com.gearwenxin.entity.response.PromptResponse;
 import com.gearwenxin.schedule.entity.BlockingMap;
 import com.gearwenxin.schedule.entity.ChatTask;
 import com.gearwenxin.service.ChatService;
@@ -10,13 +12,13 @@ import com.gearwenxin.entity.chatmodel.ChatErnieRequest;
 import com.gearwenxin.entity.request.ImageBaseRequest;
 import com.gearwenxin.entity.response.ChatResponse;
 import com.gearwenxin.entity.response.ImageResponse;
+import com.gearwenxin.service.PromptService;
 import jakarta.annotation.Resource;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.reactivestreams.Publisher;
 import org.springframework.stereotype.Component;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.*;
@@ -36,6 +38,8 @@ public class TaskHandler {
 
     @Resource
     private ChatService chatService;
+    @Resource
+    private PromptService promptService;
     @Resource
     private ImageService imageService;
 
@@ -119,7 +123,7 @@ public class TaskHandler {
         ModelConfig modelConfig = task.getModelConfig();
         ExecutorService executorService = ThreadPoolManager.getInstance(task.getTaskType());
         switch (task.getTaskType()) {
-            case chat, embedding -> {
+            case chat -> {
                 // 提交任务到线程池
                 CompletableFuture<Publisher<ChatResponse>> completableFuture = CompletableFuture.supplyAsync(() -> {
                     // 如果包含ernie，则使用erni的请求类
@@ -134,10 +138,17 @@ public class TaskHandler {
                 }, executorService);
                 taskManager.getChatFutureMap().putAndNotify(taskId, completableFuture);
             }
+            case prompt -> {
+                CompletableFuture<Mono<PromptResponse>> completableFuture = CompletableFuture.supplyAsync(() -> {
+                    log.debug("[{}] submit task {}, type: prompt", TAG, taskId);
+                    return promptService.chatPromptProcess((ChatPromptRequest) task.getTaskRequest(), modelConfig);
+                }, executorService);
+                taskManager.getPromptFutureMap().putAndNotify(taskId, completableFuture);
+            }
             case image -> {
                 CompletableFuture<Mono<ImageResponse>> completableFuture = CompletableFuture.supplyAsync(() -> {
-                    ImageBaseRequest taskRequest = (ImageBaseRequest) task.getTaskRequest();
-                    return imageService.chatImage(taskRequest);
+                    log.debug("[{}] submit task {}, type: image", TAG, taskId);
+                    return imageService.chatImage((ImageBaseRequest) task.getTaskRequest());
                 }, executorService);
                 taskManager.getImageFutureMap().putAndNotify(taskId, completableFuture);
                 log.debug("[{}] add a image task, taskId: {}", TAG, taskId);

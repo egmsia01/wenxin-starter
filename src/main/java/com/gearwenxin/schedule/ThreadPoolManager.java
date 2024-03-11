@@ -14,7 +14,7 @@ public class ThreadPoolManager {
     public static final String TAG = "ThreadPoolManager";
     private static final int NUM_THREADS = 5;
     private static final int TASK_NUM_THREADS = 10;
-    private static final ExecutorService[] executorServices = new ExecutorService[4];
+    private static final ExecutorService[] executorServices = new ExecutorService[5];
 
     public static ExecutorService getInstance(ModelType type) {
         int index = getIndex(type);
@@ -37,8 +37,9 @@ public class ThreadPoolManager {
         return switch (type) {
             case chat -> 0;
             case image -> 1;
-            case embedding -> 2;
-            case addTask -> 3;
+            case prompt -> 2;
+            case embedding -> 3;
+            case addTask -> 4;
         };
     }
 

@@ -1,5 +1,6 @@
-package com.gearwenxin.client;
+package com.gearwenxin.service;
 
+import com.gearwenxin.config.ModelConfig;
 import com.gearwenxin.core.WebManager;
 import com.gearwenxin.common.ConvertUtils;
 import com.gearwenxin.common.ErrorCode;
@@ -13,8 +14,7 @@ import com.gearwenxin.entity.chatmodel.ChatPromptRequest;
 import com.gearwenxin.entity.request.PromptRequest;
 import com.gearwenxin.entity.response.PromptResponse;
 import com.gearwenxin.model.BaseBot;
-import com.gearwenxin.model.PromptBot;
-import com.gearwenxin.service.ChatService;
+import com.gearwenxin.model.PromptModel;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 
@@ -33,60 +33,32 @@ import java.util.Map;
 @Slf4j
 @Lazy
 @Service
-public class PromptBotClient implements PromptBot, BaseBot {
+public class PromptService {
 
-    WebManager webManager = new WebManager();
+    public static final String TAG = "PromptService";
+
+    private final WebManager webManager = new WebManager();
 
     @Resource
     private WenXinProperties wenXinProperties;
 
-    private String accessToken = null;
-    private static final String TAG = "Prompt-Bot-Client";
-
-    private static final String URL = Constant.PROMPT_URL;
-
-    public String getAccessToken() {
+    private String getAccessToken() {
         return wenXinProperties.getAccessToken();
     }
 
-    @Override
-    public String getCustomAccessToken() {
-        return accessToken != null ? accessToken : getAccessToken();
-    }
-
-    @Override
-    public void setCustomAccessToken(String accessToken) {
-        this.accessToken = accessToken;
-    }
-
-    @Override
-    public String getURL() {
-        return URL;
-    }
-
-    @Override
-    public String getTag() {
-        return TAG;
-    }
-
-    @Override
-    public Mono<PromptResponse> chatPrompt(ChatPromptRequest chatPromptRequest) {
-        if (chatPromptRequest == null ||
-                chatPromptRequest.getId() <= 0 ||
-                CollectionUtils.isEmpty(chatPromptRequest.getParamMap())
-        ) {
+    public Mono<PromptResponse> chatPromptProcess(ChatPromptRequest chatPromptRequest, ModelConfig config) {
+        if (chatPromptRequest == null || chatPromptRequest.getId() <= 0 || CollectionUtils.isEmpty(chatPromptRequest.getParamMap())) {
             throw new WenXinException(ErrorCode.PARAMS_ERROR, "chatPromptRequest is null or id is null or paramMap is null");
         }
         PromptRequest promptRequest = ConvertUtils.toPromptRequest(chatPromptRequest);
         Map<String, String> paramMap = promptRequest.getParamMap();
         paramMap.put("id", promptRequest.getId());
 
-        return webManager.monoGet(URL, getCustomAccessToken(), paramMap, PromptResponse.class);
+        return webManager.monoGet(config, getAccessToken(), paramMap, PromptResponse.class);
     }
 
-    @Override
-    public <U extends ChatService, T extends ChatBaseRequest> Flux<ChatResponse> chatUsePrompt(ChatPromptRequest request, T chatRequest, U chatClient) {
-        return this.chatPrompt(request).flatMapMany(response -> {
+    public <U extends ChatService, T extends ChatBaseRequest> Flux<ChatResponse> chatUsePrompt(ChatPromptRequest request, T chatRequest, U chatClient, ModelConfig config) {
+        return this.chatPromptProcess(request, config).flatMapMany(response -> {
             log.debug("PromptResponse => {}", response);
             chatRequest.setContent(response.getResult().getContent());
 

@@ -12,7 +12,7 @@ import reactor.core.publisher.Mono;
  * @author Ge Mingjia
  * {@code @date} 2023/7/20
  */
-public interface PromptBot {
+public interface PromptModel {
 
     /**
      * Prompt模板对话 (Get请求 不支持流式返回)
@@ -21,14 +21,8 @@ public interface PromptBot {
      * @param request 请求实体类
      * @return ChatResponse 响应实体类
      */
-    Mono<PromptResponse> chatPrompt(ChatPromptRequest request);
+    Mono<PromptResponse> chat(ChatPromptRequest request);
+    Mono<PromptResponse> chat(ChatPromptRequest request, float weight);
 
-    /**
-     * Prompt模板对话
-     *
-     * @param request 请求实体类
-     * @return ChatResponse 响应实体类
-     */
-    <U extends ChatService, T extends ChatBaseRequest> Flux<ChatResponse> chatUsePrompt(ChatPromptRequest request, T chatRequest, U chatClient);
 
 }

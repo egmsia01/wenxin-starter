@@ -2,6 +2,7 @@ package com.gearwenxin.schedule;
 
 import com.gearwenxin.entity.response.ChatResponse;
 import com.gearwenxin.entity.response.ImageResponse;
+import com.gearwenxin.entity.response.PromptResponse;
 import com.gearwenxin.schedule.entity.BlockingMap;
 import com.gearwenxin.schedule.entity.ChatTask;
 import lombok.Getter;
@@ -34,6 +35,7 @@ public class TaskQueueManager {
     // 提交的任务Map
     private final BlockingMap<String, CompletableFuture<Publisher<ChatResponse>>> chatFutureMap = new BlockingMap<>();
     private final BlockingMap<String, CompletableFuture<Mono<ImageResponse>>> imageFutureMap = new BlockingMap<>();
+    private final BlockingMap<String, CompletableFuture<Mono<PromptResponse>>> promptFutureMap = new BlockingMap<>();
 
     private final Lock lock = new ReentrantLock();
     private final Map<String, CountDownLatch> latchMap = new ConcurrentHashMap<>();
@@ -91,6 +93,10 @@ public class TaskQueueManager {
 
     public CompletableFuture<Mono<ImageResponse>> getImageFuture(String taskId) {
         return imageFutureMap.getAndAwait(taskId);
+    }
+
+    public CompletableFuture<Mono<PromptResponse>> getPromptFuture(String taskId) {
+        return promptFutureMap.getAndAwait(taskId);
     }
 
     public Set<String> getModelNames() {
