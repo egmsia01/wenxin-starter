@@ -6,14 +6,11 @@ import com.gearwenxin.entity.chatmodel.ChatBaseRequest;
 import com.gearwenxin.entity.enums.ModelType;
 import com.gearwenxin.entity.response.ChatResponse;
 import com.gearwenxin.model.ChatModel;
-import com.gearwenxin.schedule.ThreadPoolManager;
 import com.gearwenxin.schedule.entity.ChatTask;
 import com.gearwenxin.schedule.TaskQueueManager;
 import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-
-import java.util.concurrent.ExecutorService;
 
 @Slf4j
 public class ChatClient implements ChatModel {
@@ -27,26 +24,25 @@ public class ChatClient implements ChatModel {
     }
 
     TaskQueueManager taskQueueManager = TaskQueueManager.getInstance();
-    ExecutorService executorService = ThreadPoolManager.getInstance(ModelType.addTask);
 
     @Override
     public Mono<ChatResponse> chat(String content) {
-        return null;
+        return Mono.from(chatStream(content));
     }
 
     @Override
     public Mono<ChatResponse> chat(String content, float weight) {
-        return null;
+        return Mono.from(chatStream(content, weight));
     }
 
     @Override
     public <T extends ChatBaseRequest> Mono<ChatResponse> chat(T chatRequest) {
-        return null;
+        return Mono.from(chatStream(chatRequest));
     }
 
     @Override
     public <T extends ChatBaseRequest> Mono<ChatResponse> chat(T chatRequest, float weight) {
-        return null;
+        return Mono.from(chatStream(chatRequest, weight));
     }
 
     @Override
@@ -80,22 +76,22 @@ public class ChatClient implements ChatModel {
 
     @Override
     public Mono<ChatResponse> chats(String content, String msgUid) {
-        return null;
+        return chats(content, msgUid, defaultWeight);
     }
 
     @Override
     public Mono<ChatResponse> chats(String content, String msgUid, float weight) {
-        return null;
+        return chatsStream(content, msgUid, weight).next();
     }
 
     @Override
     public <T extends ChatBaseRequest> Mono<ChatResponse> chats(T chatRequest, String msgUid) {
-        return null;
+        return chats(chatRequest, msgUid, defaultWeight);
     }
 
     @Override
     public <T extends ChatBaseRequest> Mono<ChatResponse> chats(T chatRequest, String msgUid, float weight) {
-        return null;
+        return chatsStream(chatRequest, msgUid, weight).next();
     }
 
     @Override
