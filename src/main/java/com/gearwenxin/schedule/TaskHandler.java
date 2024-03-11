@@ -79,7 +79,7 @@ public class TaskHandler {
 
     public void eventLoopProcess(String modelName) {
         Map<String, Integer> modelCurrentQPSMap = taskManager.getModelCurrentQPSMap();
-        for (; ; ) {
+        while (true) {
             Integer currentQPS = modelCurrentQPSMap.get(modelName);
             if (currentQPS == null) {
                 taskManager.initModelCurrentQPS(modelName);
@@ -97,42 +97,9 @@ public class TaskHandler {
                     }
                     continue;
                 }
-                String taskId = task.getTaskId();
-                ModelConfig modelConfig = task.getModelConfig();
                 log.debug("[{}] get task: {}", TAG, task);
+                submitTask(task);
                 taskManager.upModelCurrentQPS(modelName);
-                ExecutorService executorService = ThreadPoolManager.getInstance(task.getTaskType());
-                switch (task.getTaskType()) {
-                    case chat, embedding -> {
-                        BlockingMap<String, CompletableFuture<Flux<ChatResponse>>> chatFutureMap = taskManager.getChatFutureMap();
-                        // 提交任务到线程池
-                        CompletableFuture<Flux<ChatResponse>> completableFuture = CompletableFuture.supplyAsync(() -> {
-                            // 如果包含ernie，则使用erni的请求类
-                            ChatBaseRequest taskRequest;
-                            if (modelConfig.getModelName().toLowerCase().contains("ernie")) {
-                                taskRequest = (ChatErnieRequest) task.getTaskRequest();
-                            } else {
-                                taskRequest = (ChatBaseRequest) task.getTaskRequest();
-                            }
-                            log.debug("[{}] submit task {}, ernie: {}", TAG, taskId, taskRequest.getClass() == ChatErnieRequest.class);
-                            if (task.getMessageId() != null) {
-                                return chatService.chatContinuousStream(taskRequest, task.getMessageId(), modelConfig);
-                            } else {
-                                return chatService.chatOnceStream(taskRequest, modelConfig);
-                            }
-                        }, executorService);
-                        chatFutureMap.put(taskId, completableFuture);
-                    }
-                    case image -> {
-                        BlockingMap<String, CompletableFuture<Mono<ImageResponse>>> imageFutureMap = taskManager.getImageFutureMap();
-                        CompletableFuture<Mono<ImageResponse>> completableFuture = CompletableFuture.supplyAsync(() -> {
-                            ImageBaseRequest taskRequest = (ImageBaseRequest) task.getTaskRequest();
-                            return imageService.chatImage(taskRequest);
-                        }, executorService);
-                        imageFutureMap.put(taskId, completableFuture);
-                        log.debug("[{}] add a image task, taskId: {}", TAG, taskId);
-                    }
-                }
             } else {
                 // TODO: 待优化，QPS超额应该直接wait()
                 try {
@@ -144,6 +111,41 @@ public class TaskHandler {
             }
         }
 
+    }
+
+    private void submitTask(ChatTask task) {
+        String taskId = task.getTaskId();
+        ModelConfig modelConfig = task.getModelConfig();
+        ExecutorService executorService = ThreadPoolManager.getInstance(task.getTaskType());
+        switch (task.getTaskType()) {
+            case chat, embedding -> {
+                // 提交任务到线程池
+                CompletableFuture<Flux<ChatResponse>> completableFuture = CompletableFuture.supplyAsync(() -> {
+                    // 如果包含ernie，则使用erni的请求类
+                    ChatBaseRequest taskRequest;
+                    if (modelConfig.getModelName().toLowerCase().contains("ernie")) {
+                        taskRequest = (ChatErnieRequest) task.getTaskRequest();
+                    } else {
+                        taskRequest = (ChatBaseRequest) task.getTaskRequest();
+                    }
+                    log.debug("[{}] submit task {}, ernie: {}", TAG, taskId, taskRequest.getClass() == ChatErnieRequest.class);
+                    if (task.getMessageId() != null) {
+                        return chatService.chatContinuousStream(taskRequest, task.getMessageId(), modelConfig);
+                    } else {
+                        return chatService.chatOnceStream(taskRequest, modelConfig);
+                    }
+                }, executorService);
+                taskManager.getChatFutureMap().put(taskId, completableFuture);
+            }
+            case image -> {
+                CompletableFuture<Mono<ImageResponse>> completableFuture = CompletableFuture.supplyAsync(() -> {
+                    ImageBaseRequest taskRequest = (ImageBaseRequest) task.getTaskRequest();
+                    return imageService.chatImage(taskRequest);
+                }, executorService);
+                taskManager.getImageFutureMap().put(taskId, completableFuture);
+                log.debug("[{}] add a image task, taskId: {}", TAG, taskId);
+            }
+        }
     }
 
 }

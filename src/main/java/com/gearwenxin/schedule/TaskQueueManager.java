@@ -77,7 +77,7 @@ public class TaskQueueManager {
     }
 
     public synchronized ChatTask getTask(String modelName) {
-        List<ChatTask> list = taskMap.remove(modelName);
+        List<ChatTask> list = taskMap.get(modelName);
         if (list == null || list.isEmpty()) {
             return null;
         }
