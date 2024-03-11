@@ -144,7 +144,7 @@ public class ChatController {
    * 以下两种方式均可
    */
   // 连续对话，流式
-  @GetMapping(value = "/stream/chat", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+  @GetMapping(value = "/stream/chats", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
   public Flux<String> chatSingleStream(@RequestParam String msg, @RequestParam String uid) {
     // 单次对话 chatClient.chatStream(msg)
     Flux<ChatResponse> responseFlux = chatClient.chatsStream(msg, uid);
@@ -152,7 +152,7 @@ public class ChatController {
   }
 
   // 连续对话，流式
-  @GetMapping(value = "/sse/chats", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+  @GetMapping(value = "/stream/chats1", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
   public SseEmitter chats(@RequestParam String msg, @RequestParam String uid) {
     SseEmitter emitter = new SseEmitter();
     // 支持参数设置 ChatErnieRequest（Ernie系列模型）、ChatBaseRequest（其他模型）
