@@ -10,10 +10,10 @@
     </parent>
     <groupId>io.github.gemingjia</groupId>
     <artifactId>wenxin-starter</artifactId>
-    <version>2.0.0-beta2</version>
+    <version>2.0.0-beta</version>
     <name>wenxin-starter</name>
     <description>A springboot start of Baidu "WENXINWORKSHOP"</description>
-    <url>https://github.com/GMerge01/wenxin-starter</url>
+    <url>https://github.com/egmsia01/wenxin-starter</url>
 
     <properties>
         <java.version>17</java.version>
@@ -22,9 +22,9 @@
         <maven.compiler.encoding>UTF-8</maven.compiler.encoding>
     </properties>
     <scm>
-        <connection>https://github.com/GMerge01/wenxin-starter</connection>
-        <developerConnection>https://github.com/GMerge01/wenxin-starter</developerConnection>
-        <url>https://github.com/GMerge01/wenxin-starter.git</url>
+        <connection>https://github.com/egmsia01/wenxin-starter</connection>
+        <developerConnection>https://github.com/egmsia01/wenxin-starter</developerConnection>
+        <url>https://github.com/egmsia01/wenxin-starter.git</url>
     </scm>
     <developers>
         <developer>
