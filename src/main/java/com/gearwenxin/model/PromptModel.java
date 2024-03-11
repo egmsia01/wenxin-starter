@@ -1,11 +1,7 @@
 package com.gearwenxin.model;
 
-import com.gearwenxin.service.ChatService;
-import com.gearwenxin.entity.chatmodel.ChatBaseRequest;
 import com.gearwenxin.entity.chatmodel.ChatPromptRequest;
-import com.gearwenxin.entity.response.ChatResponse;
 import com.gearwenxin.entity.response.PromptResponse;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 /**
