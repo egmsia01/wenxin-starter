@@ -48,8 +48,8 @@ public class WenXinUtils {
 
     public static Deque<Message> buildMessageHistory(Message userMessage, Message assistantMessage) {
         Deque<Message> messageDeque = new ConcurrentLinkedDeque<>();
-        ChatUtils.offerMessage(messageDeque, userMessage);
-        ChatUtils.offerMessage(messageDeque, assistantMessage);
+        ChatUtils.addMessage(messageDeque, userMessage);
+        ChatUtils.addMessage(messageDeque, assistantMessage);
         return messageDeque;
     }
 

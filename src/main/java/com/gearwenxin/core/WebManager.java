@@ -188,7 +188,7 @@ public class WebManager {
             assertNotNullMono(ErrorCode.SYSTEM_ERROR, "响应错误！", chatResponse.getResult(), chatResponse);
 
             Message messageResult = WenXinUtils.buildAssistantMessage(chatResponse.getResult());
-            ChatUtils.offerMessage(messagesHistory, messageResult);
+            ChatUtils.addMessage(messagesHistory, messageResult);
             taskManager.downModelCurrentQPS(config.getModelName());
 
             return Mono.just(chatResponse);

@@ -81,7 +81,7 @@ public class CommonSubscriber implements Subscriber<ChatResponse>, Disposable {
         String result = joiner.toString();
         Optional.ofNullable(result).filter(StringUtils::isNotBlank).ifPresent(r -> {
             Message message = buildAssistantMessage(r);
-            ChatUtils.offerMessage(messagesHistory, message);
+            ChatUtils.addMessage(messagesHistory, message);
             log.debug("offerMessage onComplete");
         });
         emitter.complete();
