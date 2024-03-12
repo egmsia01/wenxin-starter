@@ -33,6 +33,7 @@ public class ChatUtils {
         updatedHistory.offer(message);
 
         if (message.getRole() == Role.assistant) {
+            synchronizeHistories(originalHistory, updatedHistory);
             return;
         }
 

@@ -58,7 +58,7 @@ public class ChatService {
             );
             targetRequest = buildTargetRequest(messagesHistory, stream, request);
             Message message = WenXinUtils.buildUserMessage(request.getContent());
-            ChatUtils.offerMessage(messagesHistory, message);
+            ChatUtils.addMessage(messagesHistory, message);
 
             log.debug("[{}] stream: {}, continuous: {}", TAG, stream, true);
 
