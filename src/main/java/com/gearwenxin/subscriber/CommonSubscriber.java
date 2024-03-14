@@ -1,7 +1,7 @@
 package com.gearwenxin.subscriber;
 
 import com.gearwenxin.config.ModelConfig;
-import com.gearwenxin.core.ChatUtils;
+import com.gearwenxin.core.MessageHistoryManager;
 import com.gearwenxin.entity.Message;
 import com.gearwenxin.entity.response.ChatResponse;
 import com.gearwenxin.schedule.TaskQueueManager;
@@ -81,7 +81,7 @@ public class CommonSubscriber implements Subscriber<ChatResponse>, Disposable {
         String result = joiner.toString();
         Optional.ofNullable(result).filter(StringUtils::isNotBlank).ifPresent(r -> {
             Message message = buildAssistantMessage(r);
-            ChatUtils.addMessage(messagesHistory, message);
+            MessageHistoryManager.addMessage(messagesHistory, message);
             log.debug("offerMessage onComplete");
         });
         emitter.complete();

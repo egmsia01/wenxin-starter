@@ -3,7 +3,7 @@ package com.gearwenxin.service;
 import com.gearwenxin.common.*;
 import com.gearwenxin.config.WenXinProperties;
 import com.gearwenxin.core.WebManager;
-import com.gearwenxin.core.ChatUtils;
+import com.gearwenxin.core.MessageHistoryManager;
 import com.gearwenxin.entity.BaseRequest;
 import com.gearwenxin.entity.chatmodel.ChatBaseRequest;
 import com.gearwenxin.entity.chatmodel.ChatErnieRequest;
@@ -58,7 +58,7 @@ public class ChatService {
             );
             targetRequest = buildTargetRequest(messagesHistory, stream, request);
             Message message = WenXinUtils.buildUserMessage(request.getContent());
-            ChatUtils.addMessage(messagesHistory, message);
+            MessageHistoryManager.addMessage(messagesHistory, message);
 
             log.debug("[{}] stream: {}, continuous: {}", TAG, stream, true);
 

@@ -1,6 +1,6 @@
 package com.gearwenxin.common;
 
-import com.gearwenxin.core.ChatUtils;
+import com.gearwenxin.core.MessageHistoryManager;
 import com.gearwenxin.entity.FunctionCall;
 import com.gearwenxin.entity.enums.Role;
 import com.gearwenxin.exception.WenXinException;
@@ -48,8 +48,8 @@ public class WenXinUtils {
 
     public static Deque<Message> buildMessageHistory(Message userMessage, Message assistantMessage) {
         Deque<Message> messageDeque = new ConcurrentLinkedDeque<>();
-        ChatUtils.addMessage(messageDeque, userMessage);
-        ChatUtils.addMessage(messageDeque, assistantMessage);
+        MessageHistoryManager.addMessage(messageDeque, userMessage);
+        MessageHistoryManager.addMessage(messageDeque, assistantMessage);
         return messageDeque;
     }
 

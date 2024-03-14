@@ -10,7 +10,7 @@ import static com.gearwenxin.common.Constant.MAX_TOTAL_LENGTH;
 import static com.gearwenxin.common.WenXinUtils.assertNotBlank;
 import static com.gearwenxin.common.WenXinUtils.assertNotNull;
 
-public class ChatUtils {
+public class MessageHistoryManager {
 
     /**
      * 向历史消息中添加消息
@@ -33,7 +33,7 @@ public class ChatUtils {
         updatedHistory.offer(message);
 
         if (message.getRole() == Role.assistant) {
-            synchronizeHistories(originalHistory, updatedHistory);
+            syncHistories(originalHistory, updatedHistory);
             return;
         }
 
@@ -41,7 +41,7 @@ public class ChatUtils {
         handleExceedingLength(updatedHistory);
 
         // 同步历史记录
-        synchronizeHistories(originalHistory, updatedHistory);
+        syncHistories(originalHistory, updatedHistory);
     }
 
     private static void validateMessageRule(Deque<Message> history, Message message) {
@@ -63,7 +63,6 @@ public class ChatUtils {
                         validateMessageRule(history, message);
                     }
                 }
-
                 // 第一个message的role不能是function
                 if (history.size() == 1 && message.getRole() == Role.function) {
                     // 删除最后一条消息
@@ -80,7 +79,7 @@ public class ChatUtils {
         }
     }
 
-    private static void synchronizeHistories(Deque<Message> original, Deque<Message> updated) {
+    private static void syncHistories(Deque<Message> original, Deque<Message> updated) {
         if (updated.size() <= original.size()) {
             updated.clear();
             updated.addAll(original);
