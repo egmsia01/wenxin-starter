@@ -1,7 +1,7 @@
 package com.gearwenxin.config;
 
 import com.gearwenxin.core.WebManager;
-import com.gearwenxin.schedule.TaskHandler;
+import com.gearwenxin.schedule.TaskConsumerLoop;
 import com.gearwenxin.entity.response.TokenResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,12 +24,12 @@ public class GearWenXinConfig implements CommandLineRunner {
 
     private final WenXinProperties wenXinProperties;
 
-    private final TaskHandler taskHandler;
+    private final TaskConsumerLoop taskConsumerLoop;
 
     @Autowired
-    public GearWenXinConfig(WenXinProperties wenXinProperties, TaskHandler taskHandler) {
+    public GearWenXinConfig(WenXinProperties wenXinProperties, TaskConsumerLoop taskConsumerLoop) {
         this.wenXinProperties = wenXinProperties;
-        this.taskHandler = taskHandler;
+        this.taskConsumerLoop = taskConsumerLoop;
     }
 
     @Override
@@ -40,7 +40,7 @@ public class GearWenXinConfig implements CommandLineRunner {
 
         // TODO: 曲线救国，初始化modelQPSList
         List<String> modelQPSList = wenXinProperties.getModelQPSList();
-        taskHandler.setModelQPSList(modelQPSList);
+        taskConsumerLoop.setModelQPSList(modelQPSList);
 
         if (apiKey == null && secretKey == null) {
             return;

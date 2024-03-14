@@ -26,9 +26,9 @@ import java.util.concurrent.ExecutorService;
 
 @Slf4j
 @Component
-public class TaskHandler {
+public class TaskConsumerLoop {
 
-    public static final String TAG = "TaskHandler";
+    public static final String TAG = "TaskConsumerLoop";
     public static final int DEFAULT_QPS = -1;
 
     @Getter
