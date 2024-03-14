@@ -7,7 +7,7 @@
 
 ![gear-wenxinworkshop-starter](https://socialify.git.ci/egmsia01/wenxin-starter/image?font=Inter&forks=1&issues=1&language=1&name=1&owner=1&pattern=Floating%20Cogs&pulls=1&stargazers=1&theme=Light)
 
-![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.1.2-brightgreen.svg)
+![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.1.5-brightgreen.svg)
 ![JDK](https://img.shields.io/badge/JDK-17.0.5-orange.svg)
 ![Maven](https://img.shields.io/badge/Maven-3.9-blue.svg)
 
@@ -18,31 +18,20 @@
 </div>
 # WenXin-Starter
 
-# [1.0版本链接](https://github.com/egmsia01/wenxin-starter/tree/master?tab=readme-ov-file)
+# [ => 1.0版本链接](https://github.com/egmsia01/wenxin-starter/tree/master?tab=readme-ov-file)
 
 ## 项目简介
 - 百度 **“文心千帆 WENXINWORKSHOP”** 大模型的spring-boot-starter，可以帮助您快速接入百度的AI能力。
 - 完整对接文心千帆的官方API文档。
-- 支持文生图。
-- 内置对话记忆。
-- 支持对话的流式返回。
-- 支持文心千帆官网所有模型API，包括  `文心一言 ErnieBot`、`ERNIE-Bot-turbo`、`BLOOMZ-7B`、`Prompt模板`等模型的API（单轮对话、连续对话、流式返回、图片生成）。
+- 支持文生图，内置对话记忆，支持对话的流式返回。
+- 支持单个模型的QPS控制，支持排队机制。
 - 即将增加插件支持。
 
 ## 快速开始
 
 [使用demo (1.x版，2.x请阅读文档) ](https://github.com/egmsia01/springboot-wenxin-demo)
 
-```text
-Client类型 -> 参数类 -> 响应类：
-
-ErnieBotClient、ErnieBot4Client、ErnieBotTurboClient -> ChatErnieRequest -> ChatResponse
-其他对话Client -> ChatBaseRequest -> ChatResponse
-PromptBotClient -> ChatPromptRequest -> PromptResponse
-文生图类Client -> ImageBaseRequest -> ImageResponse
-
-详见文档或文心一言官方文档。
-```
+*【基于Springboot 3.0开发，所以要求JDK版本为17及以上】*
 
 ### 1、添加依赖
 
