@@ -63,6 +63,10 @@ public class MessageHistoryManager {
         }
     }
 
+    public Deque<Message> getMessageHistory(String msgUid) {
+        return getChatMessageHistoryMap().get(msgUid);
+    }
+
     /**
      * 向历史消息中添加消息
      *

@@ -18,6 +18,7 @@ import java.util.StringJoiner;
 
 import static com.gearwenxin.common.WenXinUtils.assertNotNull;
 import static com.gearwenxin.common.WenXinUtils.buildAssistantMessage;
+import static com.gearwenxin.core.MessageHistoryManager.validateMessageRule;
 
 /**
  * @author Ge Mingjia
@@ -53,7 +54,7 @@ public class CommonSubscriber implements Subscriber<ChatResponse>, Disposable {
             return;
         }
 
-        assertNotNull(response, "ChatResponse is null");
+        assertNotNull(response, "chat response is null");
 
         log.debug("onNext...");
 
@@ -65,6 +66,7 @@ public class CommonSubscriber implements Subscriber<ChatResponse>, Disposable {
     @Override
     public void onError(Throwable throwable) {
         taskManager.downModelCurrentQPS(modelConfig.getModelName());
+        validateMessageRule(messagesHistory);
         if (isDisposed()) {
             return;
         }
@@ -82,7 +84,7 @@ public class CommonSubscriber implements Subscriber<ChatResponse>, Disposable {
         Optional.ofNullable(result).filter(StringUtils::isNotBlank).ifPresent(r -> {
             Message message = buildAssistantMessage(r);
             MessageHistoryManager.addMessage(messagesHistory, message);
-            log.debug("offerMessage onComplete");
+            log.debug("add message onComplete");
         });
         emitter.complete();
     }

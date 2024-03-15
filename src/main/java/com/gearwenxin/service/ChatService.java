@@ -44,12 +44,13 @@ public class ChatService {
 
     public <T extends ChatBaseRequest> Publisher<ChatResponse> chatProcess(T request, String msgUid, boolean stream, ModelConfig config) {
         validRequest(request, config);
+        Map<String, Deque<Message>> messageMap = messageHistoryManager.getChatMessageHistoryMap();
         boolean isContinuous = (msgUid != null);
         String accessToken = config.getAccessToken() == null ? getAccessToken() : config.getAccessToken();
         Object targetRequest;
         if (isContinuous) {
-            Deque<Message> messagesHistory = messageHistoryManager.getChatMessageHistoryMap().computeIfAbsent(
-                    msgUid, key -> new ConcurrentLinkedDeque<>()
+            Deque<Message> messagesHistory = messageMap.computeIfAbsent(
+                    msgUid, key -> new ArrayDeque<>()
             );
             targetRequest = buildTargetRequest(messagesHistory, stream, request);
             Message message = WenXinUtils.buildUserMessage(request.getContent());
@@ -58,7 +59,7 @@ public class ChatService {
             log.debug("[{}] stream: {}, continuous: {}", TAG, stream, true);
 
             return stream ? webManager.historyFluxPost(accessToken, targetRequest, messagesHistory, config) :
-                    webManager.historyMonoPost(accessToken, targetRequest, messagesHistory, config);
+                    webManager.historyMonoPost(accessToken, targetRequest, messagesHistory, config, msgUid);
         } else {
             targetRequest = buildTargetRequest(null, stream, request);
         }
@@ -66,7 +67,7 @@ public class ChatService {
         log.debug("[{}] stream: {}, continuous: {}", TAG, stream, false);
 
         return stream ? webManager.fluxPost(config, accessToken, targetRequest, ChatResponse.class) :
-                webManager.monoPost(config, accessToken, targetRequest, ChatResponse.class);
+                webManager.monoPost(config, accessToken, targetRequest, ChatResponse.class, msgUid);
     }
 
     public <T extends ChatBaseRequest> void validRequest(T request, ModelConfig config) {

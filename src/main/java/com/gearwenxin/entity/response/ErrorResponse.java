@@ -46,4 +46,14 @@ public class ErrorResponse {
     @JsonProperty("error_msg")
     private String errorMsg;
 
+    @Override
+    public String toString() {
+        return "error_response { " +
+                "id: '" + id + '\'' +
+                ", logId: '" + logId + '\'' +
+                ", errorCode: " + errorCode +
+                ", ebCode: " + ebCode +
+                ", errorMsg: '" + errorMsg + '\'' +
+                '}' + " ";
+    }
 }

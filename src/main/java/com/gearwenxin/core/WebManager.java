@@ -31,6 +31,7 @@ import java.util.stream.Collectors;
 
 import static com.gearwenxin.common.Constant.GET_ACCESS_TOKEN_URL;
 import static com.gearwenxin.common.WenXinUtils.*;
+import static com.gearwenxin.core.MessageHistoryManager.validateMessageRule;
 
 /**
  * @author Ge Mingjia
@@ -40,7 +41,8 @@ import static com.gearwenxin.common.WenXinUtils.*;
 public class WebManager {
 
     private final TaskQueueManager taskManager = TaskQueueManager.getInstance();
-    Map<String, Integer> qpsMap = taskManager.getModelCurrentQPSMap();
+
+    MessageHistoryManager messageHistoryManager = MessageHistoryManager.getInstance();
 
     private static final String ACCESS_TOKEN_PRE = "?access_token=";
 
@@ -69,6 +71,10 @@ public class WebManager {
         return builder.build();
     }
 
+    public <T> Mono<T> monoPost(ModelConfig config, String accessToken, Object request, Class<T> type) {
+        return monoPost(config, accessToken, request, type, null);
+    }
+
     /**
      * 非流式请求 POST
      *
@@ -77,7 +83,7 @@ public class WebManager {
      * @param request     请求类
      * @return Mono<T>
      */
-    public <T> Mono<T> monoPost(ModelConfig config, String accessToken, Object request, Class<T> type) {
+    public <T> Mono<T> monoPost(ModelConfig config, String accessToken, Object request, Class<T> type, String messageUid) {
         String url = config.getModelUrl();
         validateParams(url, accessToken, request, type);
         log.debug("model url: {}", url);
@@ -93,7 +99,15 @@ public class WebManager {
                     handleErrResponse(response);
                     taskManager.downModelCurrentQPS(config.getModelName());
                 })
-                .doOnError(WebClientResponseException.class, handleWebClientError());
+                .doOnError(WebClientResponseException.class, e -> {
+                    if (messageUid == null) {
+                        handleWebClientError().accept(e);
+                        return;
+                    }
+                    Deque<Message> messageHistory = messageHistoryManager.getMessageHistory(messageUid);
+                    validateMessageRule(messageHistory);
+                    handleWebClientError().accept(e);
+                });
     }
 
     /**
@@ -180,8 +194,8 @@ public class WebManager {
         });
     }
 
-    public <T> Mono<ChatResponse> historyMonoPost(String token, T request, Deque<Message> messagesHistory, ModelConfig config) {
-        Mono<ChatResponse> response = monoPost(config, token, request, ChatResponse.class)
+    public <T> Mono<ChatResponse> historyMonoPost(String token, T request, Deque<Message> messagesHistory, ModelConfig config, String messageUid) {
+        Mono<ChatResponse> response = monoPost(config, token, request, ChatResponse.class, messageUid)
                 .subscribeOn(Schedulers.boundedElastic());
 
         return response.flatMap(chatResponse -> {
@@ -237,7 +251,7 @@ public class WebManager {
                         .errorMsg(chatResponse.getErrorMsg())
                         .errorCode(chatResponse.getErrorCode())
                         .build();
-                throw new WenXinException(ErrorCode.WENXIN_ERROR, errorResponse.toString());
+                log.error("响应存在错误: {}", errorResponse);
             });
         }
     }
