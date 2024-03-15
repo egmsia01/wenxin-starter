@@ -18,7 +18,6 @@ import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-import reactor.core.scheduler.Schedulers;
 
 import java.net.URI;
 import java.net.URLEncoder;
@@ -45,6 +44,10 @@ public class WebManager {
     MessageHistoryManager messageHistoryManager = MessageHistoryManager.getInstance();
 
     private static final String ACCESS_TOKEN_PRE = "?access_token=";
+
+    private static WebClient buildWebClient(String baseUrl) {
+        return buildWebClient(baseUrl, null);
+    }
 
     private static WebClient buildWebClient(String baseUrl, ModelHeader header) {
         WebClient.Builder builder = WebClient.builder()
@@ -166,7 +169,7 @@ public class WebManager {
                 .map(entry -> entry.getKey() + "=" + encodeURL(entry.getValue()))
                 .collect(Collectors.joining("&"));
 
-        WebClient client = buildWebClient(url, null).mutate()
+        WebClient client = buildWebClient(url).mutate()
                 .filter((request, next) -> {
                     String uriWithQueryParams = request.url() + "?" + queryParams;
                     ClientRequest filteredRequest = ClientRequest.from(request)
@@ -183,9 +186,6 @@ public class WebManager {
                 .doOnError(WebClientResponseException.class, handleWebClientError());
     }
 
-    /**
-     * flux形式的回答，添加到历史消息中
-     */
     public <T> Flux<ChatResponse> historyFluxPost(String token, T request, Deque<Message> messagesHistory, ModelConfig config) {
         return Flux.create(emitter -> {
             CommonSubscriber subscriber = new CommonSubscriber(emitter, messagesHistory, config);
@@ -195,16 +195,12 @@ public class WebManager {
     }
 
     public <T> Mono<ChatResponse> historyMonoPost(String token, T request, Deque<Message> messagesHistory, ModelConfig config, String messageUid) {
-        Mono<ChatResponse> response = monoPost(config, token, request, ChatResponse.class, messageUid)
-                .subscribeOn(Schedulers.boundedElastic());
+        Mono<ChatResponse> response = monoPost(config, token, request, ChatResponse.class, messageUid);
 
         return response.flatMap(chatResponse -> {
-            assertNotNullMono(ErrorCode.SYSTEM_ERROR, "响应错误！", chatResponse.getResult(), chatResponse);
-
             Message messageResult = WenXinUtils.buildAssistantMessage(chatResponse.getResult());
             MessageHistoryManager.addMessage(messagesHistory, messageResult);
             taskManager.downModelCurrentQPS(config.getModelName());
-
             return Mono.just(chatResponse);
         });
     }
@@ -214,7 +210,7 @@ public class WebManager {
 
         final String url = String.format(GET_ACCESS_TOKEN_URL, apiKey, secretKey);
 
-        return buildWebClient(url, null)
+        return buildWebClient(url)
                 .get()
                 .retrieve()
                 .bodyToMono(TokenResponse.class);
