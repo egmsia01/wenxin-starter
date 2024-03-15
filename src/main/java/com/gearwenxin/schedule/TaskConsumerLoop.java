@@ -33,7 +33,7 @@ public class TaskConsumerLoop {
 
     @Getter
     @Setter
-    private List<String> modelQPSList = null;
+    private List<String> qpsList = null;
 
     @Resource
     private ChatService chatService;
@@ -42,81 +42,87 @@ public class TaskConsumerLoop {
     @Resource
     private ImageService imageService;
 
-    private static final Map<String, Integer> modelQPSMap = new HashMap<>();
+    private static final Map<String, Integer> MODEL_QPS_MAP = new HashMap<>();
 
     private final TaskQueueManager taskManager = TaskQueueManager.getInstance();
 
     public void start() {
         initModelQpsMap();
-        Set<String> modelNames = modelQPSMap.keySet();
+        Set<String> modelNames = MODEL_QPS_MAP.keySet();
         modelNames.forEach(modelName -> new Thread(() -> {
             try {
                 Thread.currentThread().setName(modelName + "-thread");
                 log.info("[{}] {}, model: {}, loop start", TAG, Thread.currentThread().getName(), modelName);
-                eventLoopProcess(modelName);
+                // 消费事件循环处理
+                while (true) {
+                    eventLoopProcess(modelName);
+                }
             } catch (Exception e) {
                 log.error("[{}] loop-process error, modelName: {}, thread-{}", TAG, modelName, Thread.currentThread().getName(), e);
                 if (!Thread.currentThread().isAlive()) {
                     log.error("[{}] {} is not alive", TAG, Thread.currentThread().getName());
-                    log.info("[{}] restarting model: {}", TAG, modelName);
-                    Thread.currentThread().start();
                 }
             }
         }).start());
     }
 
     public void initModelQpsMap() {
-        if (modelQPSList == null || modelQPSList.isEmpty()) {
+        if (qpsList == null || qpsList.isEmpty()) {
             return;
         }
-        log.debug("[{}] model qps list: {}", TAG, modelQPSList);
-        modelQPSList.forEach(s -> {
+        log.debug("[{}] model qps list: {}", TAG, qpsList);
+        qpsList.forEach(s -> {
             String[] split = s.split(" ");
-            modelQPSMap.put(split[0], Integer.parseInt(split[1]));
+            MODEL_QPS_MAP.put(split[0], Integer.parseInt(split[1]));
         });
         log.info("[{}] init model qps map complete", TAG);
     }
 
     private int getModelQps(String modelName) {
-        return modelQPSMap.getOrDefault(modelName, DEFAULT_QPS);
+        return MODEL_QPS_MAP.getOrDefault(modelName, DEFAULT_QPS);
     }
 
+    /**
+     * 消费事件循环处理
+     */
     public void eventLoopProcess(String modelName) {
         Map<String, Integer> currentQpsMap = taskManager.getModelCurrentQPSMap();
         // 获取配置的QPS
         int modelQps = getModelQps(modelName);
-        while (true) {
-            // 获取到当前的QPS
-            Integer currentQPS = currentQpsMap.get(modelName);
-            if (currentQPS == null) {
-                taskManager.initModelCurrentQPS(modelName);
-                currentQPS = 0;
-            }
+        // 获取到当前的QPS
+        Integer currentQPS = currentQpsMap.get(modelName);
+        if (currentQPS == null) {
+            taskManager.initModelCurrentQPS(modelName);
+            currentQPS = 0;
+        }
 
-            log.debug("[{}] [{}] current qps: {}", TAG, modelName, currentQPS);
+        log.debug("[{}] [{}] current qps: {}", TAG, modelName, currentQPS);
 
-            if (currentQPS < modelQps || modelQps == DEFAULT_QPS) {
-                ChatTask task = taskManager.getTask(modelName);
-                if (task != null) {
-                    log.debug("[{}] get task: {}", TAG, task);
-                    submitTask(task);
-                    taskManager.upModelCurrentQPS(modelName);
-                }
-            }
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                log.error("[{}] thread sleep error", TAG, e);
-                // 重新标记线程中断状态
-                Thread.currentThread().interrupt();
+        if (currentQPS < modelQps || modelQps == DEFAULT_QPS) {
+            ChatTask task = taskManager.getTask(modelName);
+            if (task != null) {
+                log.debug("[{}] get task: {}", TAG, task);
+                submitTask(task);
+                taskManager.upModelCurrentQPS(modelName);
             }
         }
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            log.error("[{}] thread sleep error", TAG, e);
+            // 重新标记线程中断状态
+            Thread.currentThread().interrupt();
+        }
+
     }
 
+    /**
+     * 提交任务到不同的线程池
+     */
     private void submitTask(ChatTask task) {
         String taskId = task.getTaskId();
         ModelConfig modelConfig = task.getModelConfig();
-        // 根据不同的任务类型，提交到不同的线程池
+        // 根据不同的任务类型，获取不同的线程池实例
         ExecutorService executorService = ThreadPoolManager.getInstance(task.getTaskType());
         switch (task.getTaskType()) {
             case chat -> {

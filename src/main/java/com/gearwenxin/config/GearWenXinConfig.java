@@ -40,7 +40,7 @@ public class GearWenXinConfig implements CommandLineRunner {
 
         // TODO: 曲线救国，初始化modelQPSList
         List<String> modelQPSList = wenXinProperties.getModelQPSList();
-        taskConsumerLoop.setModelQPSList(modelQPSList);
+        taskConsumerLoop.setQpsList(modelQPSList);
 
         if (apiKey == null && secretKey == null) {
             return;
