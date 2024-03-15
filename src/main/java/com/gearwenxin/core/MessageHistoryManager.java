@@ -5,12 +5,63 @@ import com.gearwenxin.entity.enums.Role;
 
 import java.util.Deque;
 import java.util.LinkedList;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static com.gearwenxin.common.Constant.MAX_TOTAL_LENGTH;
 import static com.gearwenxin.common.WenXinUtils.assertNotBlank;
 import static com.gearwenxin.common.WenXinUtils.assertNotNull;
 
 public class MessageHistoryManager {
+
+    private MessageHistoryManager() {
+    }
+
+    private static final Integer DEFAULT_MESSAGE_MAP_KRY_SIZE = 1024;
+
+    private volatile int CURRENT_MAP = 0;
+
+    /**
+     * 历史消息记录, 扩容时会来回切换
+     */
+    private static final Map<String, Deque<Message>> chatMessageHistoryMap0;
+
+    // 暂未使用
+    private static final Map<String, Deque<Message>> chatMessageHistoryMap1 = null;
+
+    private static volatile MessageHistoryManager messageHistoryManager;
+
+    static {
+        chatMessageHistoryMap0 = new ConcurrentHashMap<>(DEFAULT_MESSAGE_MAP_KRY_SIZE);
+    }
+
+    public static MessageHistoryManager getInstance() {
+        if (messageHistoryManager == null) {
+            synchronized (MessageHistoryManager.class) {
+                if (messageHistoryManager == null) {
+                    messageHistoryManager = new MessageHistoryManager();
+                }
+            }
+        }
+        return messageHistoryManager;
+    }
+
+    public Map<String, Deque<Message>> getChatMessageHistoryMap() {
+        if (CURRENT_MAP == 0) {
+            return chatMessageHistoryMap0;
+        }
+        return chatMessageHistoryMap1;
+    }
+
+    public synchronized void setChatMessageHistoryMap(Map<String, Deque<Message>> map) {
+        if (CURRENT_MAP == 0) {
+            chatMessageHistoryMap0.clear();
+            chatMessageHistoryMap0.putAll(map);
+        } else {
+            chatMessageHistoryMap1.clear();
+            chatMessageHistoryMap1.putAll(map);
+        }
+    }
 
     /**
      * 向历史消息中添加消息
@@ -44,7 +95,7 @@ public class MessageHistoryManager {
         syncHistories(originalHistory, updatedHistory);
     }
 
-    private static void validateMessageRule(Deque<Message> history, Message message) {
+    public static void validateMessageRule(Deque<Message> history, Message message) {
         if (!history.isEmpty()) {
             Message lastMessage = history.peekLast();
             if (lastMessage != null) {
@@ -76,6 +127,13 @@ public class MessageHistoryManager {
                     validateMessageRule(history, message);
                 }
             }
+        }
+    }
+
+    public static void validateMessageRule(Deque<Message> history) {
+        if (history != null && !history.isEmpty()) {
+            Message message = history.pollLast();
+            validateMessageRule(history, message);
         }
     }
 

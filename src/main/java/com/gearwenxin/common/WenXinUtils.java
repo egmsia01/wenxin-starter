@@ -17,21 +17,6 @@ import java.util.concurrent.ConcurrentLinkedDeque;
  */
 public class WenXinUtils {
 
-    @Deprecated
-    public static Deque<Message> buildUserMessageDeque(String content) {
-        return buildUserMessageHistory(content);
-    }
-
-    @Deprecated
-    public static Deque<Message> buildUserMessageDeque(String content, String name, FunctionCall functionCall) {
-        return buildUserMessageHistory(content, name, functionCall);
-    }
-
-    @Deprecated
-    public static Deque<Message> buildMessageDeque(Message userMessage, Message assistantMessage) {
-        return buildMessageHistory(userMessage, assistantMessage);
-    }
-
     public static Deque<Message> buildUserMessageHistory(String content) {
         return buildUserMessageHistory(content, null, null);
     }
@@ -44,13 +29,6 @@ public class WenXinUtils {
         Message message = buildUserMessage(content, name, functionCall);
         messageHistory.offer(message);
         return messageHistory;
-    }
-
-    public static Deque<Message> buildMessageHistory(Message userMessage, Message assistantMessage) {
-        Deque<Message> messageDeque = new ConcurrentLinkedDeque<>();
-        MessageHistoryManager.addMessage(messageDeque, userMessage);
-        MessageHistoryManager.addMessage(messageDeque, assistantMessage);
-        return messageDeque;
     }
 
     public static Message buildUserMessage(String content) {

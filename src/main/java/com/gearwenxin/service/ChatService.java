@@ -14,14 +14,11 @@ import com.gearwenxin.config.ModelConfig;
 import com.gearwenxin.validator.RequestValidator;
 import com.gearwenxin.validator.RequestValidatorFactory;
 import jakarta.annotation.Resource;
-import lombok.Getter;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.reactivestreams.Publisher;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedDeque;
 
 /**
@@ -37,11 +34,9 @@ public class ChatService {
     @Resource
     private WenXinProperties wenXinProperties;
 
-    @Getter
-    @Setter
-    private Map<String, Deque<Message>> chatMessageHistoryMap = new ConcurrentHashMap<>();
-
     private final WebManager webManager = new WebManager();
+
+    private static final MessageHistoryManager messageHistoryManager = MessageHistoryManager.getInstance();
 
     private String getAccessToken() {
         return wenXinProperties.getAccessToken();
@@ -53,7 +48,7 @@ public class ChatService {
         String accessToken = config.getAccessToken() == null ? getAccessToken() : config.getAccessToken();
         Object targetRequest;
         if (isContinuous) {
-            Deque<Message> messagesHistory = getChatMessageHistoryMap().computeIfAbsent(
+            Deque<Message> messagesHistory = messageHistoryManager.getChatMessageHistoryMap().computeIfAbsent(
                     msgUid, key -> new ConcurrentLinkedDeque<>()
             );
             targetRequest = buildTargetRequest(messagesHistory, stream, request);
@@ -83,11 +78,15 @@ public class ChatService {
         Object targetRequest = null;
         if (request.getClass() == ChatBaseRequest.class) {
             BaseRequest.BaseRequestBuilder requestBuilder = ConvertUtils.toBaseRequest(request).stream(stream);
-            if (messagesHistory != null) requestBuilder.messages(messagesHistory);
+            if (messagesHistory != null) {
+                requestBuilder.messages(messagesHistory);
+            }
             targetRequest = requestBuilder.build();
         } else if (request.getClass() == ChatErnieRequest.class) {
             ErnieRequest.ErnieRequestBuilder requestBuilder = ConvertUtils.toErnieRequest((ChatErnieRequest) request).stream(stream);
-            if (messagesHistory != null) requestBuilder.messages(messagesHistory);
+            if (messagesHistory != null) {
+                requestBuilder.messages(messagesHistory);
+            }
             targetRequest = requestBuilder.build();
         }
         return targetRequest;

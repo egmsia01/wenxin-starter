@@ -1,5 +1,6 @@
 package com.gearwenxin.service.impl;
 
+import com.gearwenxin.core.MessageHistoryManager;
 import com.gearwenxin.entity.Message;
 import com.gearwenxin.service.ChatService;
 import com.gearwenxin.service.WinXinActions;
@@ -17,23 +18,23 @@ public class WinXinActionsImpl implements WinXinActions {
 
     public static final String TAG = "WinXinActions";
 
-    @Resource
-    private ChatService chatService;
+    private static final MessageHistoryManager messageHistoryManager = MessageHistoryManager.getInstance();
+
     public static final Gson gson = new Gson();
 
     @Override
     public void initMessageMap(Map<String, Deque<Message>> map) {
-        chatService.setChatMessageHistoryMap(map);
+        messageHistoryManager.setChatMessageHistoryMap(map);
     }
 
     @Override
     public void initMessages(String msgUid, Deque<Message> messageDeque) {
-        chatService.getChatMessageHistoryMap().put(msgUid, messageDeque);
+        messageHistoryManager.getChatMessageHistoryMap().put(msgUid, messageDeque);
     }
 
     @Override
     public String exportMessages(String msgUid) {
-        Deque<Message> messages = chatService.getChatMessageHistoryMap().get(msgUid);
+        Deque<Message> messages = messageHistoryManager.getChatMessageHistoryMap().get(msgUid);
         if (messages != null) {
             log.debug("[{}] export messages, magUid: {}", TAG, msgUid);
             return gson.toJson(messages);
@@ -43,7 +44,7 @@ public class WinXinActionsImpl implements WinXinActions {
 
     @Override
     public String exportAllMessages() {
-        Map<String, Deque<Message>> chatMessageHistoryMap = chatService.getChatMessageHistoryMap();
+        Map<String, Deque<Message>> chatMessageHistoryMap = messageHistoryManager.getChatMessageHistoryMap();
         if (chatMessageHistoryMap != null) {
             log.debug("[{}] export all messages", TAG);
             return gson.toJson(chatMessageHistoryMap);
