@@ -107,9 +107,10 @@ public class TaskConsumerLoop {
             }
         }
         try {
+            // TODO: 可能存在busy-wait问题, 待优化
             Thread.sleep(1000);
         } catch (InterruptedException e) {
-            log.error("[{}] thread sleep error", TAG, e);
+            log.error("[{}] thread sleep error", TAG);
             // 重新标记线程中断状态
             Thread.currentThread().interrupt();
         }
