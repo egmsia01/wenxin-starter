@@ -45,7 +45,8 @@ public class TaskQueueManager {
 
     private volatile static TaskQueueManager instance = null;
 
-    private CountDownLatch loopConsumerCountDownLatch = null;
+    @Getter
+    private final Map<String, CountDownLatch> consumerCountDownLatchMap = new ConcurrentHashMap<>();
 
     private TaskQueueManager() {
     }
@@ -63,6 +64,12 @@ public class TaskQueueManager {
 
     public String addTask(ChatTask task) {
         String modelName = task.getModelConfig().getModelName();
+        if (consumerCountDownLatchMap.containsKey(modelName)
+                && consumerCountDownLatchMap.get(modelName).getCount() == 1) {
+            consumerCountDownLatchMap.get(modelName).countDown();
+        } else {
+            consumerCountDownLatchMap.put(modelName, new CountDownLatch(1));
+        }
         String taskId = UUID.randomUUID().toString();
         task.setTaskId(taskId);
         task.getModelConfig().setTaskId(taskId);
@@ -110,14 +117,6 @@ public class TaskQueueManager {
 
     public int getTaskCount(String modelName) {
         return taskCountMap.get(modelName);
-    }
-
-    public CountDownLatch getLoopConsumerCountDownLatch() {
-        return loopConsumerCountDownLatch;
-    }
-
-    public void setLoopConsumerCountDownLatch(CountDownLatch loopConsumerCountDownLatch) {
-        this.loopConsumerCountDownLatch = loopConsumerCountDownLatch;
     }
 
     public synchronized void initTaskCount(String modelName) {

@@ -22,6 +22,7 @@ import reactor.core.publisher.Mono;
 
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 
 @Slf4j
@@ -46,11 +47,16 @@ public class TaskConsumerLoop {
 
     private final TaskQueueManager taskManager = TaskQueueManager.getInstance();
 
+    private final Map<String, CountDownLatch> countDownLatchMap = taskManager.getConsumerCountDownLatchMap();
+
     public void start() {
         initModelQpsMap();
         Set<String> modelNames = MODEL_QPS_MAP.keySet();
         modelNames.forEach(modelName -> new Thread(() -> {
             try {
+                if (!countDownLatchMap.containsKey(modelName)) {
+                    countDownLatchMap.put(modelName, new CountDownLatch(1));
+                }
                 Thread.currentThread().setName(modelName + "-thread");
                 log.info("[{}] {}, model: {}, loop start", TAG, Thread.currentThread().getName(), modelName);
                 // 消费事件循环处理
@@ -105,16 +111,17 @@ public class TaskConsumerLoop {
                 submitTask(task);
                 taskManager.upModelCurrentQPS(modelName);
             }
+        } else {
+            if (countDownLatchMap.containsKey(modelName) && countDownLatchMap.get(modelName).getCount() != 1) {
+                countDownLatchMap.put(modelName, new CountDownLatch(1));
+            }
+            try {
+                log.info("[{}] [{}] current qps: {}, wait...", TAG, modelName, currentQPS);
+                countDownLatchMap.get(modelName).await();
+            } catch (InterruptedException e) {
+                log.error("[{}] thread sleep error", TAG);
+            }
         }
-        try {
-            // TODO: 可能存在busy-wait问题, 待优化
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            log.error("[{}] thread sleep error", TAG);
-            // 重新标记线程中断状态
-            Thread.currentThread().interrupt();
-        }
-
     }
 
     /**
