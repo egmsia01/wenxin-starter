@@ -20,26 +20,32 @@ import java.util.concurrent.locks.ReentrantLock;
  * {@code @date} 2024/2/28
  */
 @Slf4j
-@Getter
 public class TaskQueueManager {
 
     public static final String TAG = "TaskQueueManager";
-
+    @Getter
     private final BlockingMap<String, List<ChatTask>> taskMap = new BlockingMap<>();
 
     // 任务数量Map
+    @Getter
     private final Map<String, Integer> taskCountMap = new ConcurrentHashMap<>();
+    @Getter
     private final Map<String, Integer> modelCurrentQPSMap = new ConcurrentHashMap<>();
 
     // 提交的任务Map
+    @Getter
     private final BlockingMap<String, CompletableFuture<Publisher<ChatResponse>>> chatFutureMap = new BlockingMap<>();
+    @Getter
     private final BlockingMap<String, CompletableFuture<Mono<ImageResponse>>> imageFutureMap = new BlockingMap<>();
+    @Getter
     private final BlockingMap<String, CompletableFuture<Mono<PromptResponse>>> promptFutureMap = new BlockingMap<>();
 
     private final Lock lock = new ReentrantLock();
     private final Map<String, CountDownLatch> latchMap = new ConcurrentHashMap<>();
 
     private volatile static TaskQueueManager instance = null;
+
+    private CountDownLatch loopConsumerCountDownLatch = null;
 
     private TaskQueueManager() {
     }
@@ -104,6 +110,14 @@ public class TaskQueueManager {
 
     public int getTaskCount(String modelName) {
         return taskCountMap.get(modelName);
+    }
+
+    public CountDownLatch getLoopConsumerCountDownLatch() {
+        return loopConsumerCountDownLatch;
+    }
+
+    public void setLoopConsumerCountDownLatch(CountDownLatch loopConsumerCountDownLatch) {
+        this.loopConsumerCountDownLatch = loopConsumerCountDownLatch;
     }
 
     public synchronized void initTaskCount(String modelName) {

@@ -145,12 +145,8 @@ public class TaskConsumerLoop {
 
     private Publisher<ChatResponse> processChatTask(ChatTask task, ModelConfig modelConfig) {
         // 如果包含"ernie"，则使用erni的请求类
-        ChatBaseRequest taskRequest;
-        if (modelConfig.getModelName().toLowerCase().contains("ernie")) {
-            taskRequest = (ChatErnieRequest) task.getTaskRequest();
-        } else {
-            taskRequest = (ChatBaseRequest) task.getTaskRequest();
-        }
+        ChatBaseRequest taskRequest = modelConfig.getModelName().toLowerCase().contains("ernie") ?
+                (ChatErnieRequest) task.getTaskRequest() : (ChatBaseRequest) task.getTaskRequest();
         log.debug("[{}] submit task {}, ernie: {}", TAG, task.getTaskId(), taskRequest.getClass() == ChatErnieRequest.class);
         return chatService.chatProcess(taskRequest, task.getMessageId(), task.isStream(), modelConfig);
     }
