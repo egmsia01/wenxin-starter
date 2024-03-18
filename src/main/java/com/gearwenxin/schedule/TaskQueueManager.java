@@ -64,12 +64,6 @@ public class TaskQueueManager {
 
     public String addTask(ChatTask task) {
         String modelName = task.getModelConfig().getModelName();
-        if (consumerCountDownLatchMap.containsKey(modelName)
-                && consumerCountDownLatchMap.get(modelName).getCount() == 1) {
-            consumerCountDownLatchMap.get(modelName).countDown();
-        } else {
-            consumerCountDownLatchMap.put(modelName, new CountDownLatch(1));
-        }
         String taskId = UUID.randomUUID().toString();
         task.setTaskId(taskId);
         task.getModelConfig().setTaskId(taskId);

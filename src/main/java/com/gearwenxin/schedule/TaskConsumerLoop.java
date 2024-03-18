@@ -112,14 +112,12 @@ public class TaskConsumerLoop {
                 taskManager.upModelCurrentQPS(modelName);
             }
         } else {
-            if (countDownLatchMap.containsKey(modelName) && countDownLatchMap.get(modelName).getCount() != 1) {
-                countDownLatchMap.put(modelName, new CountDownLatch(1));
-            }
             try {
                 log.info("[{}] [{}] current qps: {}, wait...", TAG, modelName, currentQPS);
-                countDownLatchMap.get(modelName).await();
+                Thread.sleep(1000);
             } catch (InterruptedException e) {
                 log.error("[{}] thread sleep error", TAG);
+                Thread.currentThread().interrupt();
             }
         }
     }
