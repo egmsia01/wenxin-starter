@@ -5,6 +5,8 @@ import com.gearwenxin.core.MessageHistoryManager;
 import com.gearwenxin.entity.Message;
 import com.gearwenxin.entity.response.ChatResponse;
 import com.gearwenxin.schedule.TaskQueueManager;
+import com.gearwenxin.service.MessageService;
+import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.reactivestreams.Subscriber;
@@ -32,6 +34,8 @@ public class CommonSubscriber implements Subscriber<ChatResponse>, Disposable {
     private final FluxSink<ChatResponse> emitter;
     private Subscription subscription;
     private final Deque<Message> messagesHistory;
+    @Resource
+    private MessageService messageService;
     private final ModelConfig modelConfig;
     private final StringJoiner joiner = new StringJoiner("");
 
@@ -76,6 +80,7 @@ public class CommonSubscriber implements Subscriber<ChatResponse>, Disposable {
 
     @Override
     public void onComplete() {
+        taskManager.downModelCurrentQPS(modelConfig.getModelName());
         if (isDisposed()) {
             return;
         }
