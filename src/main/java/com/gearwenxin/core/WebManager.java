@@ -10,7 +10,9 @@ import com.gearwenxin.entity.response.TokenResponse;
 import com.gearwenxin.exception.WenXinException;
 import com.gearwenxin.schedule.TaskQueueManager;
 import com.gearwenxin.schedule.entity.ModelHeader;
+import com.gearwenxin.service.MessageService;
 import com.gearwenxin.subscriber.CommonSubscriber;
+import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -42,6 +44,9 @@ public class WebManager {
     private final TaskQueueManager taskManager = TaskQueueManager.getInstance();
 
     MessageHistoryManager messageHistoryManager = MessageHistoryManager.getInstance();
+
+    @Resource
+    private MessageService messageService;
 
     private static final String ACCESS_TOKEN_PRE = "?access_token=";
 
@@ -99,7 +104,9 @@ public class WebManager {
                 .retrieve()
                 .bodyToMono(type)
                 .doOnSuccess(response -> {
-                    handleErrResponse(response);
+                    if (handleErrResponse(response)) {
+                        return;
+                    }
                     taskManager.downModelCurrentQPS(config.getModelName());
                 })
                 .doOnError(WebClientResponseException.class, e -> {
@@ -135,9 +142,14 @@ public class WebManager {
                 .retrieve()
                 .bodyToFlux(type)
                 .doOnNext(response -> {
-                    handleErrResponse(response);
+                    if (handleErrResponse(response)) {
+                        return;
+                    }
                     ChatResponse chatResponse = (ChatResponse) response;
                     String text = ((ChatResponse) response).getResult();
+                    if (text == null) {
+                        return;
+                    }
                     if (text.startsWith("data:") && text.length() > 5) {
                         text = text.substring(5);
                     }
@@ -236,7 +248,7 @@ public class WebManager {
         };
     }
 
-    private static <T> void handleErrResponse(T response) {
+    private static <T> boolean handleErrResponse(T response) {
         assertNotNull(response, "响应异常");
         if (response instanceof ChatResponse chatResponse) {
             Optional.ofNullable(chatResponse.getErrorMsg()).ifPresent(errMsg -> {
@@ -249,7 +261,9 @@ public class WebManager {
                         .build();
                 log.error("响应存在错误: {}", errorResponse);
             });
+            return true;
         }
+        return false;
     }
 
 }
