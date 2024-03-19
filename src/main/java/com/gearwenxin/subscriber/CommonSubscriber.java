@@ -96,6 +96,7 @@ public class CommonSubscriber implements Subscriber<ChatResponse>, Disposable {
 
     @Override
     public void dispose() {
+        taskManager.downModelCurrentQPS(modelConfig.getModelName());
         log.debug("dispose");
         subscription.cancel();
     }
