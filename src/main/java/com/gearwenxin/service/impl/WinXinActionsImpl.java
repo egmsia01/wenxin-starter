@@ -2,10 +2,8 @@ package com.gearwenxin.service.impl;
 
 import com.gearwenxin.core.MessageHistoryManager;
 import com.gearwenxin.entity.Message;
-import com.gearwenxin.service.ChatService;
 import com.gearwenxin.service.WinXinActions;
 import com.google.gson.Gson;
-import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 

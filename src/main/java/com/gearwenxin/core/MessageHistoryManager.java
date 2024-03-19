@@ -26,8 +26,6 @@ public class MessageHistoryManager {
      */
     private static final Map<String, Deque<Message>> chatMessageHistoryMap0;
 
-    // 暂未使用
-    private static final Map<String, Deque<Message>> chatMessageHistoryMap1 = null;
 
     private static volatile MessageHistoryManager messageHistoryManager;
 
@@ -47,19 +45,13 @@ public class MessageHistoryManager {
     }
 
     public Map<String, Deque<Message>> getChatMessageHistoryMap() {
-        if (CURRENT_MAP == 0) {
-            return chatMessageHistoryMap0;
-        }
-        return chatMessageHistoryMap1;
+        return chatMessageHistoryMap0;
     }
 
     public synchronized void setChatMessageHistoryMap(Map<String, Deque<Message>> map) {
         if (CURRENT_MAP == 0) {
             chatMessageHistoryMap0.clear();
             chatMessageHistoryMap0.putAll(map);
-        } else {
-            chatMessageHistoryMap1.clear();
-            chatMessageHistoryMap1.putAll(map);
         }
     }
 
@@ -142,10 +134,10 @@ public class MessageHistoryManager {
     }
 
     private static void syncHistories(Deque<Message> original, Deque<Message> updated) {
-        if (updated.size() <= original.size()) {
-            updated.clear();
-            updated.addAll(original);
-        }
+//        if (updated.size() <= original.size()) {
+        original.clear();
+        original.addAll(updated);
+//        }
     }
 
     private static void handleExceedingLength(Deque<Message> updatedHistory) {

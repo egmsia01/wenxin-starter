@@ -19,7 +19,6 @@ import org.reactivestreams.Publisher;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
-import java.util.concurrent.ConcurrentLinkedDeque;
 
 /**
  * @author Ge Mingjia
@@ -33,6 +32,9 @@ public class ChatService {
 
     @Resource
     private WenXinProperties wenXinProperties;
+
+    @Resource
+    private MessageService messageService;
 
     private final WebManager webManager = new WebManager();
 
