@@ -43,7 +43,7 @@ public class WebManager {
 
     private final TaskQueueManager taskManager = TaskQueueManager.getInstance();
 
-    MessageHistoryManager messageHistoryManager = MessageHistoryManager.getInstance();
+    private static final MessageHistoryManager messageHistoryManager = MessageHistoryManager.getInstance();
 
     @Resource
     private MessageService messageService;
@@ -83,14 +83,6 @@ public class WebManager {
         return monoPost(config, accessToken, request, type, null);
     }
 
-    /**
-     * 非流式请求 POST
-     *
-     * @param config      Model配置
-     * @param accessToken accessToken
-     * @param request     请求类
-     * @return Mono<T>
-     */
     public <T> Mono<T> monoPost(ModelConfig config, String accessToken, Object request, Class<T> type, String messageUid) {
         String url = config.getModelUrl();
         validateParams(url, accessToken, request, type);
@@ -104,7 +96,7 @@ public class WebManager {
                 .retrieve()
                 .bodyToMono(type)
                 .doOnSuccess(response -> {
-                    if (handleErrResponse(response)) {
+                    if (handleErrResponse(response, messageUid)) {
                         return;
                     }
                     taskManager.downModelCurrentQPS(config.getModelName());
@@ -114,21 +106,15 @@ public class WebManager {
                         handleWebClientError().accept(e);
                         return;
                     }
-                    Deque<Message> messageHistory = messageHistoryManager.getMessageHistory(messageUid);
-                    validateMessageRule(messageHistory);
                     handleWebClientError().accept(e);
                 });
     }
 
-    /**
-     * 流式请求 POST
-     *
-     * @param config      Model配置
-     * @param accessToken accessToken
-     * @param request     请求类
-     * @return Flux<T>
-     */
     public <T> Flux<T> fluxPost(ModelConfig config, String accessToken, Object request, Class<T> type) {
+        return fluxPost(config, accessToken, request, type, null);
+    }
+
+    public <T> Flux<T> fluxPost(ModelConfig config, String accessToken, Object request, Class<T> type, String messageUid) {
         String url = config.getModelUrl();
         validateParams(url, accessToken, request, type);
         log.debug("model url: {}", url);
@@ -142,7 +128,7 @@ public class WebManager {
                 .retrieve()
                 .bodyToFlux(type)
                 .doOnNext(response -> {
-                    if (handleErrResponse(response)) {
+                    if (handleErrResponse(response, messageUid)) {
                         return;
                     }
                     ChatResponse chatResponse = (ChatResponse) response;
@@ -249,6 +235,10 @@ public class WebManager {
     }
 
     private static <T> boolean handleErrResponse(T response) {
+        return handleErrResponse(response, null);
+    }
+
+    private static <T> boolean handleErrResponse(T response, String messageUid) {
         assertNotNull(response, "响应异常");
         if (response instanceof ChatResponse chatResponse) {
             Optional.ofNullable(chatResponse.getErrorMsg()).ifPresent(errMsg -> {
@@ -260,6 +250,11 @@ public class WebManager {
                         .errorCode(chatResponse.getErrorCode())
                         .build();
                 log.error("响应存在错误: {}", errorResponse);
+                // 校验消息规则
+                if (messageUid != null) {
+                    Deque<Message> messageHistory = messageHistoryManager.getMessageHistory(messageUid);
+                    validateMessageRule(messageHistory);
+                }
             });
             return true;
         }

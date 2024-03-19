@@ -68,7 +68,7 @@ public class ChatService {
 
         log.debug("[{}] stream: {}, continuous: {}", TAG, stream, false);
 
-        return stream ? webManager.fluxPost(config, accessToken, targetRequest, ChatResponse.class) :
+        return stream ? webManager.fluxPost(config, accessToken, targetRequest, ChatResponse.class, msgUid) :
                 webManager.monoPost(config, accessToken, targetRequest, ChatResponse.class, msgUid);
     }
 
