@@ -72,12 +72,12 @@ public class TaskQueueManager {
             if (chatTaskList == null) {
                 List<ChatTask> list = new CopyOnWriteArrayList<>();
                 list.add(task);
-                taskMap.put(modelName, list);
                 initTaskCount(modelName);
+                taskMap.put(modelName, list);
             } else {
                 chatTaskList.add(task);
-                taskMap.put(modelName, chatTaskList);
                 upTaskCount(modelName);
+                taskMap.put(modelName, chatTaskList);
             }
         }
         log.info("[{}] add task for [{}], count: {}", TAG, modelName, getTaskCount(modelName));
@@ -125,6 +125,10 @@ public class TaskQueueManager {
 
     public synchronized void upTaskCount(String modelName) {
         Integer taskCount = taskCountMap.get(modelName);
+        if (taskCount == null) {
+            log.error("[{}] task count map not has been init, {}", TAG, modelName);
+            return;
+        }
         taskCountMap.put(modelName, taskCount + 1);
         log.debug("[{}] up task count for {}, number {}", TAG, modelName, taskCount + 1);
     }
@@ -137,7 +141,12 @@ public class TaskQueueManager {
 
     public synchronized void downTaskCount(String modelName) {
         Integer taskCount = taskCountMap.get(modelName);
-        if (taskCount == null || taskCount <= 0) {
+        if (taskCount == null) {
+            log.error("[{}] task count map not has been init, {}", TAG, modelName);
+            return;
+        }
+        if (taskCount <= 0) {
+            log.error("[{}] task count is less than 0, {}", TAG, modelName);
             return;
         }
         taskCountMap.put(modelName, taskCount - 1);
