@@ -110,10 +110,17 @@ public class TaskConsumerLoop {
                 log.debug("[{}] get task: {}", TAG, task);
                 submitTask(task);
                 taskManager.upModelCurrentQPS(modelName);
+            } else {
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    log.error("[{}] thread sleep error", TAG);
+                    Thread.currentThread().interrupt();
+                }
             }
         } else {
             try {
-                log.info("[{}] [{}] current qps: {}, wait...", TAG, modelName, currentQPS);
+                log.debug("[{}] [{}] current qps: {}, wait...", TAG, modelName, currentQPS);
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
                 log.error("[{}] thread sleep error", TAG);
