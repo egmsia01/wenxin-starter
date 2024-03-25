@@ -16,6 +16,8 @@ public interface ImageModel<T extends ImageBaseRequest> {
      * @param imageBaseRequest 作图参数
      * @return ImageResponse 图片响应
      */
-    Mono<ImageResponse> chatImage(ImageBaseRequest imageBaseRequest);
+    Mono<ImageResponse> chatImage(T imageBaseRequest);
+
+    Mono<ImageResponse> chatImage(T imageBaseRequest, float weight);
 
 }
