@@ -40,13 +40,13 @@
 <dependency>
   <groupId>io.github.gemingjia</groupId>
   <artifactId>wenxin-starter</artifactId>
-  <version>2.0.0-beta2</version>
+  <version>2.0.0-beta3</version>
 </dependency>
 ```
 - Gradle
 ```gradle
 dependencies {
-  implementation 'io.github.gemingjia:wenxin-starter:2.0.0-beta2' 
+  implementation 'io.github.gemingjia:wenxin-starter:2.0.0-beta3' 
 }
 ```
 
@@ -165,6 +165,17 @@ public class ChatController {
 [![Star History Chart](https://api.star-history.com/svg?repos=egmsia01/wenxin-starter&type=Date)](https://star-history.com/#egmsia01/wenxin-starter)
 
 ## 更新日志
+
+v2.0.0 - bata3
+
+- 修复 修复并发场景下导致的丢对话任务的问题
+- 修复 网络异常情况下导致的消息错乱问题
+- 新增 导入导出消息的api
+- 新增 消息存储与获取的api
+- 新增 Prompt与ImageClient
+- 优化 整体性能
+- 其余改动请查看commit.
+
 v2.0.0 - bata
 
 ！ 2.x 版本与 1.x 版本不兼容
