@@ -21,6 +21,8 @@ public class WenXinProperties {
 
     private List<String> model_qps;
 
+    private Integer saveScheduledTime;
+
     public List<String> getModelQPSList() {
         return model_qps;
     }
