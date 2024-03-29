@@ -158,6 +158,11 @@ public class ChatController {
     }
 
 }
+
+    /**
+     * Prompt模板被百度改的有点迷，等稳定一下再做适配...
+     */
+
 ```
 
 ## Star History
