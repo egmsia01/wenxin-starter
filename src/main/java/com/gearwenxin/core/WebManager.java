@@ -88,7 +88,8 @@ public class WebManager {
 
     public <T> Mono<T> monoPost(ModelConfig config, String accessToken, Object request, Class<T> type,
                                 String messageUid) {
-        String url = isAuthorization(config) ? "" : config.getModelUrl();
+        String url = config.getModelUrl();
+        accessToken = isAuthorization(config) ? "" : accessToken;
         validateParams(url, accessToken, request, type);
         log.debug("model url: {}", url);
 
@@ -120,7 +121,8 @@ public class WebManager {
     }
 
     public <T> Flux<T> fluxPost(ModelConfig config, String accessToken, Object request, Class<T> type, String messageUid) {
-        String url = isAuthorization(config) ? "" : config.getModelUrl();
+        String url = config.getModelUrl();
+        accessToken = isAuthorization(config) ? "" : accessToken;
         validateParams(url, accessToken, request, type);
         log.debug("model url: {}", url);
 
@@ -164,7 +166,8 @@ public class WebManager {
      * @return Mono<T>
      */
     public <T> Mono<T> monoGet(ModelConfig config, String accessToken, Map<String, String> paramsMap, Class<T> type) {
-        String url = isAuthorization(config) ? "" : config.getModelUrl();
+        String url = config.getModelUrl();
+        accessToken = isAuthorization(config) ? "" : accessToken;
         validateParams(url, accessToken, paramsMap, type);
         log.debug("model url: {}", url);
 
