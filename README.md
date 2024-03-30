@@ -40,13 +40,13 @@
 <dependency>
   <groupId>io.github.gemingjia</groupId>
   <artifactId>wenxin-starter</artifactId>
-  <version>2.0.0-beta3</version>
+  <version>2.0.0-beta4</version>
 </dependency>
 ```
 - Gradle
 ```gradle
 dependencies {
-  implementation 'io.github.gemingjia:wenxin-starter:2.0.0-beta3' 
+  implementation 'io.github.gemingjia:wenxin-starter:2.0.0-beta4' 
 }
 ```
 
@@ -158,6 +158,11 @@ public class ChatController {
     }
 
 }
+
+    /**
+     * Prompt模板被百度改的有点迷，等稳定一下再做适配...
+     */
+
 ```
 
 ## Star History
@@ -165,6 +170,10 @@ public class ChatController {
 [![Star History Chart](https://api.star-history.com/svg?repos=egmsia01/wenxin-starter&type=Date)](https://star-history.com/#egmsia01/wenxin-starter)
 
 ## 更新日志
+
+v2.0.0 - bata4
+
+- 修复 修复定时任务导致的序列化问题
 
 v2.0.0 - bata3
 
