@@ -1,11 +1,18 @@
 package com.gearwenxin.schedule.entity;
 
+import lombok.Getter;
+import lombok.Setter;
+
 public class ModelHeader {
 
     private Integer X_Ratelimit_Limit_Requests;
     private Integer X_Ratelimit_Limit_Tokens;
     private Integer X_Ratelimit_Remaining_Requests;
     private Integer X_Ratelimit_Remaining_Tokens;
+
+    @Getter
+    @Setter
+    private String authorization;
 
     public Integer get_X_Ratelimit_Limit_Requests() {
         return X_Ratelimit_Limit_Requests;

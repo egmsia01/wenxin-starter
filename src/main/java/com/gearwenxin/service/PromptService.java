@@ -39,7 +39,7 @@ public class PromptService {
     }
 
     public Mono<PromptResponse> promptProcess(ChatPromptRequest chatPromptRequest, ModelConfig config) {
-        if (chatPromptRequest == null || chatPromptRequest.getId() <= 0 || CollectionUtils.isEmpty(chatPromptRequest.getParamMap())) {
+        if (chatPromptRequest == null || chatPromptRequest.getId() == null || CollectionUtils.isEmpty(chatPromptRequest.getParamMap())) {
             throw new WenXinException(ErrorCode.PARAMS_ERROR, "chatPromptRequest is null or id is null or paramMap is null");
         }
         PromptRequest promptRequest = ConvertUtils.toPromptRequest(chatPromptRequest);

@@ -16,7 +16,7 @@ public class ChatPromptRequest {
     /**
      * prompt工程里面对应的模板id
      */
-    private int id;
+    private String id;
 
     /**
      * 参数map

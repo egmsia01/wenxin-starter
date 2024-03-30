@@ -75,6 +75,9 @@ public class WebManager {
         if (header.get_X_Ratelimit_Remaining_Tokens() != null) {
             builder.defaultHeader("X-Ratelimit-Remaining-Tokens", String.valueOf(header.get_X_Ratelimit_Remaining_Tokens()));
         }
+        if (header.getAuthorization() != null) {
+            builder.defaultHeader(HttpHeaders.AUTHORIZATION, header.getAuthorization());
+        }
 
         return builder.build();
     }
@@ -83,12 +86,14 @@ public class WebManager {
         return monoPost(config, accessToken, request, type, null);
     }
 
-    public <T> Mono<T> monoPost(ModelConfig config, String accessToken, Object request, Class<T> type, String messageUid) {
-        String url = config.getModelUrl();
+    public <T> Mono<T> monoPost(ModelConfig config, String accessToken, Object request, Class<T> type,
+                                String messageUid) {
+        String url = isAuthorization(config) ? "" : config.getModelUrl();
         validateParams(url, accessToken, request, type);
         log.debug("model url: {}", url);
 
-        String completeUrl = url + ACCESS_TOKEN_PRE + accessToken;
+        String completeUrl = String.format("%s%s%s", url, isAuthorization(config) ? "" :
+                ACCESS_TOKEN_PRE, accessToken);
 
         return buildWebClient(completeUrl, config.getModelHeader())
                 .post()
@@ -115,11 +120,12 @@ public class WebManager {
     }
 
     public <T> Flux<T> fluxPost(ModelConfig config, String accessToken, Object request, Class<T> type, String messageUid) {
-        String url = config.getModelUrl();
+        String url = isAuthorization(config) ? "" : config.getModelUrl();
         validateParams(url, accessToken, request, type);
         log.debug("model url: {}", url);
 
-        String completeUrl = url + ACCESS_TOKEN_PRE + accessToken;
+        String completeUrl = String.format("%s%s%s", url, isAuthorization(config) ? "" :
+                ACCESS_TOKEN_PRE, accessToken);
 
         return buildWebClient(completeUrl, config.getModelHeader())
                 .post()
@@ -158,11 +164,13 @@ public class WebManager {
      * @return Mono<T>
      */
     public <T> Mono<T> monoGet(ModelConfig config, String accessToken, Map<String, String> paramsMap, Class<T> type) {
-        String url = config.getModelUrl();
+        String url = isAuthorization(config) ? "" : config.getModelUrl();
         validateParams(url, accessToken, paramsMap, type);
         log.debug("model url: {}", url);
 
-        paramsMap.put("access_token", accessToken);
+        if (!isAuthorization(config)) {
+            paramsMap.put("access_token", accessToken);
+        }
         String queryParams = paramsMap.entrySet().stream()
                 .map(entry -> entry.getKey() + "=" + encodeURL(entry.getValue()))
                 .collect(Collectors.joining("&"));
@@ -221,7 +229,8 @@ public class WebManager {
 
     private static <T> void validateParams(String url, String accessToken, Object request, Class<T> type) {
         assertNotBlank(url, "model url is null");
-        assertNotBlank(accessToken, "accessToken is null");
+        // 有些接口不能用accessToken，只能用AK和SK
+//        assertNotBlank(accessToken, "accessToken is null");
         assertNotNull(request, "request is null");
         assertNotNull(type, "response type is null");
     }
@@ -259,6 +268,10 @@ public class WebManager {
             return true;
         }
         return false;
+    }
+
+    private boolean isAuthorization(ModelConfig config) {
+        return config.getModelHeader().getAuthorization() != null;
     }
 
 }
