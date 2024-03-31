@@ -5,7 +5,8 @@ import com.gearwenxin.core.WebManager;
 import com.gearwenxin.entity.Message;
 import com.gearwenxin.schedule.TaskConsumerLoop;
 import com.gearwenxin.entity.response.TokenResponse;
-import com.gearwenxin.service.MessageService;
+import com.gearwenxin.service.*;
+import com.gearwenxin.service.impl.WinXinActionsImpl;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
@@ -14,7 +15,9 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.core.annotation.Order;
+import org.springframework.stereotype.Component;
 
 import java.util.*;
 
@@ -24,14 +27,13 @@ import java.util.*;
 @Slf4j
 @Order(1)
 @AutoConfiguration
+@ComponentScan(basePackages = {"com.gearwenxin"})
 @ConditionalOnClass(MessageService.class)
 @EnableConfigurationProperties(value = {WenXinProperties.class})
 public class GearWenXinConfig implements CommandLineRunner {
 
     @Resource
     private WenXinProperties wenXinProperties;
-
-    private static final MessageHistoryManager messageHistoryManager = MessageHistoryManager.getInstance();
 
     @Override
     public void run(String... args) {
@@ -88,5 +90,4 @@ public class GearWenXinConfig implements CommandLineRunner {
             }
         };
     }
-
 }
