@@ -25,7 +25,6 @@ import java.util.Map;
  * {@code @date} 2023/7/20
  */
 @Slf4j
-@Lazy
 @Service
 public class PromptService {
 
