@@ -50,7 +50,7 @@ public class TaskConsumerLoop {
     private final Map<String, CountDownLatch> countDownLatchMap = taskManager.getConsumerCountDownLatchMap();
 
     public void start() {
-        initModelQpsMap();
+        initModelQPSMap();
         Set<String> modelNames = MODEL_QPS_MAP.keySet();
         modelNames.forEach(modelName -> new Thread(() -> {
             try {
@@ -72,7 +72,7 @@ public class TaskConsumerLoop {
         }).start());
     }
 
-    public void initModelQpsMap() {
+    public void initModelQPSMap() {
         if (qpsList == null || qpsList.isEmpty()) {
             return;
         }
@@ -84,7 +84,7 @@ public class TaskConsumerLoop {
         log.info("[{}] init model qps map complete", TAG);
     }
 
-    private int getModelQps(String modelName) {
+    private int getModelQPS(String modelName) {
         return MODEL_QPS_MAP.getOrDefault(modelName, DEFAULT_QPS);
     }
 
@@ -92,39 +92,26 @@ public class TaskConsumerLoop {
      * 消费事件循环处理
      */
     public void eventLoopProcess(String modelName) {
-        Map<String, Integer> currentQpsMap = taskManager.getModelCurrentQPSMap();
+        Map<String, Integer> currentQPSMap = taskManager.getModelCurrentQPSMap();
         // 获取配置的QPS
-        int modelQps = getModelQps(modelName);
+        int modelQPS = getModelQPS(modelName);
         // 获取到当前的QPS
-        Integer currentQPS = currentQpsMap.get(modelName);
+        Integer currentQPS = currentQPSMap.get(modelName);
         if (currentQPS == null) {
             taskManager.initModelCurrentQPS(modelName);
             currentQPS = 0;
         }
-
         log.debug("[{}] [{}] current qps: {}", TAG, modelName, currentQPS);
-
-        if (currentQPS < modelQps || modelQps == DEFAULT_QPS) {
+        if (currentQPS < modelQPS || modelQPS == DEFAULT_QPS) {
             ChatTask task = taskManager.getTask(modelName);
-            if (task != null) {
-                log.debug("[{}] get task: {}", TAG, task);
-                submitTask(task);
+            Optional.ofNullable(task).ifPresentOrElse(t -> {
+                log.debug("[{}] [{}] task: {}", TAG, modelName, t);
+                submitTask(t);
                 taskManager.upModelCurrentQPS(modelName);
-            } else {
-                sleep(1000);
-            }
+            }, () -> sleep(1000));
         } else {
             // TODO: 待优化
-            sleep(1000);
-        }
-    }
-
-    private void sleep(long millis) {
-        try {
-            Thread.sleep(millis);
-        } catch (InterruptedException e) {
-            log.error("[{}] thread sleep error", TAG);
-            Thread.currentThread().interrupt();
+            sleep(1001);
         }
     }
 
@@ -170,6 +157,15 @@ public class TaskConsumerLoop {
     private Mono<ImageResponse> processImageTask(ChatTask task, ModelConfig modelConfig) {
         log.debug("[{}] submit task {}, type: image", TAG, task.getTaskId());
         return imageService.imageProcess((ImageBaseRequest) task.getTaskRequest(), modelConfig);
+    }
+
+    private void sleep(long millis) {
+        try {
+            Thread.sleep(millis);
+        } catch (InterruptedException e) {
+            log.error("[{}] thread sleep error", TAG);
+            Thread.currentThread().interrupt();
+        }
     }
 
 }

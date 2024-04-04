@@ -1,6 +1,5 @@
 package com.gearwenxin.common;
 
-import com.gearwenxin.core.MessageHistoryManager;
 import com.gearwenxin.entity.FunctionCall;
 import com.gearwenxin.entity.enums.Role;
 import com.gearwenxin.exception.WenXinException;
