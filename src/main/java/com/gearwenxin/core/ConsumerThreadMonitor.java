@@ -3,6 +3,7 @@ package com.gearwenxin.core;
 import com.gearwenxin.common.Constant;
 import com.gearwenxin.common.ErrorCode;
 import com.gearwenxin.common.StatusConst;
+import com.gearwenxin.common.Toolkit;
 import com.gearwenxin.config.ModelConfig;
 import com.gearwenxin.entity.enums.ModelType;
 import com.gearwenxin.exception.WenXinException;
@@ -15,12 +16,13 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
+import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
 
 @Slf4j
 @Order(3)
 @Component
-public class ThreadStartCheckService implements CommandLineRunner {
+public class ConsumerThreadMonitor implements CommandLineRunner {
 
     private static final TaskQueueManager taskQueueManager = TaskQueueManager.getInstance();
 
@@ -42,11 +44,11 @@ public class ThreadStartCheckService implements CommandLineRunner {
         } catch (InterruptedException e) {
             throw new WenXinException(ErrorCode.CONSUMER_THREAD_START_FAILED);
         }
-        if (StatusConst.SERVICE_STARTED) {
-            log.info("Consumer thread started.");
-        } else {
-            throw new WenXinException(ErrorCode.CONSUMER_THREAD_START_FAILED);
-        }
+        Toolkit.ifOrElse(StatusConst.SERVICE_STARTED,
+                () -> log.info("Consumer thread started."),
+                () -> {
+                    throw new WenXinException(ErrorCode.CONSUMER_THREAD_START_FAILED);
+                });
     }
 
 }
