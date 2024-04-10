@@ -1,7 +1,10 @@
 package com.gearwenxin.schedule;
 
+import com.gearwenxin.common.Constant;
+import com.gearwenxin.common.StatusConst;
 import com.gearwenxin.config.ModelConfig;
 import com.gearwenxin.entity.chatmodel.ChatPromptRequest;
+import com.gearwenxin.entity.enums.ModelType;
 import com.gearwenxin.entity.response.PromptResponse;
 import com.gearwenxin.schedule.entity.ChatTask;
 import com.gearwenxin.service.ChatService;
@@ -31,6 +34,10 @@ public class TaskConsumerLoop {
 
     public static final String TAG = "TaskConsumerLoop";
     public static final int DEFAULT_QPS = -1;
+
+    @Getter
+    @Setter
+    public CountDownLatch testCountDownLatch;
 
     @Getter
     @Setter
@@ -77,6 +84,8 @@ public class TaskConsumerLoop {
             return;
         }
         log.debug("[{}] model qps list: {}", TAG, qpsList);
+        // 用于检测消费线程是否启动
+        qpsList.add(Constant.CHECK + " " + DEFAULT_QPS);
         qpsList.forEach(s -> {
             String[] split = s.split(" ");
             MODEL_QPS_MAP.put(split[0], Integer.parseInt(split[1]));
@@ -137,6 +146,11 @@ public class TaskConsumerLoop {
                 taskManager.getImageFutureMap().putAndNotify(taskId, future);
             }
             case embedding -> {
+            }
+            case check -> {
+                // 用于检查消费线程是否启动
+                StatusConst.SERVICE_STARTED = true;
+                getTestCountDownLatch().countDown();
             }
         }
     }

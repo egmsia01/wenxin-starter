@@ -23,7 +23,7 @@ public class ChatClient implements ChatModel {
         this.modelConfig = modelConfig;
     }
 
-    TaskQueueManager taskQueueManager = TaskQueueManager.getInstance();
+    private static final TaskQueueManager taskQueueManager = TaskQueueManager.getInstance();
 
     @Override
     public Mono<ChatResponse> chat(String content) {

@@ -1,5 +1,6 @@
 package com.gearwenxin.schedule;
 
+import com.gearwenxin.entity.enums.ModelType;
 import com.gearwenxin.entity.response.ChatResponse;
 import com.gearwenxin.entity.response.ImageResponse;
 import com.gearwenxin.entity.response.PromptResponse;

@@ -7,6 +7,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import static com.gearwenxin.entity.enums.ModelType.addTask;
+import static com.gearwenxin.entity.enums.ModelType.check;
 
 @Slf4j
 public class ThreadPoolManager {
@@ -14,7 +15,7 @@ public class ThreadPoolManager {
     public static final String TAG = "ThreadPoolManager";
     private static final int NUM_THREADS = 5;
     private static final int TASK_NUM_THREADS = 10;
-    private static final ExecutorService[] executorServices = new ExecutorService[5];
+    private static final ExecutorService[] executorServices = new ExecutorService[6];
 
     public static ExecutorService getInstance(ModelType type) {
         int index = getIndex(type);
@@ -22,8 +23,8 @@ public class ThreadPoolManager {
             synchronized (ExecutorService.class) {
                 if (executorServices[index] == null) {
                     log.info("[{}] creat new thread pool for [{}]", TAG, type);
-                    if (type == addTask) {
-                        executorServices[index] = Executors.newFixedThreadPool(TASK_NUM_THREADS);
+                    if (type == check) {
+                        executorServices[index] = Executors.newFixedThreadPool(1);
                     } else {
                         executorServices[index] = Executors.newFixedThreadPool(NUM_THREADS);
                     }
@@ -40,6 +41,7 @@ public class ThreadPoolManager {
             case prompt -> 2;
             case embedding -> 3;
             case addTask -> 4;
+            case check -> 5;
         };
     }
 

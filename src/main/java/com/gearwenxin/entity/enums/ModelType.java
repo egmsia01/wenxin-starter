@@ -12,7 +12,8 @@ public enum ModelType {
     prompt("prompt"),
     image("image"),
     embedding("embedding"),
-    addTask("addTask");
+    addTask("addTask"),
+    check("check"),;
 
     private final String value;
 
