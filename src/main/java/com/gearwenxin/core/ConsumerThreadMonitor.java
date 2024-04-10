@@ -16,7 +16,6 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
-import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
 
 @Slf4j
@@ -41,8 +40,7 @@ public class ConsumerThreadMonitor implements CommandLineRunner {
         try {
             log.info("Waiting for consumer thread to start...");
             countDownLatch.await();
-        } catch (InterruptedException e) {
-            throw new WenXinException(ErrorCode.CONSUMER_THREAD_START_FAILED);
+        } catch (InterruptedException ignored) {
         }
         Toolkit.ifOrElse(StatusConst.SERVICE_STARTED,
                 () -> log.info("Consumer thread started."),
