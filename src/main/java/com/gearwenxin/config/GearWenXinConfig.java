@@ -1,12 +1,9 @@
 package com.gearwenxin.config;
 
-import com.gearwenxin.core.MessageHistoryManager;
 import com.gearwenxin.core.WebManager;
 import com.gearwenxin.entity.Message;
-import com.gearwenxin.schedule.TaskConsumerLoop;
 import com.gearwenxin.entity.response.TokenResponse;
 import com.gearwenxin.service.*;
-import com.gearwenxin.service.impl.WinXinActionsImpl;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
@@ -17,7 +14,6 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.core.annotation.Order;
-import org.springframework.stereotype.Component;
 
 import java.util.*;
 

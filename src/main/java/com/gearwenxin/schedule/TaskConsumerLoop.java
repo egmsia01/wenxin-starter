@@ -4,7 +4,6 @@ import com.gearwenxin.common.Constant;
 import com.gearwenxin.common.StatusConst;
 import com.gearwenxin.config.ModelConfig;
 import com.gearwenxin.entity.chatmodel.ChatPromptRequest;
-import com.gearwenxin.entity.enums.ModelType;
 import com.gearwenxin.entity.response.PromptResponse;
 import com.gearwenxin.schedule.entity.ChatTask;
 import com.gearwenxin.service.ChatService;
