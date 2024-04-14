@@ -1,6 +1,7 @@
 package com.gearwenxin.schedule;
 
 import com.gearwenxin.common.Constant;
+import com.gearwenxin.common.RuntimeToolkit;
 import com.gearwenxin.common.StatusConst;
 import com.gearwenxin.config.ModelConfig;
 import com.gearwenxin.entity.chatmodel.ChatPromptRequest;
@@ -119,8 +120,10 @@ public class TaskConsumerLoop {
             }, () -> sleep(1000));
         } else {
             // TODO: 待优化
-            sleep(1001);
+            RuntimeToolkit.threadWait(Thread.currentThread());
+//            sleep(1000);
         }
+
     }
 
     /**

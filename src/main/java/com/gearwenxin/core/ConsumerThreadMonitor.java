@@ -3,7 +3,7 @@ package com.gearwenxin.core;
 import com.gearwenxin.common.Constant;
 import com.gearwenxin.common.ErrorCode;
 import com.gearwenxin.common.StatusConst;
-import com.gearwenxin.common.Toolkit;
+import com.gearwenxin.common.RuntimeToolkit;
 import com.gearwenxin.config.ModelConfig;
 import com.gearwenxin.entity.enums.ModelType;
 import com.gearwenxin.exception.WenXinException;
@@ -42,7 +42,7 @@ public class ConsumerThreadMonitor implements CommandLineRunner {
             countDownLatch.await();
         } catch (InterruptedException ignored) {
         }
-        Toolkit.ifOrElse(StatusConst.SERVICE_STARTED,
+        RuntimeToolkit.ifOrElse(StatusConst.SERVICE_STARTED,
                 () -> log.info("Consumer thread started."),
                 () -> {
                     throw new WenXinException(ErrorCode.CONSUMER_THREAD_START_FAILED);

@@ -1,5 +1,6 @@
 package com.gearwenxin.schedule;
 
+import com.gearwenxin.common.RuntimeToolkit;
 import com.gearwenxin.entity.enums.ModelType;
 import com.gearwenxin.entity.response.ChatResponse;
 import com.gearwenxin.entity.response.ImageResponse;
@@ -81,6 +82,7 @@ public class TaskQueueManager {
                 taskMap.put(modelName, chatTaskList);
             }
         }
+        RuntimeToolkit.threadNotify(Thread.currentThread());
         log.info("[{}] add task for [{}], count: {}", TAG, modelName, getTaskCount(modelName));
         return taskId;
     }
