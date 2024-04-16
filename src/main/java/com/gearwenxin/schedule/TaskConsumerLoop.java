@@ -120,8 +120,8 @@ public class TaskConsumerLoop {
             }, () -> sleep(1000));
         } else {
             // TODO: 待优化
-            RuntimeToolkit.threadWait(Thread.currentThread());
-//            sleep(1000);
+//            RuntimeToolkit.threadWait(Thread.currentThread());
+            sleep(1000);
         }
 
     }

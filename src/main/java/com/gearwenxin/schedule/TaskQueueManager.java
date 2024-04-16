@@ -82,7 +82,7 @@ public class TaskQueueManager {
                 taskMap.put(modelName, chatTaskList);
             }
         }
-        RuntimeToolkit.threadNotify(Thread.currentThread());
+//        RuntimeToolkit.threadNotify(Thread.currentThread());
         log.info("[{}] add task for [{}], count: {}", TAG, modelName, getTaskCount(modelName));
         return taskId;
     }
