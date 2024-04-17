@@ -23,6 +23,8 @@ public interface Constant {
      */
     int MAX_SYSTEM_LENGTH = 1024;
 
+    boolean BASIC_MODE = false;
+
     String CHECK = "check";
 
     String GET_ACCESS_TOKEN_URL = "https://aip.baidubce.com/oauth/2.0/token?grant_type=client_credentials&client_id=%s&client_secret=%s";
