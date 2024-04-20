@@ -88,7 +88,7 @@ public class ClientConfig {
 
     @Bean
     @Qualifier("Ernie")
-    public ChatClient ernieClient() {
+    public ChatModel ernieClient() {
         
         ModelConfig modelConfig = new ModelConfig();
         // 模型名称，需跟设置的QPS数值的名称一致 (建议与官网名称一致)
@@ -121,7 +121,7 @@ public class ChatController {
     // 要调用的模型的客户端（示例为文心）
     @Resource
     @Qualifier("Ernie")
-    private ChatClient chatClient;
+    private ChatModel chatClient;
   
     /**
      * chatClient.chatStream(msg) 单轮流式对话
