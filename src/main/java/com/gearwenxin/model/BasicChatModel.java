@@ -5,7 +5,7 @@ import com.gearwenxin.entity.response.ChatResponse;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-public interface ChatModel {
+public interface BasicChatModel {
 
     /** 单次对话 **/
     Mono<ChatResponse> chat(String content);
@@ -23,22 +23,5 @@ public interface ChatModel {
     <T extends ChatBaseRequest> Flux<ChatResponse> chatStream(T chatRequest);
 
     <T extends ChatBaseRequest> Flux<ChatResponse> chatStream(T chatRequest, float weight);
-
-    /** 连续对话 **/
-    Mono<ChatResponse> chats(String content, String msgUid);
-
-    Mono<ChatResponse> chats(String content, String msgUid, float weight);
-
-    <T extends ChatBaseRequest> Mono<ChatResponse> chats(T chatRequest, String msgUid);
-
-    <T extends ChatBaseRequest> Mono<ChatResponse> chats(T chatRequest, String msgUid, float weight);
-
-    Flux<ChatResponse> chatsStream(String content, String msgUid);
-
-    Flux<ChatResponse> chatsStream(String content, String msgUid, float weight);
-
-    <T extends ChatBaseRequest> Flux<ChatResponse> chatsStream(T chatRequest, String msgUid);
-
-    <T extends ChatBaseRequest> Flux<ChatResponse> chatsStream(T chatRequest, String msgUid, float weight);
 
 }

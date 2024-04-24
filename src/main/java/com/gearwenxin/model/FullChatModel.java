@@ -1,0 +1,27 @@
+package com.gearwenxin.model;
+
+import com.gearwenxin.entity.chatmodel.ChatBaseRequest;
+import com.gearwenxin.entity.response.ChatResponse;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+
+public interface FullChatModel {
+
+    /** 连续对话 **/
+    Mono<ChatResponse> chats(String content, String msgUid);
+
+    Mono<ChatResponse> chats(String content, String msgUid, float weight);
+
+    <T extends ChatBaseRequest> Mono<ChatResponse> chats(T chatRequest, String msgUid);
+
+    <T extends ChatBaseRequest> Mono<ChatResponse> chats(T chatRequest, String msgUid, float weight);
+
+    Flux<ChatResponse> chatsStream(String content, String msgUid);
+
+    Flux<ChatResponse> chatsStream(String content, String msgUid, float weight);
+
+    <T extends ChatBaseRequest> Flux<ChatResponse> chatsStream(T chatRequest, String msgUid);
+
+    <T extends ChatBaseRequest> Flux<ChatResponse> chatsStream(T chatRequest, String msgUid, float weight);
+
+}

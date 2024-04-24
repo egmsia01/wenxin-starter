@@ -5,7 +5,8 @@ import com.gearwenxin.config.ModelConfig;
 import com.gearwenxin.entity.chatmodel.ChatBaseRequest;
 import com.gearwenxin.entity.enums.ModelType;
 import com.gearwenxin.entity.response.ChatResponse;
-import com.gearwenxin.model.ChatModel;
+import com.gearwenxin.model.BasicChatModel;
+import com.gearwenxin.model.FullChatModel;
 import com.gearwenxin.schedule.entity.ChatTask;
 import com.gearwenxin.schedule.TaskQueueManager;
 import lombok.extern.slf4j.Slf4j;
@@ -13,7 +14,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @Slf4j
-public class ChatClient implements ChatModel {
+public class ChatClient implements BasicChatModel, FullChatModel {
 
     private final ModelConfig modelConfig;
 
