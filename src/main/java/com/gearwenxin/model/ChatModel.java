@@ -5,6 +5,8 @@ import com.gearwenxin.entity.response.ChatResponse;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.Map;
+
 public interface ChatModel {
 
     /** 单次对话 **/
@@ -23,6 +25,8 @@ public interface ChatModel {
     <T extends ChatBaseRequest> Flux<ChatResponse> chatStream(T chatRequest);
 
     <T extends ChatBaseRequest> Flux<ChatResponse> chatStream(T chatRequest, float weight);
+
+    Flux<ChatResponse> chatStream(Map<Object, Object> chatRequest);
 
     /** 连续对话 **/
     Mono<ChatResponse> chats(String content, String msgUid);

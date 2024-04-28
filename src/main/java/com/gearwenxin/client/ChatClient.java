@@ -13,6 +13,8 @@ import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.Map;
+
 @Slf4j
 public class ChatClient implements ChatModel {
 
@@ -84,6 +86,12 @@ public class ChatClient implements ChatModel {
                 .build();
         String taskId = taskQueueManager.addTask(chatTask);
         return Flux.from(taskQueueManager.getChatFuture(taskId).join());
+    }
+
+    @Override
+    public Flux<ChatResponse> chatStream(Map<Object, Object> chatRequest) {
+        log.warn("待实现");
+        return null;
     }
 
     @Override
