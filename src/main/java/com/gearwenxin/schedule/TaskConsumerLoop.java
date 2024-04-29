@@ -61,6 +61,7 @@ public class TaskConsumerLoop {
         Set<String> modelNames = MODEL_QPS_MAP.keySet();
         modelNames.forEach(modelName -> new Thread(() -> {
             try {
+                // 暂未使用
                 if (!countDownLatchMap.containsKey(modelName)) {
                     countDownLatchMap.put(modelName, new CountDownLatch(1));
                 }
@@ -102,14 +103,11 @@ public class TaskConsumerLoop {
      */
     public void eventLoopProcess(String modelName) {
         Map<String, Integer> currentQPSMap = taskManager.getModelCurrentQPSMap();
-        // 获取配置的QPS
         int modelQPS = getModelQPS(modelName);
-        // 获取到当前的QPS
-        Integer currentQPS = currentQPSMap.get(modelName);
-        if (currentQPS == null) {
-            taskManager.initModelCurrentQPS(modelName);
-            currentQPS = 0;
-        }
+        Integer currentQPS = currentQPSMap.computeIfAbsent(modelName, k -> {
+            taskManager.initModelCurrentQPS(k);
+            return 0;
+        });
         log.debug("[{}] [{}] current qps: {}", TAG, modelName, currentQPS);
         if (currentQPS < modelQPS || modelQPS == DEFAULT_QPS) {
             ChatTask task = taskManager.getTask(modelName);
@@ -154,6 +152,7 @@ public class TaskConsumerLoop {
                 StatusConst.SERVICE_STARTED = true;
                 getTestCountDownLatch().countDown();
             }
+            default -> log.error("[{}] unknown task type: {}", TAG, task.getTaskType());
         }
     }
 
