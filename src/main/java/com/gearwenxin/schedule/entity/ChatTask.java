@@ -31,4 +31,6 @@ public class ChatTask {
 
     private boolean stream;
 
+    private boolean jsonMode = false;
+
 }

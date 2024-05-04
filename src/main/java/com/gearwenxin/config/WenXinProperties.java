@@ -1,6 +1,6 @@
 package com.gearwenxin.config;
 
-import lombok.Data;
+import com.gearwenxin.common.StatusConst;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -37,6 +37,7 @@ public class WenXinProperties {
     private Integer saveScheduledTime;
 
     private boolean basicMode;
+    private boolean jsonMode;
 
     public List<String> getModelQPSList() {
         return model_qps;
@@ -50,9 +51,17 @@ public class WenXinProperties {
         return basicMode;
     }
 
-    private void setBasicMode(boolean basicMode) {
-        this.basicMode = basicMode;
+    private void setBasicMode(boolean jsonMode) {
+        this.basicMode = jsonMode;
+    }
 
+    private boolean getJsonMode() {
+        return jsonMode;
+    }
+
+    private void setJsonMode(boolean jsonMode) {
+        this.jsonMode = jsonMode;
+        StatusConst.JSON_MODE = jsonMode;
     }
 
 }

@@ -89,9 +89,17 @@ public class ChatClient implements ChatModel {
     }
 
     @Override
-    public Flux<ChatResponse> chatStream(Map<Object, Object> chatRequest) {
-        log.warn("待实现");
-        return null;
+    public Flux<ChatResponse> chatStream(Map<Object, Object> request) {
+        ChatTask chatTask = ChatTask.builder()
+                .modelConfig(modelConfig)
+                .taskType(ModelType.chat)
+                .taskRequest(request)
+                .taskWeight(defaultWeight)
+                .stream(true)
+                .jsonMode(true)
+                .build();
+        String taskId = taskQueueManager.addTask(chatTask);
+        return Flux.from(taskQueueManager.getChatFuture(taskId).join());
     }
 
     @Override
