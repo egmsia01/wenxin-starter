@@ -2,6 +2,8 @@ package com.gearwenxin.core;
 
 import com.gearwenxin.entity.Message;
 import com.gearwenxin.entity.enums.Role;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Deque;
 import java.util.LinkedList;
@@ -13,6 +15,8 @@ import static com.gearwenxin.common.WenXinUtils.assertNotBlank;
 import static com.gearwenxin.common.WenXinUtils.assertNotNull;
 
 public class MessageHistoryManager {
+
+    private static final Logger log = LoggerFactory.getLogger(MessageHistoryManager.class);
 
     private MessageHistoryManager() {
     }
@@ -99,27 +103,31 @@ public class MessageHistoryManager {
                 if (history.size() % 2 != 0) {
                     if (message.getRole() != Role.user && message.getRole() != Role.function) {
                         // 删除最后一条消息
-                        history.pollLast();
+                        Message polledMessage = history.pollLast();
+                        log.debug("remove message: {}. Odd Position role is not user or function", polledMessage);
                         validateMessageRule(history, message);
                     }
                 } else {
                     // 如果当前是偶数位message，要求role值为assistant
                     if (message.getRole() != Role.assistant) {
                         // 删除最后一条消息
-                        history.pollLast();
+                        Message polledMessage = history.pollLast();
+                        log.debug("remove message: {}. Even position role is not assistant", polledMessage);
                         validateMessageRule(history, message);
                     }
                 }
                 // 第一个message的role不能是function
                 if (history.size() == 1 && message.getRole() == Role.function) {
                     // 删除最后一条消息
-                    history.pollLast();
+                    Message polledMessage = history.pollLast();
+                    log.debug("remove message: {}. first role is function", polledMessage);
                     validateMessageRule(history, message);
                 }
 
                 // 移除连续的相同role的user messages
                 if (lastMessage.getRole() == Role.user && message.getRole() == Role.user) {
-                    history.pollLast();
+                    Message polledMessage = history.pollLast();
+                    log.debug("remove message: {}. Same role message", polledMessage);
                     validateMessageRule(history, message);
                 }
             }
