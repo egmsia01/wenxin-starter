@@ -2,7 +2,7 @@ package com.gearwenxin.core;
 
 import com.gearwenxin.config.WenXinProperties;
 import com.gearwenxin.schedule.TaskConsumerLoop;
-import jakarta.annotation.Resource;
+import javax.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.core.annotation.Order;

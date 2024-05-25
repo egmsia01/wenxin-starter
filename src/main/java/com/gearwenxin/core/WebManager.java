@@ -12,7 +12,9 @@ import com.gearwenxin.schedule.TaskQueueManager;
 import com.gearwenxin.schedule.entity.ModelHeader;
 import com.gearwenxin.service.MessageService;
 import com.gearwenxin.subscriber.CommonSubscriber;
-import jakarta.annotation.Resource;
+import javax.annotation.Resource;
+
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -225,9 +227,10 @@ public class WebManager {
                 .bodyToMono(TokenResponse.class);
     }
 
+    @SneakyThrows
     public static String encodeURL(String component) {
         assertNotBlank(component, "EncodeURL error!");
-        return URLEncoder.encode(component, StandardCharsets.UTF_8);
+        return URLEncoder.encode(component, "UTF-8");
     }
 
     private static <T> void validateParams(String url, String accessToken, Object request, Class<T> type) {
@@ -252,14 +255,15 @@ public class WebManager {
 
     private static <T> boolean handleErrResponse(T response, String messageUid) {
         assertNotNull(response, "响应异常");
-        if (response instanceof ChatResponse chatResponse) {
-            Optional.ofNullable(chatResponse.getErrorMsg()).ifPresent(errMsg -> {
+        if (response instanceof ChatResponse) {
+            ChatResponse chatResponse0 = (ChatResponse) response;
+            Optional.ofNullable(chatResponse0.getErrorMsg()).ifPresent(errMsg -> {
                 ErrorResponse errorResponse = ErrorResponse.builder()
-                        .id(chatResponse.getId())
-                        .logId(chatResponse.getLogId())
-                        .ebCode(chatResponse.getEbCode())
-                        .errorMsg(chatResponse.getErrorMsg())
-                        .errorCode(chatResponse.getErrorCode())
+                        .id(chatResponse0.getId())
+                        .logId(chatResponse0.getLogId())
+                        .ebCode(chatResponse0.getEbCode())
+                        .errorMsg(chatResponse0.getErrorMsg())
+                        .errorCode(chatResponse0.getErrorCode())
                         .build();
                 log.error("响应存在错误: {}", errorResponse);
                 // 校验消息规则

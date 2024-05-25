@@ -10,7 +10,7 @@ import com.gearwenxin.exception.WenXinException;
 import com.gearwenxin.entity.chatmodel.ChatPromptRequest;
 import com.gearwenxin.entity.request.PromptRequest;
 import com.gearwenxin.entity.response.PromptResponse;
-import jakarta.annotation.Resource;
+import javax.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.context.annotation.Lazy;

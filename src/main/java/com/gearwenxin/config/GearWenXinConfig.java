@@ -4,7 +4,9 @@ import com.gearwenxin.core.WebManager;
 import com.gearwenxin.entity.Message;
 import com.gearwenxin.entity.response.TokenResponse;
 import com.gearwenxin.service.*;
-import jakarta.annotation.Resource;
+
+import javax.annotation.Resource;
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -47,14 +49,13 @@ public class GearWenXinConfig implements CommandLineRunner {
         try {
             WebManager.getAccessTokenByAKSK(apiKey, secretKey).doOnNext(tokenResponse -> {
                 if (tokenResponse != null) {
-                    Optional.ofNullable(tokenResponse.getAccessToken()).ifPresentOrElse(token -> {
-                        wenXinProperties.setAccessToken(token);
-                        log.info("[global] access-token: {}", token);
-                    }, () -> log.error("""
-                             api-key or secret-key error！
-                             error_description: {}
-                             error: {}
-                            """, tokenResponse.getErrorDescription(), tokenResponse.getError()));
+                    if (tokenResponse.getAccessToken() == null) {
+                        log.error("api-key or secret-key error！error_description: {}error: {}",
+                                tokenResponse.getErrorDescription(), tokenResponse.getError());
+                    } else {
+                        log.info("[global] access-token: {}", tokenResponse.getAccessToken());
+                        wenXinProperties.setAccessToken(tokenResponse.getAccessToken());
+                    }
                 }
             }).map(TokenResponse::getAccessToken).block();
         } catch (Exception e) {

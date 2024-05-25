@@ -6,7 +6,7 @@ import com.gearwenxin.entity.Message;
 import com.gearwenxin.entity.response.ChatResponse;
 import com.gearwenxin.schedule.TaskQueueManager;
 import com.gearwenxin.service.MessageService;
-import jakarta.annotation.Resource;
+import javax.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.reactivestreams.Subscriber;

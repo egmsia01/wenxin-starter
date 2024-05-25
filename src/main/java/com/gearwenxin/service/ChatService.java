@@ -13,7 +13,7 @@ import com.gearwenxin.entity.Message;
 import com.gearwenxin.config.ModelConfig;
 import com.gearwenxin.validator.RequestValidator;
 import com.gearwenxin.validator.RequestValidatorFactory;
-import jakarta.annotation.Resource;
+import javax.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.reactivestreams.Publisher;
 import org.springframework.stereotype.Service;

@@ -35,14 +35,21 @@ public class ThreadPoolManager {
     }
 
     private static int getIndex(ModelType type) {
-        return switch (type) {
-            case chat -> 0;
-            case image -> 1;
-            case prompt -> 2;
-            case embedding -> 3;
-            case addTask -> 4;
-            case check -> 5;
-        };
+        switch (type) {
+            case chat:
+                return 0;
+            case image:
+                return 1;
+            case prompt:
+                return 2;
+            case embedding:
+                return 3;
+            case addTask:
+                return 4;
+            case check:
+                return 5;
+        }
+        return 0;
     }
 
 }

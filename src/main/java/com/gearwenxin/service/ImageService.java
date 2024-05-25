@@ -6,7 +6,7 @@ import com.gearwenxin.core.WebManager;
 import com.gearwenxin.entity.request.ImageBaseRequest;
 import com.gearwenxin.entity.response.ImageResponse;
 import com.gearwenxin.model.ImageModel;
-import jakarta.annotation.Resource;
+import javax.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;

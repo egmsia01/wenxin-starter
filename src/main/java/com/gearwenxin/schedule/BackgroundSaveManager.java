@@ -4,7 +4,7 @@ import com.gearwenxin.config.WenXinProperties;
 import com.gearwenxin.schedule.entity.BlockingMap;
 import com.gearwenxin.schedule.entity.ChatTask;
 import com.google.gson.Gson;
-import jakarta.annotation.Resource;
+import javax.annotation.Resource;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;

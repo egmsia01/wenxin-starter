@@ -15,7 +15,9 @@ import com.gearwenxin.entity.request.ImageBaseRequest;
 import com.gearwenxin.entity.response.ChatResponse;
 import com.gearwenxin.entity.response.ImageResponse;
 import com.gearwenxin.service.PromptService;
-import jakarta.annotation.Resource;
+
+import javax.annotation.Resource;
+
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -111,11 +113,13 @@ public class TaskConsumerLoop {
         log.debug("[{}] [{}] current qps: {}", TAG, modelName, currentQPS);
         if (currentQPS < modelQPS || modelQPS == DEFAULT_QPS) {
             ChatTask task = taskManager.getTask(modelName);
-            Optional.ofNullable(task).ifPresentOrElse(t -> {
-                log.debug("[{}] [{}] task: {}", TAG, modelName, t);
-                submitTask(t);
+            if (task != null) {
+                log.debug("[{}] [{}] task: {}", TAG, modelName, task);
+                submitTask(task);
                 taskManager.upModelCurrentQPS(modelName);
-            }, () -> sleep(1000));
+            } else {
+                sleep(1000);
+            }
         } else {
             // TODO: 待优化
 //            RuntimeToolkit.threadWait(Thread.currentThread());
@@ -133,26 +137,27 @@ public class TaskConsumerLoop {
         // 根据不同的任务类型，获取不同的线程池实例
         ExecutorService executorService = ThreadPoolManager.getInstance(task.getTaskType());
         switch (task.getTaskType()) {
-            case chat -> {
-                var future = CompletableFuture.supplyAsync(() -> processChatTask(task, modelConfig), executorService);
-                taskManager.getChatFutureMap().putAndNotify(taskId, future);
-            }
-            case prompt -> {
-                var future = CompletableFuture.supplyAsync(() -> processPromptTask(task, modelConfig), executorService);
-                taskManager.getPromptFutureMap().putAndNotify(taskId, future);
-            }
-            case image -> {
-                var future = CompletableFuture.supplyAsync(() -> processImageTask(task, modelConfig), executorService);
-                taskManager.getImageFutureMap().putAndNotify(taskId, future);
-            }
-            case embedding -> {
-            }
-            case check -> {
+            case chat:
+                CompletableFuture<Publisher<ChatResponse>> chatFuture = CompletableFuture.supplyAsync(() -> processChatTask(task, modelConfig), executorService);
+                taskManager.getChatFutureMap().putAndNotify(taskId, chatFuture);
+                break;
+            case prompt:
+                CompletableFuture<Mono<PromptResponse>> promptFuture = CompletableFuture.supplyAsync(() -> processPromptTask(task, modelConfig), executorService);
+                taskManager.getPromptFutureMap().putAndNotify(taskId, promptFuture);
+                break;
+            case image:
+                CompletableFuture<Mono<ImageResponse>> imageFuture = CompletableFuture.supplyAsync(() -> processImageTask(task, modelConfig), executorService);
+                taskManager.getImageFutureMap().putAndNotify(taskId, imageFuture);
+                break;
+            case embedding:
+                break;
+            case check:
                 // 用于检查消费线程是否启动
                 StatusConst.SERVICE_STARTED = true;
                 getTestCountDownLatch().countDown();
-            }
-            default -> log.error("[{}] unknown task type: {}", TAG, task.getTaskType());
+                break;
+            default:
+                log.error("[{}] unknown task type: {}", TAG, task.getTaskType());
         }
     }
 
