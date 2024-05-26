@@ -115,7 +115,7 @@ public class TaskConsumerLoop {
                 log.debug("[{}] [{}] task: {}", TAG, modelName, t);
                 submitTask(t);
                 taskManager.upModelCurrentQPS(modelName);
-            }, () -> sleep(1000));
+            }, () -> sleep(1500));
         } else {
             // TODO: 待优化
 //            RuntimeToolkit.threadWait(Thread.currentThread());
@@ -134,15 +134,21 @@ public class TaskConsumerLoop {
         ExecutorService executorService = ThreadPoolManager.getInstance(task.getTaskType());
         switch (task.getTaskType()) {
             case chat -> {
-                var future = CompletableFuture.supplyAsync(() -> processChatTask(task, modelConfig), executorService);
+                var future = CompletableFuture.supplyAsync(() ->
+                        processChatTask(task, modelConfig), executorService
+                );
                 taskManager.getChatFutureMap().putAndNotify(taskId, future);
             }
             case prompt -> {
-                var future = CompletableFuture.supplyAsync(() -> processPromptTask(task, modelConfig), executorService);
+                var future = CompletableFuture.supplyAsync(() ->
+                        processPromptTask(task, modelConfig), executorService
+                );
                 taskManager.getPromptFutureMap().putAndNotify(taskId, future);
             }
             case image -> {
-                var future = CompletableFuture.supplyAsync(() -> processImageTask(task, modelConfig), executorService);
+                var future = CompletableFuture.supplyAsync(() ->
+                        processImageTask(task, modelConfig), executorService
+                );
                 taskManager.getImageFutureMap().putAndNotify(taskId, future);
             }
             case embedding -> {
@@ -151,6 +157,8 @@ public class TaskConsumerLoop {
                 // 用于检查消费线程是否启动
                 StatusConst.SERVICE_STARTED = true;
                 getTestCountDownLatch().countDown();
+                // 销毁当前线程
+                Thread.currentThread().interrupt();
             }
             default -> log.error("[{}] unknown task type: {}", TAG, task.getTaskType());
         }
