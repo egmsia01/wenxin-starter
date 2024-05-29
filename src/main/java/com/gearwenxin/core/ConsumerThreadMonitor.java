@@ -30,8 +30,8 @@ public class ConsumerThreadMonitor implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        ChatTask checkTask = ChatTask.builder().
-                taskType(ModelType.check)
+        ChatTask checkTask = ChatTask.builder()
+                .taskType(ModelType.check)
                 .modelConfig(ModelConfig.builder().modelName(Constant.CHECK).build())
                 .build();
         taskQueueManager.addTask(checkTask);
