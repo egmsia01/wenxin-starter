@@ -31,7 +31,7 @@
 
 [使用demo (1.x版，2.x请阅读文档) ](https://github.com/egmsia01/springboot-wenxin-demo)
 
-*【基于Springboot 3.0开发，所以要求JDK版本为17及以上】*
+*【JDK 8专版】*
 
 ### 1、添加依赖
 
@@ -40,13 +40,13 @@
 <dependency>
   <groupId>io.github.gemingjia</groupId>
   <artifactId>wenxin-starter</artifactId>
-  <version>2.0.0-beta4</version>
+  <version>2.0.0-alpha1</version>
 </dependency>
 ```
 - Gradle
 ```gradle
 dependencies {
-  implementation 'io.github.gemingjia:wenxin-starter:2.0.0-beta4' 
+  implementation 'io.github.gemingjia:wenxin-starter:2.0.0-alpha1' 
 }
 ```
 
@@ -170,6 +170,9 @@ public class ChatController {
 [![Star History Chart](https://api.star-history.com/svg?repos=egmsia01/wenxin-starter&type=Date)](https://star-history.com/#egmsia01/wenxin-starter)
 
 ## 更新日志
+
+v2.0.0-alpha1
+- JDK 8专版
 
 v2.0.0 - bata4
 
