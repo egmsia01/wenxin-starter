@@ -171,6 +171,9 @@ public class ChatController {
 
 ## 更新日志
 
+v2.0.0-alpha1
+- JDK 8专版
+
 v2.0.0 - bata4
 
 - 修复 修复定时任务导致的序列化问题
