@@ -1,5 +1,8 @@
 package com.gearwenxin.common;
 
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
 /**
  * 模型URL
  *
@@ -22,6 +25,9 @@ public interface Constant {
      * 最大system长度
      */
     int MAX_SYSTEM_LENGTH = 1024;
+
+    // 中断标志
+    Map<String, Boolean> INTERRUPT_MAP = new ConcurrentHashMap<>();
 
     boolean BASIC_MODE = false;
 
