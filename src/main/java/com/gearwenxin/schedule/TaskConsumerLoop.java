@@ -1,7 +1,6 @@
 package com.gearwenxin.schedule;
 
 import com.gearwenxin.common.Constant;
-import com.gearwenxin.common.RuntimeToolkit;
 import com.gearwenxin.common.StatusConst;
 import com.gearwenxin.config.ModelConfig;
 import com.gearwenxin.entity.chatmodel.ChatPromptRequest;
@@ -104,10 +103,12 @@ public class TaskConsumerLoop {
     public void eventLoopProcess(String modelName) {
         Map<String, Integer> currentQPSMap = taskManager.getModelCurrentQPSMap();
         int modelQPS = getModelQPS(modelName);
-        Integer currentQPS = currentQPSMap.computeIfAbsent(modelName, k -> {
-            taskManager.initModelCurrentQPS(k);
-            return 0;
-        });
+        // 获取到当前的QPS
+        Integer currentQPS = currentQPSMap.get(modelName);
+        if (currentQPS == null) {
+            taskManager.initModelCurrentQPS(modelName);
+            currentQPS = 0;
+        }
         log.debug("[{}] [{}] current qps: {}", TAG, modelName, currentQPS);
         if (currentQPS < modelQPS || modelQPS == DEFAULT_QPS) {
             ChatTask task = taskManager.getTask(modelName);
@@ -158,7 +159,7 @@ public class TaskConsumerLoop {
                 StatusConst.SERVICE_STARTED = true;
                 getTestCountDownLatch().countDown();
                 // 销毁当前线程
-                Thread.currentThread().interrupt();
+//                Thread.currentThread().interrupt();
             }
             default -> log.error("[{}] unknown task type: {}", TAG, task.getTaskType());
         }
