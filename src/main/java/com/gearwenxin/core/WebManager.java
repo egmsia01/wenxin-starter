@@ -1,5 +1,6 @@
 package com.gearwenxin.core;
 
+import com.gearwenxin.common.Constant;
 import com.gearwenxin.common.ErrorCode;
 import com.gearwenxin.common.WenXinUtils;
 import com.gearwenxin.config.ModelConfig;
@@ -136,6 +137,11 @@ public class WebManager {
                 .retrieve()
                 .bodyToFlux(type)
                 .doOnNext(response -> {
+//                    // 中断对话
+//                    Boolean interrupt = Constant.INTERRUPT_MAP.get(messageUid);
+//                    if (interrupt != null && interrupt) {
+//                        log.info("中断对话");
+//                    }
                     if (handleErrResponse(response, messageUid)) {
                         return;
                     }
@@ -195,15 +201,17 @@ public class WebManager {
                 .doOnError(WebClientResponseException.class, handleWebClientError());
     }
 
-    public <T> Flux<ChatResponse> historyFluxPost(String token, T request, Deque<Message> messagesHistory, ModelConfig config) {
+    public <T> Flux<ChatResponse> historyFluxPost(String token, T request, Deque<Message> messagesHistory,
+                                                  ModelConfig config, String msgUid) {
         return Flux.create(emitter -> {
-            CommonSubscriber subscriber = new CommonSubscriber(emitter, messagesHistory, config);
+            CommonSubscriber subscriber = new CommonSubscriber(emitter, messagesHistory, config, msgUid);
             fluxPost(config, token, request, ChatResponse.class).subscribe(subscriber);
             emitter.onDispose(subscriber);
         });
     }
 
-    public <T> Mono<ChatResponse> historyMonoPost(String token, T request, Deque<Message> messagesHistory, ModelConfig config, String messageUid) {
+    public <T> Mono<ChatResponse> historyMonoPost(String token, T request, Deque<Message> messagesHistory,
+                                                  ModelConfig config, String messageUid) {
         Mono<ChatResponse> response = monoPost(config, token, request, ChatResponse.class, messageUid);
 
         return response.flatMap(chatResponse -> {

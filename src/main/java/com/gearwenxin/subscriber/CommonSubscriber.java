@@ -1,5 +1,6 @@
 package com.gearwenxin.subscriber;
 
+import com.gearwenxin.common.Constant;
 import com.gearwenxin.config.ModelConfig;
 import com.gearwenxin.core.MessageHistoryManager;
 import com.gearwenxin.entity.Message;
@@ -37,12 +38,16 @@ public class CommonSubscriber implements Subscriber<ChatResponse>, Disposable {
     @Resource
     private MessageService messageService;
     private final ModelConfig modelConfig;
+    private final String msgUid;
+
     private final StringJoiner joiner = new StringJoiner("");
 
-    public CommonSubscriber(FluxSink<ChatResponse> emitter, Deque<Message> messagesHistory, ModelConfig modelConfig) {
+    public CommonSubscriber(FluxSink<ChatResponse> emitter, Deque<Message> messagesHistory,
+                            ModelConfig modelConfig, String msgUid) {
         this.emitter = emitter;
         this.messagesHistory = messagesHistory;
         this.modelConfig = modelConfig;
+        this.msgUid = msgUid;
     }
 
     @Override
@@ -55,6 +60,12 @@ public class CommonSubscriber implements Subscriber<ChatResponse>, Disposable {
     @Override
     public void onNext(ChatResponse response) {
         if (isDisposed()) {
+            return;
+        }
+        // 中断对话
+        if (Constant.INTERRUPT_MAP.get(msgUid)) {
+            log.debug("interrupted");
+            dispose();
             return;
         }
 

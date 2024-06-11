@@ -5,7 +5,6 @@ import com.gearwenxin.config.ModelConfig;
 import com.gearwenxin.entity.chatmodel.ChatBaseRequest;
 import com.gearwenxin.entity.enums.ModelType;
 import com.gearwenxin.entity.response.ChatResponse;
-import com.gearwenxin.model.BasicChatModel;
 import com.gearwenxin.model.ChatModel;
 import com.gearwenxin.schedule.entity.ChatTask;
 import com.gearwenxin.schedule.TaskQueueManager;

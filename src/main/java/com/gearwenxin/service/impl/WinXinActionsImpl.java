@@ -1,5 +1,6 @@
 package com.gearwenxin.service.impl;
 
+import com.gearwenxin.common.Constant;
 import com.gearwenxin.core.MessageHistoryManager;
 import com.gearwenxin.entity.Message;
 import com.gearwenxin.service.WinXinActions;
@@ -48,6 +49,11 @@ public class WinXinActionsImpl implements WinXinActions {
             return gson.toJson(chatMessageHistoryMap);
         }
         return null;
+    }
+
+    @Override
+    public boolean interpretChat(String msgUid) {
+        return Boolean.TRUE.equals(Constant.INTERRUPT_MAP.put(msgUid, true));
     }
 
 }

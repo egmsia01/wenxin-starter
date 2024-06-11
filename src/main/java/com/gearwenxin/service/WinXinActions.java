@@ -15,4 +15,6 @@ public interface WinXinActions {
 
     String exportAllMessages();
 
+    boolean interpretChat(String msgUid);
+
 }

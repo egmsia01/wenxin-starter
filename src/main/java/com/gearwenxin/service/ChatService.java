@@ -44,7 +44,8 @@ public class ChatService {
         return wenXinProperties.getAccessToken();
     }
 
-    public <T extends ChatBaseRequest> Publisher<ChatResponse> chatProcess(T request, String msgUid, boolean stream, ModelConfig config) {
+    public <T extends ChatBaseRequest> Publisher<ChatResponse> chatProcess(T request, String msgUid,
+                                                                           boolean stream, ModelConfig config) {
         validRequest(request, config);
         Map<String, Deque<Message>> messageMap = messageHistoryManager.getChatMessageHistoryMap();
         boolean isContinuous = (msgUid != null);
@@ -60,7 +61,8 @@ public class ChatService {
 
             log.debug("[{}] stream: {}, continuous: {}", TAG, stream, true);
 
-            return stream ? webManager.historyFluxPost(accessToken, targetRequest, messagesHistory, config) :
+            return stream ? webManager.historyFluxPost(accessToken, targetRequest, messagesHistory,
+                    config, msgUid) :
                     webManager.historyMonoPost(accessToken, targetRequest, messagesHistory, config, msgUid);
         } else {
             targetRequest = buildTargetRequest(null, stream, request);
@@ -77,7 +79,8 @@ public class ChatService {
         validator.validate(request, config);
     }
 
-    public static <T extends ChatBaseRequest> Object buildTargetRequest(Deque<Message> messagesHistory, boolean stream, T request) {
+    public static <T extends ChatBaseRequest> Object buildTargetRequest(Deque<Message> messagesHistory,
+                                                                        boolean stream, T request) {
         Object targetRequest = null;
         if (request.getClass() == ChatBaseRequest.class) {
             BaseRequest.BaseRequestBuilder requestBuilder = ConvertUtils.toBaseRequest(request).stream(stream);
@@ -86,7 +89,8 @@ public class ChatService {
             }
             targetRequest = requestBuilder.build();
         } else if (request.getClass() == ChatErnieRequest.class) {
-            ErnieRequest.ErnieRequestBuilder requestBuilder = ConvertUtils.toErnieRequest((ChatErnieRequest) request).stream(stream);
+            ErnieRequest.ErnieRequestBuilder requestBuilder = ConvertUtils.toErnieRequest(
+                    (ChatErnieRequest) request).stream(stream);
             if (messagesHistory != null) {
                 requestBuilder.messages(messagesHistory);
             }
