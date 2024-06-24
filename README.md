@@ -171,7 +171,7 @@ public class ChatController {
 
 ## 更新日志
 
-v2.0.0-alpha1
+v2.0.0-alpha1  // 始终上传失败...建议自己拉仓库install
 - JDK 8专版
 
 v2.0.0 - bata4
