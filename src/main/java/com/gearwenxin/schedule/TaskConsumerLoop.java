@@ -53,7 +53,7 @@ public class TaskConsumerLoop {
 
     private final TaskQueueManager taskManager = TaskQueueManager.getInstance();
 
-    private final Map<String, CountDownLatch> countDownLatchMap = taskManager.getConsumerCountDownLatchMap();
+//    private final Map<String, CountDownLatch> countDownLatchMap = taskManager.getConsumerCountDownLatchMap();
 
     public void start() {
         initModelQPSMap();
@@ -61,9 +61,9 @@ public class TaskConsumerLoop {
         modelNames.forEach(modelName -> new Thread(() -> {
             try {
                 // 暂未使用
-                if (!countDownLatchMap.containsKey(modelName)) {
-                    countDownLatchMap.put(modelName, new CountDownLatch(1));
-                }
+//                if (!countDownLatchMap.containsKey(modelName)) {
+//                    countDownLatchMap.put(modelName, new CountDownLatch(1));
+//                }
                 Thread.currentThread().setName(modelName + "-thread");
                 log.info("[{}] {}, model: {}, loop start", TAG, Thread.currentThread().getName(), modelName);
                 // 消费事件循环处理
