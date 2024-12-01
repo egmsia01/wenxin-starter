@@ -1,7 +1,7 @@
 package com.gearwenxin.service;
 
 import com.gearwenxin.config.ModelConfig;
-import com.gearwenxin.core.WebManager;
+import com.gearwenxin.core.RequestManager;
 import com.gearwenxin.common.ConvertUtils;
 import com.gearwenxin.common.ErrorCode;
 import com.gearwenxin.config.WenXinProperties;
@@ -13,7 +13,6 @@ import com.gearwenxin.entity.response.PromptResponse;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 
-import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import reactor.core.publisher.Mono;
@@ -28,7 +27,7 @@ import java.util.Map;
 @Service
 public class PromptService {
 
-    private final WebManager webManager = new WebManager();
+    private final RequestManager requestManager = new RequestManager();
 
     @Resource
     private WenXinProperties wenXinProperties;
@@ -45,7 +44,7 @@ public class PromptService {
         Map<String, String> paramMap = promptRequest.getParamMap();
         paramMap.put("id", promptRequest.getId());
 
-        return webManager.monoGet(config, getAccessToken(), paramMap, PromptResponse.class);
+        return requestManager.monoGet(config, getAccessToken(), paramMap, PromptResponse.class);
     }
 
 }

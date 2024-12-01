@@ -2,10 +2,9 @@ package com.gearwenxin.service;
 
 import com.gearwenxin.config.ModelConfig;
 import com.gearwenxin.config.WenXinProperties;
-import com.gearwenxin.core.WebManager;
+import com.gearwenxin.core.RequestManager;
 import com.gearwenxin.entity.request.ImageBaseRequest;
 import com.gearwenxin.entity.response.ImageResponse;
-import com.gearwenxin.model.ImageModel;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -21,7 +20,7 @@ import static com.gearwenxin.common.WenXinUtils.assertNotNull;
 @Service
 public class ImageService {
 
-    private final WebManager webManager = new WebManager();
+    private final RequestManager requestManager = new RequestManager();
 
     @Resource
     private WenXinProperties wenXinProperties;
@@ -34,7 +33,7 @@ public class ImageService {
         assertNotNull(imageBaseRequest, "imageBaseRequest is null");
         imageBaseRequest.validSelf();
 
-        return webManager.monoPost(config, getAccessToken(), imageBaseRequest, ImageResponse.class);
+        return requestManager.monoPost(config, getAccessToken(), imageBaseRequest, ImageResponse.class);
     }
 
 }

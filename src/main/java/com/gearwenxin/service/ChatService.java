@@ -2,7 +2,7 @@ package com.gearwenxin.service;
 
 import com.gearwenxin.common.*;
 import com.gearwenxin.config.WenXinProperties;
-import com.gearwenxin.core.WebManager;
+import com.gearwenxin.core.RequestManager;
 import com.gearwenxin.core.MessageHistoryManager;
 import com.gearwenxin.entity.BaseRequest;
 import com.gearwenxin.entity.chatmodel.ChatBaseRequest;
@@ -33,10 +33,7 @@ public class ChatService {
     @Resource
     private WenXinProperties wenXinProperties;
 
-    @Resource
-    private MessageService messageService;
-
-    private final WebManager webManager = new WebManager();
+    private final RequestManager requestManager = new RequestManager();
 
     private static final MessageHistoryManager messageHistoryManager = MessageHistoryManager.getInstance();
 
@@ -61,17 +58,17 @@ public class ChatService {
 
             log.debug("[{}] stream: {}, continuous: {}", TAG, stream, true);
 
-            return stream ? webManager.historyFluxPost(accessToken, targetRequest, messagesHistory,
+            return stream ? requestManager.historyFluxPost(accessToken, targetRequest, messagesHistory,
                     config, msgUid) :
-                    webManager.historyMonoPost(accessToken, targetRequest, messagesHistory, config, msgUid);
+                    requestManager.historyMonoPost(accessToken, targetRequest, messagesHistory, config, msgUid);
         } else {
             targetRequest = buildTargetRequest(null, stream, request);
         }
 
         log.debug("[{}] stream: {}, continuous: {}", TAG, stream, false);
 
-        return stream ? webManager.fluxPost(config, accessToken, targetRequest, ChatResponse.class, msgUid) :
-                webManager.monoPost(config, accessToken, targetRequest, ChatResponse.class, msgUid);
+        return stream ? requestManager.fluxPost(config, accessToken, targetRequest, ChatResponse.class, msgUid) :
+                requestManager.monoPost(config, accessToken, targetRequest, ChatResponse.class, msgUid);
     }
 
     public <T extends ChatBaseRequest> void validRequest(T request, ModelConfig config) {

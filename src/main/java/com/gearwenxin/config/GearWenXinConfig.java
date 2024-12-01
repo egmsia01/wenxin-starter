@@ -1,6 +1,6 @@
 package com.gearwenxin.config;
 
-import com.gearwenxin.core.WebManager;
+import com.gearwenxin.core.RequestManager;
 import com.gearwenxin.entity.Message;
 import com.gearwenxin.entity.response.TokenResponse;
 import com.gearwenxin.service.*;
@@ -45,7 +45,7 @@ public class GearWenXinConfig implements CommandLineRunner {
             return;
         }
         try {
-            WebManager.getAccessTokenByAKSK(apiKey, secretKey).doOnNext(tokenResponse -> {
+            RequestManager.getAccessTokenByAKSK(apiKey, secretKey).doOnNext(tokenResponse -> {
                 if (tokenResponse != null) {
                     Optional.ofNullable(tokenResponse.getAccessToken()).ifPresentOrElse(token -> {
                         wenXinProperties.setAccessToken(token);

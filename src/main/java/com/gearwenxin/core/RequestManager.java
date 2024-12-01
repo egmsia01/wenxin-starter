@@ -35,7 +35,7 @@ import static com.gearwenxin.core.MessageHistoryManager.validateMessageRule;
  * {@code @date} 2023/7/21
  */
 @Slf4j
-public class WebManager {
+public class RequestManager {
 
     private final TaskQueueManager taskManager = TaskQueueManager.getInstance();
 
@@ -121,7 +121,7 @@ public class WebManager {
                 .uri(uriBuilder -> uriBuilder.query(queryParams).build())
                 .retrieve()
                 .bodyToMono(type)
-                .doOnSuccess(WebManager::handleErrResponse)
+                .doOnSuccess(RequestManager::handleErrResponse)
                 .doOnError(WebClientResponseException.class, handleWebClientError());
     }
 
