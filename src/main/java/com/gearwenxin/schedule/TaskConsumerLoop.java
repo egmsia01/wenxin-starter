@@ -53,17 +53,11 @@ public class TaskConsumerLoop {
 
     private final TaskQueueManager taskManager = TaskQueueManager.getInstance();
 
-//    private final Map<String, CountDownLatch> countDownLatchMap = taskManager.getConsumerCountDownLatchMap();
-
     public void start() {
         initModelQPSMap();
         Set<String> modelNames = MODEL_QPS_MAP.keySet();
         modelNames.forEach(modelName -> new Thread(() -> {
             try {
-                // 暂未使用
-//                if (!countDownLatchMap.containsKey(modelName)) {
-//                    countDownLatchMap.put(modelName, new CountDownLatch(1));
-//                }
                 Thread.currentThread().setName(modelName + "-thread");
                 log.info("[{}] {}, model: {}, loop start", TAG, Thread.currentThread().getName(), modelName);
                 // 消费事件循环处理
@@ -135,21 +129,15 @@ public class TaskConsumerLoop {
         ExecutorService executorService = ThreadPoolManager.getInstance(task.getTaskType());
         switch (task.getTaskType()) {
             case chat -> {
-                var future = CompletableFuture.supplyAsync(() ->
-                        processChatTask(task, modelConfig), executorService
-                );
+                var future = CompletableFuture.supplyAsync(() -> processChatTask(task, modelConfig), executorService);
                 taskManager.getChatFutureMap().putAndNotify(taskId, future);
             }
             case prompt -> {
-                var future = CompletableFuture.supplyAsync(() ->
-                        processPromptTask(task, modelConfig), executorService
-                );
+                var future = CompletableFuture.supplyAsync(() -> processPromptTask(task, modelConfig), executorService);
                 taskManager.getPromptFutureMap().putAndNotify(taskId, future);
             }
             case image -> {
-                var future = CompletableFuture.supplyAsync(() ->
-                        processImageTask(task, modelConfig), executorService
-                );
+                var future = CompletableFuture.supplyAsync(() -> processImageTask(task, modelConfig), executorService);
                 taskManager.getImageFutureMap().putAndNotify(taskId, future);
             }
             case embedding -> {
@@ -175,7 +163,7 @@ public class TaskConsumerLoop {
             ChatBaseRequest taskRequest = modelConfig.getModelName().toLowerCase().contains("ernie") ?
                     (ChatErnieRequest) task.getTaskRequest() : (ChatBaseRequest) task.getTaskRequest();
             log.debug("[{}] submit task {}, ernie: {}", TAG, task.getTaskId(), taskRequest.getClass() == ChatErnieRequest.class);
-            return chatService.chatProcess(taskRequest, task.getMessageId(), task.isStream(), modelConfig);
+            return chatService.processChatRequest(taskRequest, task.getMessageId(), task.isStream(), modelConfig);
         }
     }
 

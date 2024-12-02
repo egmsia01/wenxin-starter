@@ -125,8 +125,8 @@ public class RequestManager {
                 .doOnError(WebClientResponseException.class, handleWebClientError());
     }
 
-    public <T> Flux<ChatResponse> historyFluxPost(String token, T request, Deque<Message> messagesHistory,
-                                                  ModelConfig config, String msgUid) {
+    public <T> Flux<ChatResponse> historyFluxPost(ModelConfig config, String token, T request,
+                                                  Deque<Message> messagesHistory, String msgUid) {
         return Flux.create(emitter -> {
             CommonSubscriber subscriber = new CommonSubscriber(emitter, messagesHistory, config, msgUid);
             fluxPost(config, token, request, ChatResponse.class).subscribe(subscriber);
@@ -134,8 +134,8 @@ public class RequestManager {
         });
     }
 
-    public <T> Mono<ChatResponse> historyMonoPost(String token, T request, Deque<Message> messagesHistory,
-                                                  ModelConfig config, String messageUid) {
+    public <T> Mono<ChatResponse> historyMonoPost(ModelConfig config, String token, T request,
+                                                  Deque<Message> messagesHistory, String messageUid) {
         return monoPost(config, token, request, ChatResponse.class, messageUid)
                 .flatMap(chatResponse -> {
                     Message messageResult = WenXinUtils.buildAssistantMessage(chatResponse.getResult());

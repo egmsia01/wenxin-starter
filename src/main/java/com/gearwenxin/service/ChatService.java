@@ -28,7 +28,7 @@ import java.util.*;
 @Service
 public class ChatService {
 
-    public static final String TAG = "ChatService";
+    public static final String SERVICE_TAG = "ChatService";
 
     @Resource
     private WenXinProperties wenXinProperties;
@@ -37,63 +37,77 @@ public class ChatService {
 
     private static final MessageHistoryManager messageHistoryManager = MessageHistoryManager.getInstance();
 
-    private String getAccessToken() {
+    private String retrieveAccessToken() {
         return wenXinProperties.getAccessToken();
     }
 
-    public <T extends ChatBaseRequest> Publisher<ChatResponse> chatProcess(T request, String msgUid,
-                                                                           boolean stream, ModelConfig config) {
-        validRequest(request, config);
-        Map<String, Deque<Message>> messageMap = messageHistoryManager.getChatMessageHistoryMap();
-        boolean isContinuous = (msgUid != null);
-        String accessToken = config.getAccessToken() == null ? getAccessToken() : config.getAccessToken();
+    public <T extends ChatBaseRequest> Publisher<ChatResponse> processChatRequest(T request, String messageId,
+                                                                                  boolean useStreaming,
+                                                                                  ModelConfig modelConfig) {
+        validateRequest(request, modelConfig);
+
+        Map<String, Deque<Message>> chatHistoryMap = messageHistoryManager.getChatMessageHistoryMap();
+        boolean hasHistory = (messageId != null);
+        String accessToken = modelConfig.getAccessToken() == null
+                ? retrieveAccessToken()
+                : modelConfig.getAccessToken();
+
         Object targetRequest;
-        if (isContinuous) {
-            Deque<Message> messagesHistory = messageMap.computeIfAbsent(
-                    msgUid, key -> new ArrayDeque<>()
+
+        if (hasHistory) {
+            Deque<Message> messageHistory = chatHistoryMap.computeIfAbsent(
+                    messageId, key -> new ArrayDeque<>()
             );
-            targetRequest = buildTargetRequest(messagesHistory, stream, request);
-            Message message = WenXinUtils.buildUserMessage(request.getContent());
-            MessageHistoryManager.addMessage(messagesHistory, message);
+            targetRequest = prepareRequestWithHistory(messageHistory, useStreaming, request);
+            Message userMessage = WenXinUtils.buildUserMessage(request.getContent());
+            MessageHistoryManager.addMessage(messageHistory, userMessage);
 
-            log.debug("[{}] stream: {}, continuous: {}", TAG, stream, true);
+            log.debug("[{}] Streaming: {}, Has History: {}", SERVICE_TAG, useStreaming, true);
 
-            return stream ? requestManager.historyFluxPost(accessToken, targetRequest, messagesHistory,
-                    config, msgUid) :
-                    requestManager.historyMonoPost(accessToken, targetRequest, messagesHistory, config, msgUid);
+            return useStreaming ?
+                    requestManager.historyFluxPost(modelConfig, accessToken, targetRequest, messageHistory, messageId) :
+                    requestManager.historyMonoPost(modelConfig, accessToken, targetRequest, messageHistory, messageId);
         } else {
-            targetRequest = buildTargetRequest(null, stream, request);
+            targetRequest = prepareRequestWithoutHistory(useStreaming, request);
         }
 
-        log.debug("[{}] stream: {}, continuous: {}", TAG, stream, false);
+        log.debug("[{}] Streaming: {}, Has History: {}", SERVICE_TAG, useStreaming, false);
 
-        return stream ? requestManager.fluxPost(config, accessToken, targetRequest, ChatResponse.class, msgUid) :
-                requestManager.monoPost(config, accessToken, targetRequest, ChatResponse.class, msgUid);
+        return useStreaming ?
+                requestManager.fluxPost(modelConfig, accessToken, targetRequest, ChatResponse.class, messageId) :
+                requestManager.monoPost(modelConfig, accessToken, targetRequest, ChatResponse.class, messageId);
     }
 
-    public <T extends ChatBaseRequest> void validRequest(T request, ModelConfig config) {
-        RequestValidator validator = RequestValidatorFactory.getValidator(config);
-        validator.validate(request, config);
+    public <T extends ChatBaseRequest> void validateRequest(T request, ModelConfig modelConfig) {
+        RequestValidator validator = RequestValidatorFactory.getValidator(modelConfig);
+        validator.validate(request, modelConfig);
     }
 
-    public static <T extends ChatBaseRequest> Object buildTargetRequest(Deque<Message> messagesHistory,
-                                                                        boolean stream, T request) {
+    public static <T extends ChatBaseRequest> Object prepareRequestWithHistory(Deque<Message> messageHistory,
+                                                                               boolean useStreaming, T request) {
         Object targetRequest = null;
+
         if (request.getClass() == ChatBaseRequest.class) {
-            BaseRequest.BaseRequestBuilder requestBuilder = ConvertUtils.toBaseRequest(request).stream(stream);
-            if (messagesHistory != null) {
-                requestBuilder.messages(messagesHistory);
+            BaseRequest.BaseRequestBuilder requestBuilder = ConvertUtils.toBaseRequest(request).stream(useStreaming);
+            if (messageHistory != null) {
+                requestBuilder.messages(messageHistory);
             }
             targetRequest = requestBuilder.build();
         } else if (request.getClass() == ChatErnieRequest.class) {
             ErnieRequest.ErnieRequestBuilder requestBuilder = ConvertUtils.toErnieRequest(
-                    (ChatErnieRequest) request).stream(stream);
-            if (messagesHistory != null) {
-                requestBuilder.messages(messagesHistory);
+                    (ChatErnieRequest) request).stream(useStreaming);
+            if (messageHistory != null) {
+                requestBuilder.messages(messageHistory);
             }
             targetRequest = requestBuilder.build();
         }
+
         return targetRequest;
     }
 
+    public static <T extends ChatBaseRequest> Object prepareRequestWithoutHistory(
+            boolean useStreaming, T request) {
+
+        return prepareRequestWithHistory(null, useStreaming, request);
+    }
 }
