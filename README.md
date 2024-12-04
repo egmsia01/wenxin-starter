@@ -5,7 +5,7 @@
 
 <div align="center">
 
-![gear-wenxinworkshop-starter](https://socialify.git.ci/egmsia01/wenxin-starter/image?font=Inter&forks=1&issues=1&language=1&name=1&owner=1&pattern=Floating%20Cogs&pulls=1&stargazers=1&theme=Light)
+![llms–nexus](https://socialify.git.ci/rainveil/llms–nexus/image?font=Inter&forks=1&issues=1&language=1&name=1&owner=1&pattern=Floating%20Cogs&pulls=1&stargazers=1&theme=Light)
 
 ![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.1.5-brightgreen.svg)
 ![JDK](https://img.shields.io/badge/JDK-17.0.5-orange.svg)
