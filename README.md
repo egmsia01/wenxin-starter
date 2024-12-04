@@ -11,8 +11,8 @@
 ![JDK](https://img.shields.io/badge/JDK-17.0.5-orange.svg)
 ![Maven](https://img.shields.io/badge/Maven-3.9-blue.svg)
 
-![LICENSE](https://img.shields.io/github/license/egmsia01/wenxin-starter?style=flat-square)
-![COMMIT](https://img.shields.io/github/last-commit/egmsia01/wenxin-starter?style=flat-square)
+![LICENSE](https://img.shields.io/github/license/rainveil/llms–nexus?style=flat-square)
+![COMMIT](https://img.shields.io/github/last-commit/rainveil/llms–nexus?style=flat-square)
 ![LANG](https://img.shields.io/badge/language-Java-7F52FF?style=flat-square)
 
 </div>
@@ -50,7 +50,7 @@
 
 ## 快速开始
 
-[使用demo (1.x版，2.x请阅读文档) ](https://github.com/egmsia01/springboot-wenxin-demo)
+[使用demo (1.x版，2.x请阅读文档) ](https://github.com/rainveil/springboot-wenxin-demo)
 
 *【基于Springboot 3.0开发，所以要求JDK版本为17及以上】*
 
@@ -188,7 +188,7 @@ public class ChatController {
 
 ## Star History
 
-[![Star History Chart](https://api.star-history.com/svg?repos=egmsia01/wenxin-starter&type=Date)](https://star-history.com/#egmsia01/wenxin-starter)
+[![Star History Chart](https://api.star-history.com/svg?repos=rainveil/llms–nexus&type=Date)](https://star-history.com/#rainveil/llms–nexus)
 
 ## 更新日志
 
@@ -227,7 +227,7 @@ v2.0.0 - bata
 ```text
 MIT License
 
-Copyright (c) 2023 GMerge
+Copyright (c) 2023 Rainveil
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
